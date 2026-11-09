@@ -1,0 +1,26 @@
+{% extends "admin/index.html" %}
+
+{% block content %}
+<div style="margin-bottom: 25px; padding: 20px; background: linear-gradient(135deg, #1e293b, #0f172a); border-radius: 12px; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.15);">
+    <h2 style="margin: 0 0 10px 0; color: #f8fafc; font-size: 1.4rem;">🚀 Django Backend Operations Center</h2>
+    <p style="margin: 0 0 15px 0; color: #94a3b8; font-size: 0.95rem;">
+        Welcome to ElectroHome's primary backend control system. Manage customer profiles, track electronic repair orders, update status, and review inquiry submissions in real-time.
+    </p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+        <div style="background: rgba(255,255,255,0.07); padding: 15px; border-radius: 8px; border-left: 4px solid #3b82f6;">
+            <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">System Database</div>
+            <div style="font-size: 18px; font-weight: 700; color: #60a5fa; margin-top: 4px;">SQLite 3 (database.db)</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.07); padding: 15px; border-radius: 8px; border-left: 4px solid #10b981;">
+            <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Django Framework</div>
+            <div style="font-size: 18px; font-weight: 700; color: #34d399; margin-top: 4px;">Django 6.0 Backend</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.07); padding: 15px; border-radius: 8px; border-left: 4px solid #f59e0b;">
+            <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; font-weight: 600;">Admin Privileges</div>
+            <div style="font-size: 18px; font-weight: 700; color: #fbbf24; margin-top: 4px;">Superuser Active</div>
+        </div>
+    </div>
+</div>
+
+{{ block.super }}
+{% endblock %}

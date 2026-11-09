@@ -1,0 +1,19 @@
+{
+  "name": "ar-technician-admin-portal",
+  "version": "1.0.0",
+  "description": "Dedicated Admin Control Panel for AR Technician Work",
+  "main": "admin-server.js",
+  "scripts": {
+    "start": "node admin-server.js"
+  },
+  "keywords": [],
+  "author": "Afzal",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^4.18.2",
+    "express-session": "^1.18.0",
+    "sqlite3": "^6.0.1"
+  }
+}

@@ -1,0 +1,23 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+  <a href="{% url 'admin:index' %}" style="display: inline-flex; align-items: center; gap: 8px; font-weight: 700; color: #ffffff; text-decoration: none;">
+    <span style="background: linear-gradient(135deg, #3b82f6, #8b5cf6); width: 32px; height: 32px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);">⚡</span>
+    <span>ElectroHome <span style="color: #60a5fa; font-weight: 400; font-size: 0.9em;">| Backend Management Panel</span></span>
+  </a>
+</h1>
+{% endblock %}
+
+{% block nav-global %}
+<div style="float: right; padding: 10px 15px; display: flex; align-items: center; gap: 12px;">
+  <a href="/" target="_blank" style="background: rgba(255,255,255,0.15); color: #fff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+    🌐 Open Public Website
+  </a>
+  <a href="/admin.html" target="_blank" style="background: rgba(59, 130, 246, 0.4); color: #fff; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-size: 13px; font-weight: 600; transition: all 0.2s;" onmouseover="this.style.background='rgba(59, 130, 246, 0.7)'" onmouseout="this.style.background='rgba(59, 130, 246, 0.4)'">
+    📊 HTML Database Portal
+  </a>
+</div>
+{% endblock %}

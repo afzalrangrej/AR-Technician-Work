@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Technician Work | Local Shop & Doorstep Home Service</title>
+
+  <meta name="description"
+    content="Local electronic repair shop & doorstep home service for TVs, smartphones, laptops, microwaves, refrigerators, and home appliances. Fast doorstep visit & in-shop repair with warranty.">
+  <meta name="keywords"
+    content="home electronic repair, TV repair home service, smartphone repair shop near me, appliance PCB repair, doorstep technician">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@600;700;800;900&family=Space+Grotesk:wght@600;700;800;900&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="styles.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ElectronicsRepairShop",
+    "name": "AR Technician Work",
+    "image": "images/home_tech.png",
+    "telephone": "+91 6351618067",
+    "email": "service@artechnicianwork.com",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "Jain Mandir railway station road",
+      "addressLocality": "Kosamba, Taluka Mangrol",
+      "addressRegion": "Surat, Gujarat",
+      "postalCode": "394120"
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+      "opens": "08:00",
+      "closes": "21:00"
+    }
+  }
+  </script>
+</head>
+
+<body>
+
+
+
+  <!-- Live Announcement Broadcast Ribbon (Connected to Admin Portal) -->
+  <div id="live-broadcast-banner" class="live-broadcast-bar hidden" role="region" aria-label="Announcement"></div>
+
+  <!-- Header Navigation -->
+  <header class="navbar">
+    <div class="container navbar-container">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <svg class="ar-logo-svg" viewBox="0 0 44 44" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="arGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="50%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#ff9900" />
+              </linearGradient>
+              <linearGradient id="aGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#00c6ff" />
+              </linearGradient>
+              <linearGradient id="rGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff9900" />
+                <stop offset="100%" stop-color="#ff6600" />
+              </linearGradient>
+              <linearGradient id="boxGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f192e" />
+                <stop offset="100%" stop-color="#090d16" />
+              </linearGradient>
+            </defs>
+            <rect x="1.5" y="1.5" width="41" height="41" rx="11" fill="url(#boxGrad1)" stroke="url(#arGrad1)"
+              stroke-width="2" />
+            <text x="21" y="29.5" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900"
+              font-size="21" letter-spacing="-1">
+              <tspan fill="url(#aGrad1)">A</tspan>
+              <tspan fill="url(#rGrad1)">R</tspan>
+            </text>
+            <path d="M 12 34 L 32 34" stroke="url(#arGrad1)" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+        <div class="logo-text">
+          <span class="brand-ar">AR</span>
+          <span class="brand-name">Technician <span class="brand-highlight">Work</span></span>
+        </div>
+      </a>
+
+      <nav class="nav-links">
+        <a href="#hero" class="nav-link" data-i18n="nav_home">Home</a>
+        <a href="#notice-board" class="nav-link"><i class="fas fa-bullhorn" style="font-size:0.8rem; color:#f59e0b; margin-right:4px;"></i>Notice Board</a>
+        <a href="#services" class="nav-link" data-i18n="nav_services">Services</a>
+        <a href="#location" class="nav-link" data-i18n="nav_location">Location & Shop</a>
+        <a href="#tracker" class="nav-link" data-i18n="nav_tracker">Track Order</a>
+        <a href="#contact" class="nav-link" data-i18n="nav_contact">Contact</a>
+      </nav>
+
+      <div class="nav-actions">
+        <button id="user-login-btn" class="btn btn-user-login btn-sm" aria-label="Customer Login">
+          <i class="fas fa-user-circle"></i> <span id="user-login-label" data-i18n="nav_login">Login</span>
+        </button>
+        <button class="btn btn-amber btn-sm trigger-booking">
+          <i class="fas fa-screwdriver-wrench"></i> <span data-i18n="nav_book">Book Repair</span>
+        </button>
+        <button id="admin-btn" class="nav-hacker-btn" title="Admin Portal" aria-label="Admin Portal">
+          <svg class="hacker-mask-svg" viewBox="0 0 36 36" width="26" height="26" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="hackerMaskGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stop-color="#ffffff" />
+                <stop offset="65%" stop-color="#f1f5f9" />
+                <stop offset="100%" stop-color="#cbd5e1" />
+              </linearGradient>
+              <filter id="hackerGlow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="1" result="blur" />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
+            </defs>
+            <!-- Mask Face Silhouette -->
+            <path
+              d="M 18,3 C 25.5,3 29.5,7.5 29.5,15 C 29.5,22.5 25,30.5 18,33.5 C 11,30.5 6.5,22.5 6.5,15 C 6.5,7.5 10.5,3 18,3 Z"
+              fill="url(#hackerMaskGrad)" stroke="#00f2fe" stroke-width="1.3" />
+            <!-- Arched Eyebrows -->
+            <path d="M 9.5,12.5 Q 13,9.5 16.5,12.5" stroke="#090d16" stroke-width="1.6" stroke-linecap="round"
+              fill="none" />
+            <path d="M 19.5,12.5 Q 23,9.5 26.5,12.5" stroke="#090d16" stroke-width="1.6" stroke-linecap="round"
+              fill="none" />
+            <!-- Eye Cutouts with Glowing Cyber Pupils -->
+            <path d="M 10,15.5 Q 13,13.8 16,15.5 Q 13,17.2 10,15.5 Z" fill="#090d16" />
+            <path d="M 20,15.5 Q 23,13.8 26,15.5 Q 23,17.2 20,15.5 Z" fill="#090d16" />
+            <circle cx="13" cy="15.5" r="1.1" fill="#00f2fe" class="hacker-eye-dot" filter="url(#hackerGlow)" />
+            <circle cx="23" cy="15.5" r="1.1" fill="#00f2fe" class="hacker-eye-dot" filter="url(#hackerGlow)" />
+            <!-- Rosy Cheeks -->
+            <ellipse cx="9.5" cy="20.5" rx="2.2" ry="1.3" fill="#f43f5e" opacity="0.35" />
+            <ellipse cx="26.5" cy="20.5" rx="2.2" ry="1.3" fill="#f43f5e" opacity="0.35" />
+            <!-- Iconic Curled Mustache -->
+            <path
+              d="M 18,23.5 C 15,23.5 11.5,22 10.5,20 C 11.8,22.6 15,24.6 18,24.8 C 21,24.6 24.2,22.6 25.5,20 C 24.5,22 21,23.5 18,23.5 Z"
+              fill="#090d16" />
+            <!-- Mischievous Smile Line -->
+            <path d="M 13.5,25.8 Q 18,28.2 22.5,25.8" stroke="#090d16" stroke-width="1.2" stroke-linecap="round"
+              fill="none" />
+            <!-- Pointed Goatee Beard -->
+            <polygon points="17,28.5 19,28.5 18,32" fill="#090d16" />
+          </svg>
+        </button>
+        <button class="mobile-toggle" aria-label="Toggle Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="badge-pill amber" data-i18n="hero_badge">
+            <i class="fas fa-solid fa-screwdriver-wrench"></i> In-Shop Service
+            <i class="fas fa-solid fa-house"></i> At-Home Repair Service
+          </div>
+          <h1 data-i18n="hero_title">
+            Gas & Electrical Repair <span class="gradient-text">Shop and Home Appliance</span>
+          </h1>
+
+          <!-- Language Selector Widget: 4 Radio Buttons + Translate Button (After Headline) -->
+          <div class="lang-selector-box hero-lang-box" id="lang-selector-container">
+            <span class="lang-selector-title"><i class="fas fa-globe"></i> <span
+                data-i18n="lang_label">Language:</span></span>
+            <div class="lang-radios-group" role="radiogroup" aria-label="Select Language">
+              <label class="lang-radio-label active-choice" for="lang-en" title="English">
+                <input type="radio" id="lang-en" name="site-language" value="en" checked>
+                <span class="radio-text">English</span>
+              </label>
+              <label class="lang-radio-label" for="lang-hi" title="हिंदी">
+                <input type="radio" id="lang-hi" name="site-language" value="hi">
+                <span class="radio-text">Hindi (हिंदी)</span>
+              </label>
+              <label class="lang-radio-label" for="lang-gu" title="ગુજરાતી">
+                <input type="radio" id="lang-gu" name="site-language" value="gu">
+                <span class="radio-text">Gujarati (ગુજરાતી)</span>
+              </label>
+              <label class="lang-radio-label" for="lang-hinglish" title="Hinglish">
+                <input type="radio" id="lang-hinglish" name="site-language" value="hinglish">
+                <span class="radio-text">Hinglish</span>
+              </label>
+            </div>
+            <button type="button" id="translate-btn" class="btn-translate-action" title="Apply Selected Language">
+              <i class="fas fa-language"></i> <span data-i18n="btn_translate">Translate</span>
+            </button>
+          </div>
+
+          <p class="hero-subtitle" data-i18n="hero_subtitle">
+            We provide reliable gas, electrical, and industrial equipment repair
+            services at our shop and your home. From gas stoves and induction
+            cooktops to water pumps, coolers, and electrical wiring, we help keep
+            your appliances and equipment working safely.
+          </p>
+
+          <div class="service-modes-pills">
+            <div class="mode-pill home">
+              <i class="fas fa-solid fa-house"></i>
+              <div>
+                <strong data-i18n="hero_mode_home_title">Home Appliance</strong>
+                <p style="font-size:0.75rem; color:var(--text-muted);" data-i18n="hero_mode_home_desc">Technician visits
+                  your home for repairs</p>
+              </div>
+            </div>
+            <div class="mode-pill shop">
+              <i class="fas fa-solid fa-shop"></i>
+              <div>
+                <strong data-i18n="hero_mode_shop_title">Shop Visit</strong>
+                <p style="font-size:0.75rem; color:var(--text-muted);" data-i18n="hero_mode_shop_desc">Visit our Shop
+                  for repair and servicing</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="hero-cta-group">
+            <button class="btn btn-amber btn-lg trigger-booking">
+              <i class="fas fa-calendar-plus"></i> <span data-i18n="hero_btn_book">Request Home Technician</span>
+            </button>
+            <a href="#location" class="btn btn-secondary btn-lg">
+              <i class="fas fa-map-location-dot"></i> <span data-i18n="hero_btn_location">View Shop & Location</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-visual-column">
+          <!-- Live Admin Online/Offline Mood Indicator (Synced with Admin Panel) -->
+          <div class="hero-status-row">
+            <div id="admin-status-indicator" class="admin-status-pill online" title="Admin is Online & Available">
+              <span class="status-dot"></span>
+              <span id="admin-status-label" class="status-label">Admin: Online</span>
+            </div>
+
+            <!-- "My code" Section (Visible only when user is logged in with active booking) -->
+            <div id="user-code-pill" class="user-code-pill" title="Click to copy your tracking code" role="button"
+              tabindex="0" aria-label="My tracking code. Click to copy." style="display: none;">
+              <i class="fas fa-ticket-simple code-icon"></i>
+              <span class="code-label">My code:</span>
+              <span id="user-code-val" class="code-val"></span>
+              <button type="button" class="code-copy-btn" id="user-code-copy-btn" title="Copy code"
+                aria-label="Copy Code">
+                <i class="far fa-copy" id="user-code-copy-icon"></i>
+              </button>
+              <span class="code-copy-toast" id="user-code-copy-toast">Copied!</span>
+            </div>
+          </div>
+          <div class="hero-image-wrapper">
+            <div class="hero-slideshow" id="hero-slideshow" data-duration="3000">
+              <!-- 3-Second Automatic Progress Bar -->
+              <div class="slide-progress-bar">
+                <div class="slide-progress-fill" id="slide-progress-fill"></div>
+              </div>
+
+              <div class="slides-container" id="slides-container">
+                <!-- Slide 1: Gas Stove & Pipeline Repair -->
+                <div class="hero-slide active" data-slide-index="0">
+                  <img src="images/slide-gas-stove.jpg"
+                    alt="Certified technician repairing LPG gas stove and burner pipeline at customer kitchen">
+                  <div class="slide-caption">
+                    <span class="badge-pill amber"
+                      style="font-size:0.72rem; padding:0.2rem 0.55rem; width:fit-content;">
+                      <i class="fas fa-fire-burner"></i> Gas Stove Expert
+                    </span>
+                    <p>LPG Gas Stove, Pipeline & Leakage Doorstep Repair</p>
+                  </div>
+                </div>
+
+                <!-- Slide 2: Electrical Wiring & Switchboard -->
+                <div class="hero-slide" data-slide-index="1">
+                  <img src="images/slide-electrical.jpg"
+                    alt="Electrician repairing house switchboard wiring and circuit board with tools">
+                  <div class="slide-caption">
+                    <span class="badge-pill amber"
+                      style="font-size:0.72rem; padding:0.2rem 0.55rem; width:fit-content;">
+                      <i class="fas fa-bolt"></i> Electrical Specialist
+                    </span>
+                    <p>House Wiring, Switchboard & Short-Circuit Repair</p>
+                  </div>
+                </div>
+
+                <!-- Slide 3: Mixer Grinder Repair -->
+                <div class="hero-slide" data-slide-index="2">
+                  <img src="images/slide-mixer.jpg"
+                    alt="Technician repairing mixer grinder motor, blades, and coupling">
+                  <div class="slide-caption">
+                    <span class="badge-pill amber"
+                      style="font-size:0.72rem; padding:0.2rem 0.55rem; width:fit-content;">
+                      <i class="fas fa-blender"></i> Mixer & Appliance Repair
+                    </span>
+                    <p>Domestic & Industrial Mixer Grinder Motor Servicing</p>
+                  </div>
+                </div>
+
+                <!-- Slide 4: Gas Geyser Servicing -->
+                <div class="hero-slide" data-slide-index="3">
+                  <img src="images/slide-gas-geyser.jpg"
+                    alt="Technician inspecting and servicing wall-mounted gas geyser water heater">
+                  <div class="slide-caption">
+                    <span class="badge-pill amber"
+                      style="font-size:0.72rem; padding:0.2rem 0.55rem; width:fit-content;">
+                      <i class="fas fa-shower"></i> Geyser Expert
+                    </span>
+                    <p>Gas Geyser, Ignition & Water Heater Maintenance</p>
+                  </div>
+                </div>
+
+                <!-- Slide 5: Air Cooler & Fan Repair -->
+                <div class="hero-slide" data-slide-index="4">
+                  <img src="images/slide-cooler.jpg"
+                    alt="Technician servicing desert air cooler motor, water pump and fan wiring">
+                  <div class="slide-caption">
+                    <span class="badge-pill amber"
+                      style="font-size:0.72rem; padding:0.2rem 0.55rem; width:fit-content;">
+                      <i class="fas fa-fan"></i> Cooler & Fan Specialist
+                    </span>
+                    <p>Air Cooler Motor, Pump & Fan Wiring Repair</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Slide Navigation Controls -->
+              <button class="slide-arrow prev" id="slide-prev" aria-label="Previous Slide"><i
+                  class="fas fa-chevron-left"></i></button>
+              <button class="slide-arrow next" id="slide-next" aria-label="Next Slide"><i
+                  class="fas fa-chevron-right"></i></button>
+
+              <!-- Slide Indicators / Dots -->
+              <div class="slide-indicators" id="slide-indicators"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ADMIN NOTICE BOARD / LIVE CHAT FOR USERS ===== -->
+  <section id="notice-board" style="background: radial-gradient(circle at 50% 0%, rgba(176,96,255,0.09) 0%, rgba(8,12,20,0.98) 75%); padding: 2.25rem 0 2rem 0; border-bottom: 1px solid rgba(255,255,255,0.06);">
+    <div class="container">
+      <div class="notice-board-container" style="background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(176, 96, 255, 0.35); border-radius: 20px; padding: 1.75rem; box-shadow: 0 10px 35px rgba(0, 0, 0, 0.45); backdrop-filter: blur(12px);">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+          <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, rgba(176,96,255,0.25), rgba(236,72,153,0.25)); border: 1.5px solid rgba(176,96,255,0.5); display: flex; align-items: center; justify-content: center; font-size: 1.35rem; color: #d8b4fe; box-shadow: 0 0 20px rgba(176,96,255,0.3); flex-shrink: 0;">
+              <i class="fas fa-bullhorn"></i>
+            </div>
+            <div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin: 0; letter-spacing: -0.3px;">
+                  Admin Notice Board & Live Updates
+                </h2>
+                <span style="display: inline-flex; align-items: center; gap: 6px; background: rgba(16,185,129,0.15); border: 1px solid rgba(16,185,129,0.4); color: #34d399; font-size: 0.74rem; font-weight: 700; padding: 2px 9px; border-radius: 20px;">
+                  <span class="live-pulse-dot" style="background: #10b981; width: 7px; height: 7px;"></span> Live from Admin
+                </span>
+              </div>
+              <p style="font-size: 0.85rem; color: var(--text-muted); margin: 3px 0 0 0;">
+                Official announcements, emergency repair alerts, and messages directly from Electrician Afzal.
+              </p>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="https://wa.me/916351618067" target="_blank" style="background: rgba(16,185,129,0.18); border: 1px solid #10b981; color: #34d399; font-size: 0.82rem; font-weight: 700; padding: 6px 14px; border-radius: 10px; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+              <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <!-- Live Notice Board Chat Feed -->
+        <div id="user-notices-feed" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div style="text-align: center; padding: 2rem 1rem; color: var(--text-muted);">
+            <i class="fas fa-spinner fa-spin" style="font-size: 1.5rem; color: #b060ff; margin-bottom: 0.5rem; display: block;"></i>
+            Loading live admin notice board...
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Repair Services Grid -->
+  <section id="services" class="section-padding" style="background: var(--bg-surface-elevated);">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-pill amber" data-i18n="services_badge">
+          <i class="fas fa-screwdriver"></i> All Equipment & Appliances Covered
+        </div>
+        <h2 class="section-title" data-i18n="services_title">Shop & Home Repair Services</h2>
+        <p class="section-subtitle" data-i18n="services_subtitle">We bring specialized tools to your doorstep or
+          handle deep component repairs in our Kosamba workshop bench.</p>
+      </div>
+
+      <div class="services-grid">
+        <!-- Service Card 1 -->
+        <div class="service-card">
+          <h3 data-i18n="s1_title">Domestic & Industrial Gas Stoves</h3>
+          <p data-i18n="s1_desc">Repair & servicing for LPG gas stoves, commercial bhattis, industrial gas burners,
+            pipeline fittings, regulators, and leak prevention.</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Domestic & Industrial Gas Stoves">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Service Card 2 -->
+        <div class="service-card">
+          <h3 data-i18n="s2_title">Electric Infrared & Induction Cooktops</h3>
+          <p data-i18n="s2_desc">Component-level repairs for infrared cookers and induction stoves, heating coils, IGBT
+            circuit boards, sensor errors, and touch panels.</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Electric Infrared & Induction Cooktops">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Service Card 3 -->
+        <div class="service-card">
+          <h3 data-i18n="s3_title">Mixers & Industrial Mixture Machines</h3>
+          <p data-i18n="s3_desc">Motor rewinding, jar coupling replacement, blade sharpness, and heavy-duty repairs for
+            domestic mixers & commercial industrial grinders.</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Mixers & Industrial Mixture Machines">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Service Card 4 -->
+        <div class="service-card">
+          <h3 data-i18n="s4_title">Pressure Cookers & Kitchen Appliances</h3>
+          <p data-i18n="s4_desc">Complete servicing for domestic & commercial pressure cookers, whistle weights, rubber
+            gaskets, safety valves, handles, and body reshaping.</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Pressure Cookers & Kitchen Appliances">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Service Card 5 -->
+        <div class="service-card">
+          <h3 data-i18n="s5_title">Agricultural Spray Pumps (Dawa Ke Pump)</h3>
+          <p data-i18n="s5_desc">Battery-operated farm sprayers, pesticide knapsack pumps, 12V pressure motor repair,
+            battery replacement, charger port, and nozzle cleaning.</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Agricultural Spray Pumps (Dawa Ke Pump)">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Service Card 6 -->
+        <div class="service-card">
+          <h3 data-i18n="s6_title">Coolers, Fans & Complete Electrical Wiring</h3>
+          <p data-i18n="s6_desc">Air cooler motor & water pump repair, ceiling/exhaust fan winding, capacitor fix, and
+            complete home & commercial electrical wiring ("Kuchh bhi wiring").</p>
+          <button type="button" class="btn-service-book trigger-booking"
+            data-service-preset="Coolers, Fans & Complete Electrical Wiring">
+            <span><i class="fas fa-calendar-plus"></i> <span data-i18n="card_btn_book">Book This Service</span></span>
+            <i class="fas fa-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Live Repair & Rapido/Uber Style Visit Tracker -->
+  <section id="tracker" class="section-padding">
+    <div class="container">
+      <div class="tracker-card">
+        <div class="tracker-header-flex">
+          <div>
+            <div class="badge-pill amber"
+              style="margin-bottom:0.5rem; display:inline-flex; align-items:center; gap:6px;">
+              <span class="live-pulse-dot"></span> <strong data-i18n="tracker_badge">LIVE VEHICLE DISPATCH
+                TRACKER</strong>
+            </div>
+            <h2 class="section-title" style="font-size:1.8rem; margin-bottom:0.4rem;" data-i18n="tracker_title">
+              Live Animated <span class="gradient-text">Technician Dispatch & Travel</span>
+            </h2>
+            <p style="color:var(--text-muted); font-size:0.95rem;" data-i18n="tracker_desc">Watch your assigned
+              electrician travel on the road from our Kosamba shop directly to your doorstep in real-time!</p>
+          </div>
+        </div>
+
+        <!-- Informational Banner: Informs user to paste 4-digit code here to track electrician (Visible only when user is logged in with active booking) -->
+        <div class="tracker-paste-info-banner" id="tracker-paste-info-banner" style="display: none;">
+          <div class="info-pulse-icon">
+            <i class="fas fa-motorcycle"></i>
+          </div>
+          <div class="info-content">
+            <div class="info-title">
+              <span class="info-pill-tag"><i class="fas fa-hand-point-right"></i> PASTE 4-DIGIT CODE HERE</span>
+              <span>Paste code <strong class="highlight-code" id="tracker-banner-code-highlight"></strong>
+                below to track your assigned electrician!</span>
+            </div>
+            <p class="info-subtext">
+              Watch your electrician travel live on the road from our Kosamba shop directly to your doorstep in
+              real-time.
+            </p>
+          </div>
+          <button type="button" class="btn-paste-code-pill" id="btn-quick-paste-code"
+            title="Click to paste tracking code into field">
+            <i class="fas fa-clipboard-check"></i> <span id="btn-quick-paste-code-label">Paste Code</span>
+          </button>
+        </div>
+
+        <div class="track-search-bar" style="margin-top:1rem; margin-bottom:1rem;">
+          <div class="input-with-icon">
+            <i class="fas fa-motorcycle"></i>
+            <input type="text" id="track-input" class="zip-input"
+              placeholder="Paste 4-digit code e.g. HOME-1234 to track electrician" value=""
+              data-i18n-ph="tracker_input_ph" aria-label="Tracking Code Input">
+            <button type="button" class="track-input-paste-btn" id="track-input-paste-btn" title="Paste Tracking Code">
+              <i class="fas fa-paste"></i> Paste
+            </button>
+          </div>
+          <button id="track-btn" class="btn btn-amber btn-lg" style="box-shadow: 0 4px 15px rgba(255, 153, 0, 0.4);">
+            <i class="fas fa-location-arrow"></i> <span data-i18n="tracker_btn">Track Live Location</span>
+          </button>
+        </div>
+
+        <!-- Real Booking with Code Section (Active Repair Booking) (Visible only when user is logged in with active booking) -->
+        <div class="tracker-real-booking-section" id="tracker-real-booking-section" style="display: none;">
+          <div class="tracker-real-booking-header">
+            <h4><i class="fas fa-clipboard-list"></i> My Repair Bookings</h4>
+            <span class="tracker-real-booking-count" id="tracker-real-booking-count">1 Booking</span>
+          </div>
+
+          <div class="tracker-real-booking-card" id="tracker-real-booking-card">
+            <div class="tracker-real-booking-top">
+              <div class="real-code-group">
+                <span class="real-code-tag" id="tracker-real-code-badge" title="Click to copy tracking code">#---</span>
+                <button type="button" class="btn-copy-real-code" id="btn-copy-real-code" title="Copy tracking code">
+                  <i class="far fa-copy" id="real-copy-code-icon"></i>
+                </button>
+              </div>
+              <span class="real-status-pill booked" id="tracker-real-status-badge">
+                <span class="status-dot"></span> Booked
+              </span>
+            </div>
+            <div class="real-device-title" id="tracker-real-device-name">
+              Pressure Cookers & Kitchen Appliances
+            </div>
+            <div class="tracker-real-booking-footer">
+              <span id="tracker-real-meta">🏡 At-Home Visit</span>
+              <button type="button" class="btn-track-real-live" id="btn-track-real-booking" data-code="">
+                <i class="fas fa-location-arrow"></i> Track Live
+              </button>
+            </div>
+          </div>
+        </div>
+
+
+        <div id="track-result" style="display:none; border-top:1px solid rgba(255,255,255,0.1); padding-top:1.5rem;">
+          <!-- Dynamically Populated Uber/Rapido Live Map & Driver Profile -->
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Easy-To-Understand Location & Service Section -->
+  <section id="location" class="section-padding" style="background: var(--bg-surface);">
+    <div class="container">
+      <div class="section-header">
+        <div class="badge-pill amber" data-i18n="location_badge">
+          <i class="fas fa-location-dot"></i> Service Locations
+        </div>
+        <h2 class="section-title" data-i18n="location_title">Two Easy Ways We Serve You</h2>
+        <p class="section-subtitle" data-i18n="location_subtitle">
+          Choose whether you want our mobile technician to come directly to your home, or prefer visiting our local
+          workshop in Kosamba.
+        </p>
+      </div>
+
+      <!-- 2-Way Location Comparison Cards -->
+      <div class="location-overview-grid">
+        <!-- Option 1: At-Home Doorstep Service -->
+        <div class="location-choice-card home-card">
+          <div class="location-choice-header">
+            <div class="location-icon-bubble home">
+              <i class="fas fa-house-chimney"></i>
+            </div>
+            <div>
+              <span class="location-badge-tag home" data-i18n="loc_home_badge"><i class="fas fa-truck-fast"></i> We Come
+                To You</span>
+              <h3 style="margin-top: 0.25rem;" data-i18n="loc_home_title">At-Home Doorstep Service</h3>
+            </div>
+          </div>
+
+          <p style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="loc_home_summary">
+            No need to carry heavy appliances. Our certified technician visits your home with full testing gear and
+            replacement parts.
+          </p>
+
+          <div class="location-steps-list">
+            <div class="location-step-item">
+              <i class="fas fa-circle-check" style="color: var(--secondary);"></i>
+              <div>
+                <strong data-i18n="loc_home_cov_title">Doorstep Service Area:</strong>
+                <span data-i18n="loc_home_cov_val">Kosamba, Mangrol Taluka, Kim, and nearby areas across Surat district
+                  (Pincode: 394120).</span>
+              </div>
+            </div>
+            <div class="location-step-item">
+              <i class="fas fa-clock" style="color: var(--secondary);"></i>
+              <div>
+                <strong data-i18n="loc_home_speed_title">Arrival Time:</strong>
+                <span data-i18n="loc_home_speed_val">Within 1 to 2 hours of booking confirmation.</span>
+              </div>
+            </div>
+            <div class="location-step-item">
+              <i class="fas fa-screwdriver-wrench" style="color: var(--secondary);"></i>
+              <div>
+                <strong data-i18n="loc_home_best_title">Best Suited For:</strong>
+                <span data-i18n="loc_home_best_val">Smart TVs, Gas Stoves, Refrigerators, AC PCB, Washing Machines,
+                  Coolers & Home Wiring.</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="address-action-buttons">
+            <button class="btn btn-amber trigger-booking" style="width: 100%;">
+              <i class="fas fa-calendar-check"></i> <span data-i18n="loc_home_btn">Book Doorstep Visit</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Option 2: Walk-In Local Shop -->
+        <div class="location-choice-card shop-card">
+          <div class="location-choice-header">
+            <div class="location-icon-bubble shop">
+              <i class="fas fa-store"></i>
+            </div>
+            <div>
+              <span class="location-badge-tag shop" data-i18n="loc_shop_badge"><i class="fas fa-person-walking"></i> You
+                Visit Us</span>
+              <h3 style="margin-top: 0.25rem;" data-i18n="loc_shop_title">Visit Our Local Workshop</h3>
+            </div>
+          </div>
+
+          <p style="color: var(--text-muted); font-size: 0.9rem;" data-i18n="loc_shop_summary">
+            Bring your device directly to our workbench for quick diagnosis, instant quote, and express counter repair.
+          </p>
+
+          <div class="landmark-callout">
+            <i class="fas fa-compass" style="color:var(--primary); margin-right: 6px;"></i>
+            <strong data-i18n="loc_landmark_lbl">Easy Landmark:</strong>
+            <span data-i18n="loc_landmark_val">Beside Jain Mandir, just 2 minutes (200 meters) walk from Kosamba Railway
+              Station.</span>
+          </div>
+
+          <div class="address-box">
+            <p><strong><i class="fas fa-location-dot" style="color:var(--primary);"></i> <span
+                  data-i18n="contact_address_lbl">Address:</span></strong></p>
+            <p style="color: var(--text-main); font-weight: 500;" id="shop-full-address">Near Jain Mandir, Railway Station Road, Kosamba (R.S.), Taluka Mangrol, Surat District, Gujarat – 394120</p>
+            <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.5rem;">
+              <i class="fas fa-clock" style="color:var(--secondary);"></i> <strong
+                data-i18n="contact_hours_lbl">Hours:</strong> Mon–Sat 8:00 AM – 8:00 PM | Sun 10:00 AM – 5:00 PM
+            </p>
+          </div>
+
+          <div class="address-action-buttons">
+            <a href="https://www.google.com/maps/search/?api=1&query=Jain+Mandir+railway+station+road+kosamba+taluka+Mangrol+Surat+394120"
+              target="_blank" rel="noopener noreferrer" class="btn-directions">
+              <i class="fas fa-diamond-turn-right"></i> <span data-i18n="loc_directions_btn">Open in Google Maps</span>
+            </a>
+            <button type="button" class="btn-copy-address" id="btn-copy-shop-address">
+              <i class="fas fa-copy"></i> <span data-i18n="loc_copy_btn">Copy Address</span>
+            </button>
+            <a href="tel:+916351618067" class="btn-copy-address">
+              <i class="fas fa-phone"></i> Call Shop
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shop Location & Contact -->
+  <section id="contact" class="section-padding" style="background: var(--bg-body); padding-top: 1rem;">
+    <div class="container">
+      <div class="calc-card" style="margin-top: 0;">
+        <div class="calc-body">
+          <div class="badge-pill amber" data-i18n="contact_badge">
+            <i class="fas fa-headset"></i> Quick Support
+          </div>
+          <h2 data-i18n="contact_title">Have Questions About Your Location?</h2>
+          <p style="color:var(--text-muted); margin: 0.5rem 0 1.25rem 0;" data-i18n="contact_subtitle">
+            Not sure if your home is covered or need directions? Call or WhatsApp us directly.
+          </p>
+
+          <div style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 14px; padding: 1.25rem; margin-top: 0.5rem;">
+            <!-- Address Block -->
+            <div style="display: flex; align-items: flex-start; gap: 12px; margin-bottom: 0.85rem;">
+              <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(0, 242, 254, 0.12); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; margin-top: 2px;">
+                <i class="fas fa-location-dot"></i>
+              </div>
+              <div>
+                <strong style="color: #fff; font-size: 0.95rem; display: block; margin-bottom: 3px;" data-i18n="contact_address_lbl">Workshop Address:</strong>
+                <div style="color: var(--text-main); font-size: 0.9rem; line-height: 1.5; font-weight: 500;" data-i18n="contact_address_val">
+                  Near Jain Mandir, Railway Station Road,<br>
+                  Kosamba (R.S.), Taluka Mangrol,<br>
+                  District Surat, Gujarat – 394120
+                </div>
+                <div style="font-size: 0.78rem; color: var(--primary); margin-top: 5px; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                  <i class="fas fa-compass"></i> <span>Landmark: 200m (2 min walk) from Kosamba Railway Station</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shop Hours Block -->
+            <div style="display: flex; align-items: center; gap: 12px; padding-top: 0.85rem; border-top: 1px solid rgba(255, 255, 255, 0.06); margin-bottom: 0.75rem;">
+              <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(254, 83, 187, 0.12); color: var(--secondary); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fas fa-clock"></i>
+              </div>
+              <div>
+                <strong style="color: #fff; font-size: 0.88rem; display: block; margin-bottom: 2px;" data-i18n="contact_hours_lbl">Shop Hours:</strong>
+                <div style="color: var(--text-muted); font-size: 0.82rem;" data-i18n="contact_hours_val">
+                  Mon–Sat: 8:00 AM – 8:00 PM &nbsp;|&nbsp; Sun: 10:00 AM – 5:00 PM
+                </div>
+              </div>
+            </div>
+
+            <!-- Contact Block -->
+            <div style="display: flex; align-items: center; gap: 12px; padding-top: 0.75rem; border-top: 1px solid rgba(255, 255, 255, 0.06);">
+              <div style="width: 34px; height: 34px; border-radius: 8px; background: rgba(16, 185, 129, 0.12); color: var(--neon-green); display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0;">
+                <i class="fas fa-phone"></i>
+              </div>
+              <div style="font-size: 0.88rem;">
+                <strong style="color: #fff;"><span data-i18n="contact_mobile_lbl">Call:</span></strong>
+                <a href="tel:+916351618067" style="color: var(--primary); text-decoration: none; font-weight: 700; margin-left: 4px;">+91 6351618067</a>
+                <span style="color: var(--text-muted); margin: 0 6px;">•</span>
+                <strong style="color: #fff;">WhatsApp:</strong>
+                <a href="https://wa.me/916351618067" target="_blank" style="color: var(--neon-green); text-decoration: none; font-weight: 700; margin-left: 4px;"><i class="fab fa-whatsapp"></i> +91 6351618067</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="padding: 2.25rem 2rem; background: rgba(8,12,20,0.85); display:flex; flex-direction:column; justify-content:center; border-radius: 0 16px 16px 0;">
+          <!-- Electrician Feedback Form -->
+          <div id="contact-feedback-box" style="display:block;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem;">
+              <h3 style="margin:0; font-size:1.25rem; color:#fff;"><i class="fas fa-comment-dots" style="color:#f59e0b;"></i> Electrician Feedback</h3>
+              <span id="fb-status-badge" style="font-size:0.7rem; font-weight:700; background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.35); color:#fbbf24; padding:2px 8px; border-radius:12px;">1 Per Code</span>
+            </div>
+            <p id="fb-subtitle-text" style="font-size:0.8rem; color:var(--text-muted); margin-bottom:1rem;">
+              Share your direct feedback for Electrician Afzal using your repair code.
+            </p>
+
+            <!-- Feedback Error / Success Alert -->
+            <div id="electrician-feedback-alert" style="display:none; padding:0.65rem 0.85rem; border-radius:8px; font-size:0.82rem; margin-bottom:0.85rem;"></div>
+
+            <form id="electrician-feedback-form">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom:0.65rem;">
+                <div>
+                  <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:3px;">Your Name *</label>
+                  <input type="text" id="fb-cust-name" class="form-control" placeholder="e.g. Afzal" required>
+                </div>
+                <div>
+                  <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:3px;">Phone Number *</label>
+                  <input type="tel" id="fb-cust-phone" class="form-control" placeholder="e.g. +91 8485991694" required>
+                </div>
+              </div>
+
+              <div style="margin-bottom:0.65rem;">
+                <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:flex; justify-content:space-between; margin-bottom:3px;">
+                  <span>Repair / Tracking Code (Auto-Locked)</span>
+                  <span style="font-size:0.7rem; color:var(--primary); font-weight:700;"><i class="fas fa-lock"></i> Auto-Verified</span>
+                </label>
+                <input type="text" id="fb-tracking-code" class="form-control" placeholder="HOME-8117" readonly style="text-transform:uppercase; font-family:'JetBrains Mono',monospace; letter-spacing:1px; font-weight:700; background:rgba(0,242,254,0.06); border-color:rgba(0,242,254,0.35); cursor:not-allowed;" required>
+              </div>
+
+              <div style="margin-bottom:0.65rem;">
+                <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:3px;">Rating for Electrician *</label>
+                <select id="fb-rating" class="form-control" style="font-weight:600;" required>
+                  <option value="5">⭐⭐⭐⭐⭐ 5 Stars — Excellent Doorstep Repair</option>
+                  <option value="4">⭐⭐⭐⭐ 4 Stars — Very Good Service</option>
+                  <option value="3">⭐⭐⭐ 3 Stars — Average</option>
+                  <option value="2">⭐⭐ 2 Stars — Below Expectations</option>
+                  <option value="1">⭐ 1 Star — Poor Service</option>
+                </select>
+              </div>
+
+              <div style="margin-bottom:0.85rem;">
+                <label style="font-size:0.75rem; color:var(--text-muted); font-weight:600; display:block; margin-bottom:3px;">Feedback & Review <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+                <textarea id="fb-comment" class="form-control" rows="3" placeholder="Tell us about the electrician's punctuality, repair work, and behavior (optional)..."></textarea>
+              </div>
+
+              <button type="submit" id="fb-submit-btn" class="btn btn-amber" style="width:100%; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;">
+                <i class="fas fa-paper-plane"></i> Submit Feedback to Electrician
+              </button>
+            </form>
+
+            <!-- Closed State: Displayed when feedback is submitted for this particular code -->
+            <div id="electrician-feedback-closed" style="display:none; text-align:center; padding:2rem 1.25rem; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:14px; margin-top:0.5rem; animation:fadeIn 0.3s ease-out;">
+              <div style="width:62px; height:62px; border-radius:50%; background:rgba(16,185,129,0.18); border:2px solid #10b981; display:inline-flex; align-items:center; justify-content:center; font-size:1.85rem; color:#10b981; margin-bottom:1rem; box-shadow:0 0 20px rgba(16,185,129,0.35);">
+                <i class="fas fa-circle-check"></i>
+              </div>
+              <h4 style="margin:0 0 0.4rem 0; font-size:1.25rem; font-weight:800; color:#fff;">Feedback Submitted Successfully</h4>
+              <p style="margin:0 0 1rem 0; font-size:0.85rem; color:var(--text-muted); line-height:1.5;">
+                Thank you! Your feedback for Electrician Afzal on repair code <strong id="fb-closed-code" style="color:var(--cyan); font-family:'JetBrains Mono',monospace;">#HOME-8117</strong> has been recorded and submitted to Admin.
+              </p>
+              <div style="display:inline-flex; align-items:center; gap:8px; padding:6px 14px; border-radius:20px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.12); font-size:0.78rem; color:#6ee7b7; font-weight:700;">
+                <i class="fas fa-lock"></i> Feedback Closed for This Code
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <a href="#" class="logo" style="margin-bottom:1rem;">
+            <div class="logo-icon">
+              <svg class="ar-logo-svg" viewBox="0 0 44 44" width="44" height="44" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                  <linearGradient id="arGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2fe" />
+                    <stop offset="50%" stop-color="#38bdf8" />
+                    <stop offset="100%" stop-color="#ff9900" />
+                  </linearGradient>
+                  <linearGradient id="aGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#00f2fe" />
+                    <stop offset="100%" stop-color="#00c6ff" />
+                  </linearGradient>
+                  <linearGradient id="rGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ff9900" />
+                    <stop offset="100%" stop-color="#ff6600" />
+                  </linearGradient>
+                  <linearGradient id="boxGrad2" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#0f192e" />
+                    <stop offset="100%" stop-color="#090d16" />
+                  </linearGradient>
+                </defs>
+                <rect x="1.5" y="1.5" width="41" height="41" rx="11" fill="url(#boxGrad2)" stroke="url(#arGrad2)"
+                  stroke-width="2" />
+                <text x="21" y="29.5" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900"
+                  font-size="21" letter-spacing="-1">
+                  <tspan fill="url(#aGrad2)">A</tspan>
+                  <tspan fill="url(#rGrad2)">R</tspan>
+                </text>
+                <path d="M 12 34 L 32 34" stroke="url(#arGrad2)" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </div>
+            <div class="logo-text">
+              <span class="brand-ar">AR</span>
+              <span class="brand-name">Technician <span class="brand-highlight">Work</span></span>
+            </div>
+          </a>
+          <p style="color:var(--text-muted); font-size:0.85rem;" data-i18n="footer_desc">
+            Your trusted local electronic repair small shop & doorstep home service provider. Guaranteed quality &
+            transparent rates.
+          </p>
+          <p style="color:var(--text-muted); font-size:0.82rem; margin-top:0.5rem;">
+            <i class="fas fa-map-pin" style="color:var(--primary);"></i> <span data-i18n="contact_address_val">Near Jain Mandir, Railway Station Road, Kosamba (R.S.), Taluka Mangrol, Surat District, Gujarat – 394120</span>
+          </p>
+          <p style="color:var(--text-muted); font-size:0.82rem; margin-top:0.3rem;">
+            <i class="fas fa-phone" style="color:var(--neon-green);"></i> Mobile: <a href="tel:+916351618067"
+              style="color:inherit; text-decoration:none;">+91 6351618067</a>
+          </p>
+        </div>
+        <div>
+          <h4 data-i18n="footer_services_title">Services</h4>
+          <p style="font-size:0.85rem; color:var(--text-muted);" data-i18n="footer_services_list">Gas Stove & Industrial
+            Bhatti<br>Infrared & Induction Cooktop<br>Mixer & Industrial Mixture<br>Cooker & Kitchenware Fix<br>Dawa
+            Spray Pump & Wiring</p>
+        </div>
+        <div>
+          <h4 data-i18n="footer_guarantee_title">Guarantee</h4>
+          <p style="font-size:0.85rem; color:var(--text-muted);" data-i18n="footer_guarantee_list">✓ 100% Verified
+            Techs<br>✓ 90-Day Warranty<br>✓ No Fix, No Fee Guarantee<br>✓ Original OEM Parts</p>
+        </div>
+      </div>
+      <div
+        style="border-top:1px solid var(--border-light); margin-top:2rem; padding-top:1.5rem; text-align:center; font-size:0.8rem; color:var(--text-dim);"
+        data-i18n="footer_rights">
+        © 2026 AR Technician Work Local Repair Shop & At-Home Service. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Enhanced Quick Booking Modal -->
+  <div id="booking-modal" class="modal-overlay">
+    <div class="modal-card">
+      <button id="modal-close" class="modal-close"><i class="fas fa-times"></i></button>
+      <div style="margin-bottom:1.15rem;">
+        <span class="badge-pill amber"
+          style="font-size:0.75rem; margin-bottom:0.4rem; display:inline-flex; align-items:center; gap:5px;">
+          <i class="fas fa-house-chimney"></i> <span data-i18n="modal_badge">At-Home Doorstep Service</span>
+        </span>
+        <h3 style="font-size:1.35rem; margin-bottom:0.25rem;" data-i18n="modal_title">Request Doorstep Home Repair</h3>
+        <p style="font-size:0.83rem; color:var(--text-muted);" data-i18n="modal_subtitle">Certified technician visits
+          your home with tools & parts. Quick & hassle-free!</p>
+      </div>
+
+      <!-- Offline Warning Banner inside Booking Modal -->
+      <div id="booking-offline-banner" class="booking-offline-alert" style="display: none;">
+        <i class="fas fa-ban"></i>
+        <div>
+          <strong>Bookings Temporarily Closed:</strong>
+          <span>Admin is currently offline. You cannot submit repair requests right now. Please wait until admin is
+            online.</span>
+        </div>
+      </div>
+
+      <form id="booking-form">
+        <input type="hidden" id="booking-loc-val" value="home">
+
+        <!-- 1. One-Tap Quick Appliance Selector -->
+        <label
+          style="font-size:0.78rem; font-weight:700; color:#fff; display:flex; justify-content:space-between; align-items:center;">
+          <span data-i18n="modal_item_lbl">1. Select Appliance / Equipment (1-Tap)</span>
+          <span style="font-size:0.72rem; color:var(--primary); font-weight:600;" id="chip-selected-badge">Selected: Gas
+            Stove</span>
+        </label>
+        <div class="booking-chips-grid" id="booking-chips-grid">
+          <div class="service-chip active" data-cat="Domestic & Industrial Gas Stoves">
+            <i class="fas fa-fire-burner"></i> <span data-i18n="modal_chip_gas">Gas & Bhatti</span>
+          </div>
+          <div class="service-chip" data-cat="Electric Infrared & Induction Cooktops">
+            <i class="fas fa-bolt"></i> <span data-i18n="modal_chip_induction">Infrared & Induction</span>
+          </div>
+          <div class="service-chip" data-cat="Mixers & Industrial Mixture Machines">
+            <i class="fas fa-blender"></i> <span data-i18n="modal_chip_mixer">Mixer & Grinder</span>
+          </div>
+          <div class="service-chip" data-cat="Pressure Cookers & Kitchen Appliances">
+            <i class="fas fa-utensils"></i> <span data-i18n="modal_chip_cooker">Pressure Cooker</span>
+          </div>
+          <div class="service-chip" data-cat="Agricultural Spray Pumps (Dawa Ke Pump)">
+            <i class="fas fa-spray-can"></i> <span data-i18n="modal_chip_pump">Dawa Spray Pump</span>
+          </div>
+          <div class="service-chip" data-cat="Coolers, Fans & Complete Electrical Wiring">
+            <i class="fas fa-fan"></i> <span data-i18n="modal_chip_cooler">Cooler, Fan & Wiring</span>
+          </div>
+        </div>
+        <!-- Hidden input for exact value / fallback -->
+        <input type="hidden" id="book-item-input" value="Domestic & Industrial Gas Stoves">
+
+        <!-- Optional Issue Note -->
+        <div style="margin-bottom:0.75rem;">
+          <input type="text" id="book-issue-input" class="form-control"
+            style="font-size:0.8rem; padding:0.55rem 0.85rem;"
+            placeholder="Brief problem (optional): e.g. low flame, not turning on, wire sparking"
+            data-i18n-ph="modal_issue_ph">
+        </div>
+
+        <!-- 2. Customer Home Details -->
+        <label style="font-size:0.78rem; font-weight:700; color:#fff;" data-i18n="modal_details_lbl">2. Your Name, Phone
+          & Home Address</label>
+        <div style="display:grid; grid-template-columns:1fr; gap:0.45rem; margin-top:0.3rem;">
+          <input type="text" id="book-name-input" class="form-control" placeholder="Full Name (e.g. Pritesh Patel)"
+            required data-i18n-ph="modal_name_ph">
+
+          <div class="phone-input-wrap">
+            <span class="phone-prefix-badge">🇮🇳 +91</span>
+            <input type="tel" id="book-phone-input" class="form-control phone-input-field"
+              placeholder="10-digit Mobile Number" required maxlength="10">
+          </div>
+
+          <div id="booking-addr-wrap">
+            <input type="text" id="book-addr-input" class="form-control"
+              placeholder="Doorstep Address, Colony / Area (Kosamba & Nearby)" required data-i18n-ph="modal_addr_ph">
+          </div>
+        </div>
+
+        <!-- Action Button: Confirm -->
+        <div class="booking-actions-group">
+          <button type="submit" class="btn btn-amber btn-book-submit">
+            <i class="fas fa-paper-plane"></i> <span data-i18n="modal_submit_btn">Send Request</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Dedicated Admin Offline Notice Modal -->
+  <div id="admin-offline-modal" class="modal-overlay">
+    <div class="modal-card" style="text-align: center; max-width: 440px;">
+      <button id="admin-offline-close" class="modal-close"><i class="fas fa-times"></i></button>
+      <div class="admin-offline-icon-circle">
+        <i class="fas fa-power-off"></i>
+      </div>
+      <div class="badge-pill offline"
+        style="margin: 0 auto 0.85rem; width: fit-content; display: inline-flex; align-items: center; gap: 6px; padding: 0.35rem 0.85rem; border-radius: 999px; background: rgba(239, 68, 68, 0.12); border: 1.5px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-size: 0.8rem; font-weight: 700;">
+        <span class="status-dot"
+          style="width: 8px; height: 8px; border-radius: 50%; background: #ef4444; display: inline-block;"></span>
+        Admin: Offline (Away)
+      </div>
+      <h3 style="font-size: 1.35rem; margin-bottom: 0.45rem; color: #fff;">Bookings Temporarily Paused</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 1.35rem;">
+        The technician / admin is currently offline. Repair booking requests are paused right now. Service requests will
+        resume immediately once Admin turns Online.
+      </p>
+      <div class="offline-modal-actions" style="display: flex; flex-direction: column; gap: 0.65rem;">
+        <a href="https://wa.me/916351618067?text=Hello%20AR%20Technician%20Work!%20I%20have%20an%20urgent%20repair%20inquiry."
+          target="_blank" class="btn btn-secondary"
+          style="border-color: #25d366; color: #25d366; justify-content: center; width: 100%;">
+          <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+        </a>
+        <a href="tel:+916351618067" class="btn btn-secondary" style="justify-content: center; width: 100%;">
+          <i class="fas fa-phone-volume"></i> Call Kosamba Shop (+91 63516 18067)
+        </a>
+        <button type="button" class="btn btn-outline" id="admin-offline-ok-btn"
+          style="width: 100%; justify-content: center;">
+          Understood, Wait For Online
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Authentication Modal -->
+  <div id="admin-login-modal" class="modal-overlay admin-modal-backdrop">
+    <div class="modal-card admin-classic-card" id="admin-card-container">
+      <!-- Glow effect decorative aura -->
+      <div class="admin-card-glow"></div>
+
+      <!-- 1-Sec Approval Screen Overlay (displayed on correct credentials) -->
+      <div id="admin-approval-screen" class="admin-approval-screen" style="display: none;">
+        <div class="approval-icon-box">
+          <div class="approval-ring"></div>
+          <div class="approval-core">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <h3 class="approval-title">Access <span>Approved</span></h3>
+        <p class="approval-subtitle">
+          <i class="fas fa-shield-check"></i> Identity Verified • Opening Control Panel...
+        </p>
+      </div>
+
+      <!-- Top bar with security pill & close button -->
+      <div class="admin-card-topbar">
+        <div class="admin-security-pill">
+          <span class="security-dot"></span>
+          <i class="fas fa-shield-halved"></i>
+          <span>RESTRICTED ACCESS • 256-BIT SSL</span>
+        </div>
+        <button id="admin-modal-close" class="admin-close-btn" aria-label="Close Admin Modal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+
+      <!-- Center Security Emblem & Header -->
+      <div class="admin-header-center">
+        <div class="admin-emblem-wrapper">
+          <div class="admin-emblem-ring"></div>
+          <div class="admin-emblem-core">
+            <i class="fas fa-user-shield"></i>
+          </div>
+        </div>
+        <h3 class="admin-classic-title">Admin <span>Portal</span></h3>
+        <p class="admin-classic-subtitle">Official Management Console • Enter Admin Name & Secret Code</p>
+      </div>
+
+      <!-- Stopping / Error Message Container -->
+      <div id="admin-error-msg" class="admin-error-banner" style="display:none;">
+        <div class="admin-error-icon">
+          <i class="fas fa-triangle-exclamation"></i>
+        </div>
+        <div class="admin-error-text" id="admin-error-text-content">
+          <strong>Access Denied:</strong> Invalid Admin Name or Secret Code! Please enter valid credentials.
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <form id="admin-login-form" class="admin-classic-form" autocomplete="off">
+        <div class="admin-input-group">
+          <label for="admin-name-input" class="admin-input-label">
+            <span>Admin Username</span>
+            <span class="label-badge">Required</span>
+          </label>
+          <div class="admin-field-box">
+            <span class="admin-field-icon"><i class="fas fa-user-tie"></i></span>
+            <input type="text" id="admin-name-input" class="admin-input-control" placeholder="Enter Admin Name" required
+              autocomplete="username">
+          </div>
+        </div>
+
+        <div class="admin-input-group">
+          <div class="admin-label-row">
+            <label for="admin-code-input" class="admin-input-label">
+              <span>Secret Code</span>
+              <span class="label-badge">Confidential</span>
+            </label>
+          </div>
+          <div class="admin-field-box">
+            <span class="admin-field-icon"><i class="fas fa-key"></i></span>
+            <input type="password" id="admin-code-input" class="admin-input-control" placeholder="Enter Secret Code"
+              required autocomplete="current-password">
+            <button type="button" id="admin-toggle-pass" class="admin-eye-btn" title="Show or hide secret code"
+              aria-label="Toggle password visibility">
+              <i class="fas fa-eye" id="admin-eye-icon"></i>
+            </button>
+          </div>
+          <div id="admin-caps-warning" class="caps-warning" style="display:none;">
+            <i class="fas fa-arrow-up"></i> Caps Lock is turned on
+          </div>
+        </div>
+
+        <!-- Security Meta Strip -->
+        <div class="admin-security-meta">
+          <div class="sec-meta-item">
+            <i class="fas fa-lock"></i> TLS 1.3 Verified
+          </div>
+          <div class="sec-meta-item">
+            <i class="fas fa-fingerprint"></i> Biometric Session ID
+          </div>
+        </div>
+
+        <button type="submit" id="admin-submit-btn" class="admin-submit-button">
+          <span class="btn-text" id="admin-btn-label">
+            <i class="fas fa-arrow-right-to-bracket"></i> Login to Admin Portal
+          </span>
+          <span class="btn-shine"></span>
+        </button>
+
+        <div class="admin-card-footer">
+          <p><i class="fas fa-shield-halved"></i> Authorized Personnel Only • Protected by AR Security</p>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Customer Digital Invoice & Receipt Modal -->
+  <div id="customer-invoice-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 600px; background: #0c0817; border: 1px solid rgba(0, 242, 254, 0.3);">
+      <button id="cust-invoice-close" class="modal-close"><i class="fas fa-times"></i></button>
+      <div
+        style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem; margin-bottom: 1rem; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="font-size: 1.25rem; font-weight: 800; color: #fff;"><i class="fas fa-receipt"
+              style="color:var(--primary); margin-right: 6px;"></i> Official Digital Bill</h3>
+          <p style="font-size: 0.78rem; color: var(--text-muted);">AR Technician Work • Kosamba & Surat</p>
+        </div>
+        <span
+          style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 0.25rem 0.7rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">VERIFIED
+          RECEIPT</span>
+      </div>
+      <div id="cust-invoice-content" style="font-size: 0.88rem;"></div>
+      <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem;">
+        <button class="btn btn-secondary btn-sm" style="flex:1;" onclick="window.print()"><i class="fas fa-print"></i>
+          Print Receipt</button>
+        <button id="btn-open-review-from-invoice" class="btn btn-amber btn-sm" style="flex:1;"><i
+            class="fas fa-star"></i> Rate Our Service</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Customer Rating & Review Modal -->
+  <div id="customer-review-modal" class="modal-overlay">
+    <div class="modal-card" style="max-width: 480px; background: #0c0817; border: 1px solid rgba(245, 158, 11, 0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.8), 0 0 25px rgba(245, 158, 11, 0.2);">
+      <button id="cust-review-close" class="modal-close"><i class="fas fa-times"></i></button>
+      <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div style="font-size: 2rem; color: #fbbf24; margin-bottom: 0.5rem;"><i class="fas fa-star"></i></div>
+        <h3 style="font-size: 1.3rem; margin-bottom: 0.25rem; color:#fff;">Electrician Feedback</h3>
+        <p style="font-size: 0.82rem; color: var(--text-muted);">Your feedback for Electrician Afzal is sent directly to the Admin Feedback Section (1 feedback per code).</p>
+      </div>
+
+      <div id="rev-error-banner" style="display:none; background:rgba(239,68,68,0.15); border:1px solid #ef4444; color:#fca5a5; padding:0.6rem 0.85rem; border-radius:10px; font-size:0.82rem; margin-bottom:1rem; align-items:center; gap:8px;">
+        <i class="fas fa-circle-exclamation"></i>
+        <span id="rev-error-text"></span>
+      </div>
+
+      <form id="customer-review-form">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:0.6rem; margin-bottom: 0.85rem;">
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">Your Name *</label>
+            <input type="text" id="rev-cust-name" class="form-control" placeholder="e.g. Afzal" required>
+          </div>
+          <div>
+            <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">Phone Number *</label>
+            <input type="tel" id="rev-cust-phone" class="form-control" placeholder="e.g. +91 8485991694" required>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted); display:flex; justify-content:space-between;">
+            <span>Repair / Tracking Code (Auto-Locked)</span>
+            <span style="font-size:0.72rem; color:var(--primary); font-weight:700;"><i class="fas fa-lock"></i> Auto-Verified</span>
+          </label>
+          <input type="text" id="rev-cust-code" class="form-control" placeholder="HOME-8117" readonly style="text-transform:uppercase; font-family:'JetBrains Mono',monospace; letter-spacing:1px; font-weight:700; background:rgba(0,242,254,0.06); border-color:rgba(0,242,254,0.35); cursor:not-allowed;" required>
+        </div>
+
+        <div style="margin-bottom: 0.85rem;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">Electrician Rating (Stars) *</label>
+          <select id="rev-cust-stars" class="form-control" required>
+            <option value="5">⭐⭐⭐⭐⭐ 5 Stars — Excellent Doorstep Repair</option>
+            <option value="4">⭐⭐⭐⭐ 4 Stars — Very Good Service</option>
+            <option value="3">⭐⭐⭐ 3 Stars — Average</option>
+            <option value="2">⭐⭐ 2 Stars — Below Expectations</option>
+            <option value="1">⭐ 1 Star — Poor</option>
+          </select>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <label style="font-size: 0.78rem; font-weight: 600; color: var(--text-muted);">Feedback for Electrician <span style="font-size:0.72rem; color:var(--text-muted); font-weight:400;">(Optional)</span></label>
+          <textarea id="rev-cust-comment" class="form-control" rows="3"
+            placeholder="Tell us about the repair quality, arrival speed, and electrician behavior (optional)..."></textarea>
+        </div>
+
+        <button type="submit" id="rev-submit-btn" class="btn btn-amber" style="width: 100%; font-weight:800; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <i class="fas fa-paper-plane"></i> Submit Feedback
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- User / Customer Authentication & Signup Modal -->
+  <div id="user-login-modal" class="modal-overlay">
+    <div class="modal-card"
+      style="max-width: 440px; background: #0c121e; border: 1px solid rgba(0, 242, 254, 0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 25px rgba(0, 242, 254, 0.15); border-radius: 20px; position: relative;">
+      <!-- Top bar with security status & prominent Close button -->
+      <div class="auth-modal-topbar">
+        <div class="auth-modal-badge">
+          <span class="auth-badge-dot"></span>
+          <i class="fas fa-shield-halved"></i>
+          <span>SECURE CUSTOMER ACCESS</span>
+        </div>
+        <button type="button" id="user-login-close" class="auth-modal-close-btn" aria-label="Close Login and Signup"
+          title="Close Modal">
+          <i class="fas fa-times"></i>
+          <span>Close</span>
+        </button>
+      </div>
+
+      <!-- Compulsory Login Alert (shows when action requires customer login) -->
+      <div id="user-login-compulsory-alert" class="user-compulsory-alert" style="display: none;">
+        <div class="compulsory-alert-icon">
+          <i class="fas fa-lock"></i>
+        </div>
+        <div class="compulsory-alert-body">
+          <div class="compulsory-alert-title">
+            <span>Customer Access</span>
+            <span class="compulsory-tag">1-TIME LOGIN / SIGNUP</span>
+          </div>
+          <div class="compulsory-alert-desc">
+            Sign up or log in once to enjoy permanent access to repair bookings, live tracking, and quotes on this
+            device.
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab Switcher: Login vs Sign Up vs Forgot PIN -->
+      <div class="user-auth-tabs">
+        <button type="button" id="tab-btn-login" class="user-auth-tab active">
+          <i class="fas fa-right-to-bracket"></i> Login
+        </button>
+        <button type="button" id="tab-btn-signup" class="user-auth-tab">
+          <i class="fas fa-user-plus"></i> Sign Up Free
+        </button>
+        <button type="button" id="tab-btn-forgot" class="user-auth-tab">
+          <i class="fas fa-key"></i> Forgot PIN
+        </button>
+      </div>
+
+      <!-- 1. LOGIN SECTION -->
+      <div id="user-login-section">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div
+            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(0, 242, 254, 0.12); border: 2px solid var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary); margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(0, 242, 254, 0.3);">
+            <i class="fas fa-user-shield"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Customer <span
+              class="gradient-text">Login</span></h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Access repair records, live technician tracking & digital bills
+          </p>
+        </div>
+
+        <div id="user-login-error"
+          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="user-login-error-text">Customer record not found.</span>
+        </div>
+
+        <div id="user-login-success"
+          style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
+          <span id="user-login-success-text">Account created successfully!</span>
+        </div>
+
+        <form id="user-login-form">
+          <div style="margin-bottom: 1rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
+              MOBILE NUMBER (10 Digits)
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-mobile-screen"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+              <input type="tel" id="user-login-ident" class="form-control" placeholder="10-digit Mobile Number" required
+                maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" style="padding-left: 2.5rem;"
+                autocomplete="username">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+              <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin: 0;">
+                SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4
+                  Digits)</span>
+              </label>
+              <button type="button" id="link-goto-forgot"
+                style="background: none; border: none; padding: 0; font-size: 0.76rem; color: var(--primary); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; text-decoration: underline;"
+                title="Forgot your Secret Code / PIN? Click to recover or reset">
+                <i class="fas fa-key" style="font-size: 0.7rem;"></i> Forgot Password?
+              </button>
+            </div>
+            <div style="position: relative;">
+              <i class="fas fa-key"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="password" id="user-login-pin" class="form-control" placeholder="Enter 4-digit PIN"
+                maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="current-password">
+              <button type="button" id="user-toggle-pin"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle PIN visibility">
+                <i class="fas fa-eye" id="user-pin-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me on this Device option -->
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.15rem; font-size: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 0.45rem 0.75rem; border-radius: 8px;">
+            <label
+              style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; margin: 0;">
+              <input type="checkbox" id="user-login-remember" checked
+                style="accent-color: var(--primary); width: 16px; height: 16px; cursor: pointer;">
+              <span style="color: #e2e8f0; font-size: 0.78rem; font-weight: 500;">Remember me on this device</span>
+            </label>
+            <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;"><i class="fas fa-check-double"></i>
+              1-Time Login</span>
+          </div>
+
+          <button type="submit" id="user-login-submit" class="btn btn-primary"
+            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(0, 242, 254, 0.35);">
+            <i class="fas fa-arrow-right-to-bracket"></i> Login to Customer Account
+          </button>
+
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;">
+            <span>Don't have an account? <a href="javascript:void(0)" id="link-goto-signup"
+                style="color: var(--primary); font-weight: 700; text-decoration: underline;">Sign Up Free</a></span>
+            <a href="javascript:void(0)" id="link-goto-forgot-bottom"
+              style="color: #38bdf8; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+              <i class="fas fa-unlock-keyhole" style="font-size: 0.72rem;"></i> Forgot PIN?
+            </a>
+          </div>
+        </form>
+      </div>
+
+      <!-- 2. SIGN UP SECTION (FOR CUSTOMERS WITHOUT A CODE) -->
+      <div id="user-signup-section" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div
+            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(255, 153, 0, 0.12); border: 2px solid var(--secondary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(255, 153, 0, 0.3);">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Customer <span
+              style="color: var(--secondary);">Sign Up</span></h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Register once in seconds to get instant access with zero repeated logins!
+          </p>
+        </div>
+
+        <div id="user-signup-error"
+          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="user-signup-error-text">Please check your details.</span>
+        </div>
+
+        <form id="user-signup-form">
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              YOUR FULL NAME <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-user"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="text" id="user-signup-name" class="form-control" placeholder="e.g. Pritesh Patel" required
+                style="padding-left: 2.5rem;" autocomplete="name">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-phone"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="tel" id="user-signup-phone" class="form-control" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
+                style="padding-left: 2.5rem;" autocomplete="tel">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              EMAIL ADDRESS <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-envelope"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+              <input type="email" id="user-signup-email" class="form-control" placeholder="e.g. name@example.com"
+                style="padding-left: 2.5rem;" autocomplete="email">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CREATE YOUR SECRET CODE / PIN (4 Digits) <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-lock"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="password" id="user-signup-pin" class="form-control" placeholder="Create 4-digit PIN" required
+                maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-signup-toggle-pin"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle PIN visibility">
+                <i class="fas fa-eye" id="user-signup-pin-eye"></i>
+              </button>
+            </div>
+            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Choose a 4-digit
+              numeric code to log in on other devices.</small>
+          </div>
+
+          <!-- Keep me logged in checkbox -->
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.15rem; font-size: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 0.45rem 0.75rem; border-radius: 8px;">
+            <label
+              style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; margin: 0;">
+              <input type="checkbox" id="user-signup-remember" checked
+                style="accent-color: var(--secondary); width: 16px; height: 16px; cursor: pointer;">
+              <span style="color: #e2e8f0; font-size: 0.78rem; font-weight: 500;">Auto-login & stay logged in</span>
+            </label>
+            <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;"><i class="fas fa-bolt"></i> Instant
+              Access</span>
+          </div>
+
+          <button type="submit" id="user-signup-submit" class="btn btn-amber"
+            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(255, 153, 0, 0.35);">
+            <i class="fas fa-user-check"></i> Sign Up & Start Using Website
+          </button>
+
+          <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+            Already have an account & code? <a href="javascript:void(0)" id="link-goto-login"
+              style="color: var(--primary); font-weight: 700; text-decoration: underline;">Login Here</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- 3. FORGOT PASSWORD / PIN RESET SECTION -->
+      <div id="user-forgot-section" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div
+            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(56, 189, 248, 0.12); border: 2px solid #38bdf8; display: inline-flex; align-items: center; justify-content: center; font-size: 1.45rem; color: #38bdf8; margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);">
+            <i class="fas fa-unlock-keyhole"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Reset <span style="color: #38bdf8;">Password /
+              PIN</span></h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Recover or set a new secret code for your registered mobile number
+          </p>
+        </div>
+
+        <div id="user-forgot-error"
+          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="user-forgot-error-text">Please check your details.</span>
+        </div>
+
+        <div id="user-forgot-success"
+          style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
+          <span id="user-forgot-success-text">PIN reset successfully!</span>
+        </div>
+
+        <form id="user-forgot-form">
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              REGISTERED MOBILE PHONE (10 Digits) <span style="color: #38bdf8;">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-mobile-screen"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
+              <input type="tel" id="user-forgot-phone" class="form-control" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
+                style="padding-left: 2.5rem;" autocomplete="tel">
+            </div>
+            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Enter your
+              10-digit registered mobile number.</small>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              NEW SECRET CODE / PIN (4 Digits) <span style="color: #38bdf8;">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-lock"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
+              <input type="password" id="user-forgot-new-pin" class="form-control" placeholder="Create new 4-digit PIN"
+                required maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-forgot-toggle-pin"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle PIN visibility">
+                <i class="fas fa-eye" id="user-forgot-pin-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CONFIRM NEW PIN (4 Digits) <span style="color: #38bdf8;">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-shield-halved"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
+              <input type="password" id="user-forgot-confirm-pin" class="form-control"
+                placeholder="Re-enter new 4-digit PIN" required maxlength="4" minlength="4" inputmode="numeric"
+                pattern="[0-9]{4}" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+            </div>
+          </div>
+
+          <button type="submit" id="user-forgot-submit" class="btn"
+            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #fff; border: none; border-radius: 12px; padding: 0.75rem 1rem; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.35); cursor: pointer; transition: all 0.25s ease;">
+            <i class="fas fa-check-circle"></i> Reset PIN & Sign In
+          </button>
+
+          <div
+            style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
+            <a href="javascript:void(0)" id="link-forgot-back-to-login"
+              style="color: var(--primary); font-weight: 700; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
+              <i class="fas fa-arrow-left"></i> Back to Login
+            </a>
+            <a href="javascript:void(0)" id="link-forgot-goto-signup"
+              style="color: var(--secondary); font-weight: 600; text-decoration: underline;">
+              Sign Up Free
+            </a>
+          </div>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- User / Customer Dashboard Modal -->
+  <div id="user-dashboard-modal" class="modal-overlay">
+    <div class="modal-card"
+      style="max-width: 520px; background: #0c121e; border: 1px solid rgba(0, 242, 254, 0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 25px rgba(0, 242, 254, 0.15); border-radius: 20px; position: relative;">
+      <button id="user-dash-close" class="modal-close" aria-label="Close Modal"><i class="fas fa-times"></i></button>
+
+      <div
+        style="display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 1rem; margin-bottom: 1rem;">
+        <div style="display: flex; align-items: center; gap: 0.85rem;">
+          <div
+            style="width: 48px; height: 48px; border-radius: 50%; background: rgba(16, 185, 129, 0.15); border: 1.5px solid #10b981; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; color: #10b981;">
+            <i class="fas fa-user-check"></i>
+          </div>
+          <div>
+            <div style="display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;">
+              <h3 id="user-dash-name" style="font-size: 1.2rem; font-weight: 800; color: #fff; margin: 0;">Customer
+                Account</h3>
+              <button type="button" id="btn-quick-edit-profile" title="Update Profile Details"
+                style="background: rgba(0, 242, 254, 0.12); border: 1px solid rgba(0, 242, 254, 0.35); color: var(--primary); border-radius: 6px; padding: 2px 8px; font-size: 0.72rem; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; font-weight: 600; transition: all 0.2s;">
+                <i class="fas fa-pen-to-square"></i> Edit
+              </button>
+            </div>
+            <p id="user-dash-phone" style="font-size: 0.8rem; color: var(--text-muted); margin: 3px 0 0 0;"></p>
+          </div>
+        </div>
+        <span
+          style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #10b981; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.75rem; font-weight: 700;">LOGGED
+          IN</span>
+      </div>
+
+      <!-- Device Remembered Status Banner -->
+      <div
+        style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 12px; padding: 0.65rem 0.85rem; margin-bottom: 1.15rem; display: flex; align-items: center; gap: 0.65rem; font-size: 0.78rem; color: #6ee7b7;">
+        <i class="fas fa-circle-check" style="color: #10b981; font-size: 1.1rem; flex-shrink: 0;"></i>
+        <div>
+          <strong style="color:#fff; display:block; margin-bottom:2px;">Logged In & Remembered on this Device</strong>
+          <span style="color: var(--text-muted);">You can open and use this website anytime without any signup or login
+            tension.</span>
+        </div>
+      </div>
+
+      <!-- Tab Switcher: My Bookings vs Update Profile -->
+      <div class="user-auth-tabs" style="margin-bottom: 1.15rem;">
+        <button type="button" id="tab-dash-bookings" class="user-auth-tab active">
+          <i class="fas fa-clipboard-list"></i> My Bookings
+          <span id="user-dash-tab-count"
+            style="margin-left: 5px; background: rgba(0, 0, 0, 0.25); border-radius: 10px; padding: 1px 7px; font-size: 0.72rem; font-weight: 700;"></span>
+        </button>
+        <button type="button" id="tab-dash-profile" class="user-auth-tab">
+          <i class="fas fa-user-pen"></i> Update Profile
+        </button>
+      </div>
+
+      <!-- VIEW 1: MY BOOKINGS -->
+      <div id="user-dash-bookings-view">
+        <div style="margin-bottom: 1.25rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0;"><i
+                class="fas fa-clipboard-list" style="color:var(--primary); margin-right: 6px;"></i> My Repair Bookings
+            </h4>
+            <span id="user-dash-order-count" style="font-size: 0.75rem; color: var(--text-muted);"></span>
+          </div>
+          <div id="user-dash-orders-list"
+            style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.65rem; padding-right: 4px;">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+        <div
+          style="display: flex; gap: 0.75rem; margin-top: 1.5rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+          <button id="user-dash-book-btn" class="btn btn-amber btn-sm trigger-booking" style="flex: 1;">
+            <i class="fas fa-plus-circle"></i> New Repair
+          </button>
+          <button id="user-dash-logout-btn" class="btn btn-secondary btn-sm"
+            style="flex: 1; border-color: rgba(239, 68, 68, 0.4); color: #f87171;">
+            <i class="fas fa-arrow-right-from-bracket"></i> Logout
+          </button>
+        </div>
+
+        <div style="text-align: center; margin-top: 0.85rem; font-size: 0.78rem; color: var(--text-muted);">
+          Want to update your address or secret PIN? <a href="javascript:void(0)" id="link-goto-profile"
+            style="color: var(--primary); font-weight: 700; text-decoration: underline;">Update Profile</a>
+        </div>
+      </div>
+
+      <!-- VIEW 2: UPDATE PROFILE SECTION -->
+      <div id="user-dash-profile-view" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+          <div>
+            <h4 style="font-size: 0.98rem; font-weight: 700; color: #fff; margin: 0;">
+              <i class="fas fa-user-pen" style="color:var(--primary); margin-right: 6px;"></i> Edit Profile Details
+            </h4>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 3px 0 0 0;">
+              Keep your contact details & doorstep address up to date
+            </p>
+          </div>
+          <span
+            style="font-size: 0.72rem; color: #10b981; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fas fa-shield-halved"></i> Secure
+          </span>
+        </div>
+
+        <!-- Feedback Alerts -->
+        <div id="user-profile-error"
+          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 0.85rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="user-profile-error-text">Please check your details.</span>
+        </div>
+
+        <div id="user-profile-success"
+          style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 0.85rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
+          <span id="user-profile-success-text">Profile updated successfully!</span>
+        </div>
+
+        <form id="user-profile-form">
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              YOUR FULL NAME <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-user"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="text" id="user-profile-name" class="form-control" placeholder="e.g. Rangrej" required
+                style="padding-left: 2.5rem;" autocomplete="name">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-mobile-screen"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
+              <input type="tel" id="user-profile-phone" class="form-control" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
+                style="padding-left: 2.5rem;" autocomplete="tel">
+            </div>
+            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Primary contact
+              number for doorstep technician calls and booking updates.</small>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              EMAIL ADDRESS <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-envelope"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+              <input type="email" id="user-profile-email" class="form-control" placeholder="e.g. rangrej@example.com"
+                style="padding-left: 2.5rem;" autocomplete="email">
+            </div>
+          </div>
+
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              DOORSTEP SERVICE ADDRESS / AREA <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(For fast booking)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-location-dot" style="position: absolute; left: 14px; top: 14px; color: #10b981;"></i>
+              <textarea id="user-profile-address" class="form-control" rows="2"
+                placeholder="House / Flat No, Street, Landmark, Kosamba / Surat"
+                style="padding-left: 2.5rem;"></textarea>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1.15rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CHANGE 4-DIGIT PIN / SECRET CODE <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-key"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
+              <input type="password" id="user-profile-pin" class="form-control"
+                placeholder="Leave blank to keep existing PIN" maxlength="4" minlength="4" inputmode="numeric"
+                pattern="[0-9]{4}" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-profile-toggle-pin"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle PIN visibility">
+                <i class="fas fa-eye" id="user-profile-pin-eye"></i>
+              </button>
+            </div>
+            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Only enter
+              if you want to change your 4-digit PIN for other devices.</small>
+          </div>
+
+          <div style="display: flex; gap: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
+            <button type="button" id="user-profile-cancel-btn" class="btn btn-secondary btn-sm" style="flex: 1;">
+              <i class="fas fa-arrow-left"></i> Cancel
+            </button>
+            <button type="submit" id="user-profile-save-btn" class="btn btn-primary btn-sm"
+              style="flex: 2; justify-content: center; font-weight: 700; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);">
+              <i class="fas fa-floppy-disk"></i> Save Changes
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
