@@ -403,7 +403,7 @@ app.get('/api/orders/:code', async (req, res) => {
       step = 2;
     } else if (sLower === 'diagnosing' || sLower === 'repairing') {
       step = 3;
-    } else if (sLower === 'completed' || sLower.includes('done')) {
+    } else if (sLower === 'completed' || sLower.includes('done') || sLower.includes('paid')) {
       step = 4;
     }
 
@@ -955,19 +955,22 @@ function requireAuth(req, res, next) {
   if (req.session) {
     req.session.adminLoggedIn = true;
     req.session.adminName = req.session.adminName || 'afzal';
-    req.session.adminPhone = '8485991694';
+    req.session.adminPhone = req.session.adminPhone || '8485991694';
   }
   return next();
 }
 
-// Login (Owner: afzal, Passkey: 1512, Mobile: 8485991694)
+// Login (Owner: afzal, Passkey: 1512, Mobiles: 8485991694 & 6351618067)
 app.post('/admin-api/login', (req, res) => {
+  const { phone } = req.body || {};
+  const rawPhone = String(phone || '').replace(/\D/g, '');
+  const activePhone = (rawPhone.endsWith('6351618067')) ? '6351618067' : '8485991694';
   if (req.session) {
     req.session.adminLoggedIn = true;
     req.session.adminName = 'afzal';
-    req.session.adminPhone = '8485991694';
+    req.session.adminPhone = activePhone;
   }
-  return res.json({ success: true, adminName: 'afzal', message: 'Authentication Successful' });
+  return res.json({ success: true, adminName: 'afzal', phone: activePhone, message: 'Authentication Successful' });
 });
 
 // Logout
@@ -1000,6 +1003,7 @@ app.get('/admin-api/stats', requireAuth, async (req, res) => {
     const revObj      = await dbDriver.get(`SELECT SUM(price_estimate) as total FROM repair_orders WHERE status = 'Completed'`);
     const todayOrders = await dbDriver.get(`SELECT COUNT(*) as count FROM repair_orders WHERE date(created_at) = date('now')`);
     const todayCol    = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE date(collection_date) = date('now', 'localtime')`);
+    const weekCol     = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE date(collection_date) >= date('now', 'localtime', '-6 days')`);
     const monthCol    = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE strftime('%Y-%m', collection_date) = strftime('%Y-%m', 'now', 'localtime')`);
     const totalCol    = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections`);
     res.json({
@@ -1011,6 +1015,7 @@ app.get('/admin-api/stats', requireAuth, async (req, res) => {
         completedRevenue: revObj && revObj.total ? parseFloat(revObj.total).toFixed(2) : '0.00',
         todayOrders:      todayOrders? todayOrders.count : 0,
         todayCollection:  todayCol && todayCol.total ? parseFloat(todayCol.total).toFixed(2) : '0.00',
+        weekCollection:   weekCol && weekCol.total ? parseFloat(weekCol.total).toFixed(2) : '0.00',
         monthCollection:  monthCol && monthCol.total ? parseFloat(monthCol.total).toFixed(2) : '0.00',
         totalCollection:  totalCol && totalCol.total ? parseFloat(totalCol.total).toFixed(2) : '0.00'
       }
@@ -1538,12 +1543,14 @@ app.get('/admin-api/collections', requireAuth, async (req, res) => {
       ORDER BY date(collection_date) DESC, id DESC
     `);
     const todayCol = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE date(collection_date) = date('now', 'localtime')`);
+    const weekCol  = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE date(collection_date) >= date('now', 'localtime', '-6 days')`);
     const monthCol = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections WHERE strftime('%Y-%m', collection_date) = strftime('%Y-%m', 'now', 'localtime')`);
     const totalCol = await dbDriver.get(`SELECT COALESCE(SUM(amount), 0) as total FROM daily_collections`);
     res.json({
       success: true,
       collections: collections || [],
       todayTotal: todayCol && todayCol.total ? parseFloat(todayCol.total).toFixed(2) : '0.00',
+      weekTotal: weekCol && weekCol.total ? parseFloat(weekCol.total).toFixed(2) : '0.00',
       monthTotal: monthCol && monthCol.total ? parseFloat(monthCol.total).toFixed(2) : '0.00',
       overallTotal: totalCol && totalCol.total ? parseFloat(totalCol.total).toFixed(2) : '0.00'
     });

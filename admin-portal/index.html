@@ -1155,7 +1155,7 @@
     /* ============ STATS GRID ============ */
     .stats-grid {
       display: grid;
-      grid-template-columns: repeat(6, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       gap: 0.65rem;
       margin-bottom: 0.85rem;
     }
@@ -1170,6 +1170,46 @@
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
+    }
+
+    @media (max-width: 480px) {
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .collection-dropdown-card {
+      position: relative;
+    }
+
+    .collection-dropdown-select {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 8px;
+      color: #ede9fe;
+      font-size: 0.74rem;
+      font-weight: 700;
+      font-family: 'Outfit', sans-serif;
+      padding: 0.22rem 0.5rem;
+      cursor: pointer;
+      outline: none;
+      transition: all 0.25s ease;
+      width: 100%;
+      letter-spacing: 0.2px;
+    }
+
+    .collection-dropdown-select:hover,
+    .collection-dropdown-select:focus {
+      border-color: rgba(0, 242, 254, 0.6);
+      background: rgba(20, 30, 55, 0.95);
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.25);
+    }
+
+    .collection-dropdown-select option {
+      background: #0d0818;
+      color: #ede9fe;
+      font-weight: 600;
+      padding: 6px;
     }
 
     .stat-card {
@@ -2086,25 +2126,23 @@
                 <div class="stat-label">Completed Repairs</div>
               </div>
             </div>
-            <div class="stat-card" style="border-color: rgba(16, 185, 129, 0.4); background: linear-gradient(135deg, rgba(16, 185, 129, 0.12), rgba(6, 78, 59, 0.25));">
-              <div class="stat-icon green" style="background: rgba(16, 185, 129, 0.2); color:#34d399;"><i class="fas fa-indian-rupee-sign"></i></div>
-              <div>
-                <div class="stat-val" id="stat-today-collection" style="color:#34d399; -webkit-text-fill-color:#34d399;">₹0.00</div>
-                <div class="stat-label">Today Collection</div>
+            <div class="stat-card collection-dropdown-card" id="collection-stat-card"
+              style="border-color: rgba(16, 185, 129, 0.45); background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(6, 78, 59, 0.28)); transition: all 0.3s ease;">
+              <div class="stat-icon green" id="collection-stat-icon"
+                style="background: rgba(16, 185, 129, 0.2); color:#34d399; transition: all 0.3s ease;">
+                <i class="fas fa-indian-rupee-sign" id="collection-icon-symbol"></i>
               </div>
-            </div>
-            <div class="stat-card" style="border-color: rgba(167, 139, 250, 0.4); background: linear-gradient(135deg, rgba(167, 139, 250, 0.12), rgba(76, 29, 149, 0.25));">
-              <div class="stat-icon purple" style="background: rgba(167, 139, 250, 0.2); color:#c084fc;"><i class="fas fa-calendar-check"></i></div>
-              <div>
-                <div class="stat-val" id="stat-month-collection" style="color:#c084fc; -webkit-text-fill-color:#c084fc;">₹0.00</div>
-                <div class="stat-label">This Month Total</div>
-              </div>
-            </div>
-            <div class="stat-card" style="border-color: rgba(34, 211, 238, 0.4); background: linear-gradient(135deg, rgba(34, 211, 238, 0.12), rgba(8, 51, 68, 0.25));">
-              <div class="stat-icon cyan" style="background: rgba(34, 211, 238, 0.2); color:#22d3ee;"><i class="fas fa-vault"></i></div>
-              <div>
-                <div class="stat-val" id="stat-total-collection" style="color:#22d3ee; -webkit-text-fill-color:#22d3ee;">₹0.00</div>
-                <div class="stat-label">Total Collection</div>
+              <div style="flex: 1; min-width: 0;">
+                <div class="stat-val" id="stat-active-collection"
+                  style="color:#34d399; -webkit-text-fill-color:#34d399; transition: all 0.3s ease;">₹0.00</div>
+                <div style="margin-top: 3px;">
+                  <select id="collection-dropdown-select" class="collection-dropdown-select" onchange="onCollectionDropdownChange(this.value)" title="Choose collection period to view">
+                    <option value="daily" selected>Daily Collection</option>
+                    <option value="weekly">Weekly Collection</option>
+                    <option value="monthly">Monthly Collection</option>
+                    <option value="total">Total Collection</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
@@ -2117,15 +2155,23 @@
                   <i class="fas fa-coins" style="color:#10b981;"></i>
                   <span>Daily Order Collection & Revenue</span>
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:0.45rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#34d399;">
+                <div onclick="onCollectionDropdownChange('daily')" title="Click to view Today Collection"
+                  style="cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#34d399; transition: all 0.2s;">
                   <span>Today:</span>
                   <span id="collection-today-badge">₹0.00</span>
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:0.45rem; background:rgba(167,139,250,0.12); border:1px solid rgba(167,139,250,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#c084fc;">
+                <div onclick="onCollectionDropdownChange('weekly')" title="Click to view Weekly Collection"
+                  style="cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem; background:rgba(34,211,238,0.12); border:1px solid rgba(34,211,238,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#22d3ee; transition: all 0.2s;">
+                  <span>This Week:</span>
+                  <span id="collection-week-badge">₹0.00</span>
+                </div>
+                <div onclick="onCollectionDropdownChange('monthly')" title="Click to view Monthly Collection"
+                  style="cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem; background:rgba(167,139,250,0.12); border:1px solid rgba(167,139,250,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#c084fc; transition: all 0.2s;">
                   <span>This Month:</span>
                   <span id="collection-month-badge">₹0.00</span>
                 </div>
-                <div style="display:inline-flex; align-items:center; gap:0.45rem; background:rgba(34,211,238,0.12); border:1px solid rgba(34,211,238,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#22d3ee;">
+                <div onclick="onCollectionDropdownChange('total')" title="Click to view Total Collection"
+                  style="cursor:pointer; display:inline-flex; align-items:center; gap:0.45rem; background:rgba(251,191,36,0.12); border:1px solid rgba(251,191,36,0.35); padding:0.25rem 0.65rem; border-radius:20px; font-size:0.75rem; font-weight:700; color:#fbbf24; transition: all 0.2s;">
                   <span>Total:</span>
                   <span id="collection-total-badge">₹0.00</span>
                 </div>
@@ -3008,6 +3054,137 @@
     let activeWaOrder = null;
     let activeInvoiceOrder = null;
 
+    // ============ COLLECTION STATS & DROPDOWN STATE ============
+    window.collectionStats = {
+      daily: '0.00',
+      weekly: '0.00',
+      monthly: '0.00',
+      total: '0.00'
+    };
+    window.currentCollectionRange = 'daily';
+
+    function updateCollectionDropdownDisplay() {
+      const range = window.currentCollectionRange || 'daily';
+      const selectEl = document.getElementById('collection-dropdown-select');
+      if (selectEl && selectEl.value !== range) {
+        selectEl.value = range;
+      }
+
+      const card = document.getElementById('collection-stat-card');
+      const iconWrap = document.getElementById('collection-stat-icon');
+      const icon = document.getElementById('collection-icon-symbol');
+      const valEl = document.getElementById('stat-active-collection');
+
+      const amount = window.collectionStats[range] || '0.00';
+      if (valEl) {
+        valEl.textContent = `₹${amount}`;
+      }
+
+      if (range === 'daily') {
+        if (card) {
+          card.style.borderColor = 'rgba(16, 185, 129, 0.45)';
+          card.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(6, 78, 59, 0.28))';
+        }
+        if (iconWrap) {
+          iconWrap.className = 'stat-icon green';
+          iconWrap.style.background = 'rgba(16, 185, 129, 0.2)';
+          iconWrap.style.color = '#34d399';
+        }
+        if (icon) icon.className = 'fas fa-indian-rupee-sign';
+        if (valEl) {
+          valEl.style.color = '#34d399';
+          valEl.style.webkitTextFillColor = '#34d399';
+        }
+      } else if (range === 'weekly') {
+        if (card) {
+          card.style.borderColor = 'rgba(34, 211, 238, 0.45)';
+          card.style.background = 'linear-gradient(135deg, rgba(34, 211, 238, 0.14), rgba(8, 51, 68, 0.28))';
+        }
+        if (iconWrap) {
+          iconWrap.className = 'stat-icon cyan';
+          iconWrap.style.background = 'rgba(34, 211, 238, 0.2)';
+          iconWrap.style.color = '#22d3ee';
+        }
+        if (icon) icon.className = 'fas fa-calendar-week';
+        if (valEl) {
+          valEl.style.color = '#22d3ee';
+          valEl.style.webkitTextFillColor = '#22d3ee';
+        }
+      } else if (range === 'monthly') {
+        if (card) {
+          card.style.borderColor = 'rgba(167, 139, 250, 0.45)';
+          card.style.background = 'linear-gradient(135deg, rgba(167, 139, 250, 0.14), rgba(76, 29, 149, 0.28))';
+        }
+        if (iconWrap) {
+          iconWrap.className = 'stat-icon purple';
+          iconWrap.style.background = 'rgba(167, 139, 250, 0.2)';
+          iconWrap.style.color = '#c084fc';
+        }
+        if (icon) icon.className = 'fas fa-calendar-check';
+        if (valEl) {
+          valEl.style.color = '#c084fc';
+          valEl.style.webkitTextFillColor = '#c084fc';
+        }
+      } else if (range === 'total') {
+        if (card) {
+          card.style.borderColor = 'rgba(251, 191, 36, 0.45)';
+          card.style.background = 'linear-gradient(135deg, rgba(251, 191, 36, 0.14), rgba(120, 53, 15, 0.28))';
+        }
+        if (iconWrap) {
+          iconWrap.className = 'stat-icon amber';
+          iconWrap.style.background = 'rgba(251, 191, 36, 0.2)';
+          iconWrap.style.color = '#fbbf24';
+        }
+        if (icon) icon.className = 'fas fa-vault';
+        if (valEl) {
+          valEl.style.color = '#fbbf24';
+          valEl.style.webkitTextFillColor = '#fbbf24';
+        }
+      }
+    }
+
+    function onCollectionDropdownChange(val) {
+      if (!val) val = 'daily';
+      window.currentCollectionRange = val;
+      updateCollectionDropdownDisplay();
+      filterCollectionsByRange(val);
+    }
+
+    function filterCollectionsByRange(range) {
+      if (!allCollections || !allCollections.length) {
+        renderCollections([], range);
+        return;
+      }
+      if (range === 'total') {
+        renderCollections(allCollections, range);
+        return;
+      }
+
+      const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
+      const curYearMonth = todayStr.slice(0, 7);
+
+      const sevenDaysAgo = new Date();
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+      sevenDaysAgo.setHours(0, 0, 0, 0);
+
+      const filtered = allCollections.filter(c => {
+        if (!c.collection_date) return false;
+        const dStr = c.collection_date.split(' ')[0];
+        if (range === 'daily') {
+          return dStr === todayStr;
+        } else if (range === 'monthly') {
+          return dStr.startsWith(curYearMonth);
+        } else if (range === 'weekly') {
+          const itemDate = new Date(dStr);
+          return itemDate >= sevenDaysAgo;
+        }
+        return true;
+      });
+
+      renderCollections(filtered, range);
+    }
+
     // ============ AUDIO CHIME NOTIFIER ============
     function playAlertChime() {
       if (!soundEnabled) return;
@@ -3721,23 +3898,26 @@
           if (compEl) compEl.textContent = completedCount;
 
           if (s.todayCollection !== undefined) {
-            const todayColEl = document.getElementById('stat-today-collection');
-            if (todayColEl) todayColEl.textContent = `₹${parseFloat(s.todayCollection).toFixed(2)}`;
+            window.collectionStats.daily = parseFloat(s.todayCollection).toFixed(2);
             const todayBadge = document.getElementById('collection-today-badge');
-            if (todayBadge) todayBadge.textContent = `₹${parseFloat(s.todayCollection).toFixed(2)}`;
+            if (todayBadge) todayBadge.textContent = `₹${window.collectionStats.daily}`;
+          }
+          if (s.weekCollection !== undefined) {
+            window.collectionStats.weekly = parseFloat(s.weekCollection).toFixed(2);
+            const weekBadge = document.getElementById('collection-week-badge');
+            if (weekBadge) weekBadge.textContent = `₹${window.collectionStats.weekly}`;
           }
           if (s.monthCollection !== undefined) {
-            const monthColEl = document.getElementById('stat-month-collection');
-            if (monthColEl) monthColEl.textContent = `₹${parseFloat(s.monthCollection).toFixed(2)}`;
+            window.collectionStats.monthly = parseFloat(s.monthCollection).toFixed(2);
             const monthBadge = document.getElementById('collection-month-badge');
-            if (monthBadge) monthBadge.textContent = `₹${parseFloat(s.monthCollection).toFixed(2)}`;
+            if (monthBadge) monthBadge.textContent = `₹${window.collectionStats.monthly}`;
           }
           if (s.totalCollection !== undefined) {
-            const totalColEl = document.getElementById('stat-total-collection');
-            if (totalColEl) totalColEl.textContent = `₹${parseFloat(s.totalCollection).toFixed(2)}`;
+            window.collectionStats.total = parseFloat(s.totalCollection).toFixed(2);
             const totalBadge = document.getElementById('collection-total-badge');
-            if (totalBadge) totalBadge.textContent = `₹${parseFloat(s.totalCollection).toFixed(2)}`;
+            if (totalBadge) totalBadge.textContent = `₹${window.collectionStats.total}`;
           }
+          updateCollectionDropdownDisplay();
         }
       } catch (e) { }
     }
@@ -4354,37 +4534,43 @@
         if (colBadge) colBadge.textContent = allCollections.length;
 
         const todayTotal = d.todayTotal !== undefined ? parseFloat(d.todayTotal).toFixed(2) : '0.00';
+        const weekTotal = d.weekTotal !== undefined ? parseFloat(d.weekTotal).toFixed(2) : '0.00';
         const monthTotal = d.monthTotal !== undefined ? parseFloat(d.monthTotal).toFixed(2) : '0.00';
         const overallTotal = d.overallTotal !== undefined ? parseFloat(d.overallTotal).toFixed(2) : '0.00';
 
-        const todayStat = document.getElementById('stat-today-collection');
-        if (todayStat) todayStat.textContent = `₹${todayTotal}`;
-        const monthStat = document.getElementById('stat-month-collection');
-        if (monthStat) monthStat.textContent = `₹${monthTotal}`;
-        const totalStat = document.getElementById('stat-total-collection');
-        if (totalStat) totalStat.textContent = `₹${overallTotal}`;
+        window.collectionStats.daily = todayTotal;
+        window.collectionStats.weekly = weekTotal;
+        window.collectionStats.monthly = monthTotal;
+        window.collectionStats.total = overallTotal;
 
         const todayBadge = document.getElementById('collection-today-badge');
         if (todayBadge) todayBadge.textContent = `₹${todayTotal}`;
+        const weekBadge = document.getElementById('collection-week-badge');
+        if (weekBadge) weekBadge.textContent = `₹${weekTotal}`;
         const monthBadge = document.getElementById('collection-month-badge');
         if (monthBadge) monthBadge.textContent = `₹${monthTotal}`;
         const totalBadge = document.getElementById('collection-total-badge');
         if (totalBadge) totalBadge.textContent = `₹${overallTotal}`;
 
-        renderCollections(allCollections);
+        updateCollectionDropdownDisplay();
+        filterCollectionsByRange(window.currentCollectionRange || 'daily');
       } catch (e) {
         const tbody = document.getElementById('daily-collections-tbody');
         if (tbody) tbody.innerHTML = errorRow(6, 'Failed to load daily order collections.');
       }
     }
 
-    function renderCollections(collections) {
+    function renderCollections(collections, range) {
       const tbody = document.getElementById('daily-collections-tbody');
       if (!tbody) return;
-      if (!collections.length) {
+      if (!collections || !collections.length) {
+        let label = 'recorded yet';
+        if (range === 'daily') label = 'for Today';
+        else if (range === 'weekly') label = 'for This Week';
+        else if (range === 'monthly') label = 'for This Month';
         tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="padding:1.4rem 1rem;">
           <i class="fas fa-receipt" style="font-size:1.3rem; color:var(--text-muted); margin-bottom:0.35rem; display:block;"></i>
-          No daily order collections recorded yet. Click <strong>"+ Enter Daily Collection"</strong> to record today's collection!
+          No daily order collections ${label}. Click <strong>"+ Enter Daily Collection"</strong> to record a collection!
         </td></tr>`;
         return;
       }
@@ -5173,9 +5359,63 @@
       });
     });
 
+    // ============ ACCESS VERIFICATION (8485991694 & 6351618067) ============
+    function verifyAdminAccessOnLoad() {
+      let custUser = null;
+      try {
+        const raw = localStorage.getItem('ar_customer_user');
+        custUser = raw ? JSON.parse(raw) : null;
+      } catch (e) {
+        custUser = null;
+      }
+
+      if (custUser) {
+        const rawPhone = String(custUser.phone || custUser.identifier || '').replace(/\D/g, '');
+        const isAllowed = (
+          rawPhone === '8485991694' || rawPhone.endsWith('8485991694') ||
+          rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
+        );
+
+        if (!isAllowed) {
+          renderAdminAccessBlockedScreen(rawPhone);
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function renderAdminAccessBlockedScreen(phone) {
+      document.body.innerHTML = `
+        <div style="min-height: 100vh; background: radial-gradient(ellipse at 50% 12%, #1b0e33 0%, #070412 55%, #020106 100%); display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Outfit', sans-serif;">
+          <div style="max-width: 440px; width: 100%; text-align: center; padding: 2.5rem 2rem; border-radius: 22px; background: rgba(18, 12, 33, 0.96); border: 1.5px solid rgba(239, 68, 68, 0.45); box-shadow: 0 0 60px rgba(239, 68, 68, 0.25), 0 25px 50px rgba(0,0,0,0.8); backdrop-filter: blur(24px);">
+            <div style="width: 72px; height: 72px; margin: 0 auto 1.25rem; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.5); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);">
+              <i class="fas fa-ban"></i>
+            </div>
+            <div style="display:inline-block; padding: 0.35rem 0.85rem; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 999px; font-size: 0.72rem; font-weight: 700; color: #fca5a5; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.85rem;">
+              <i class="fas fa-lock" style="margin-right: 4px;"></i> RESTRICTED ACCESS
+            </div>
+            <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 0.6rem;">
+              Access Denied
+            </h2>
+            <div style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid rgba(239, 68, 68, 0.6); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1.25rem; color: #fca5a5; font-size: 1rem; font-weight: 700;">
+              <i class="fas fa-triangle-exclamation" style="margin-right: 6px; color: #ef4444;"></i> this side is admin access only
+            </div>
+            <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.75rem;">
+              You are logged in with mobile <strong>${escHtml(phone)}</strong>.<br>Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin dashboard.
+            </p>
+            <a href="/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #060813; font-weight: 700; border-radius: 14px; text-decoration: none; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);">
+              <i class="fas fa-arrow-left"></i> Return to Customer Website
+            </a>
+          </div>
+        </div>
+      `;
+    }
+
     // ============ BOOT ============
-    loadAdminMood();
-    unlockUI('afzal');
+    if (verifyAdminAccessOnLoad()) {
+      loadAdminMood();
+      unlockUI('afzal');
+    }
   </script>
 </body>
 

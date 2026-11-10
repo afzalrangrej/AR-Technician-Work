@@ -652,7 +652,93 @@ document.addEventListener('click', (e) => {
   }
 }, true);
 
+/* ==========================================================
+   WELCOME SPLASH SCREEN (2-SECOND WELCOME PAGE OVERLAY)
+   ========================================================== */
+function initWelcomeSplashScreen() {
+  const splash = document.getElementById('welcome-splash-screen');
+  if (!splash) return;
+
+  // Personalize greeting if user is logged in
+  try {
+    const rawUser = localStorage.getItem('ar_customer_user');
+    if (rawUser) {
+      const userObj = JSON.parse(rawUser);
+      if (userObj && userObj.name) {
+        const userName = userObj.name.trim();
+        const pillText = document.getElementById('welcome-pill-text');
+        const titleEl = document.getElementById('welcome-user-title');
+        const subEl = document.getElementById('welcome-user-sub');
+
+        if (pillText) pillText.textContent = `WELCOME BACK, ${userName.toUpperCase()}!`;
+        if (titleEl) titleEl.innerHTML = `Welcome Back, <span class="gradient-text">${escapeHtml(userName)}</span>!`;
+        if (subEl) subEl.textContent = 'Your doorstep electrical repairs & live order tracking portal is ready.';
+      }
+    }
+  } catch (e) {}
+
+  // 4-second countdown timer & animated progress bar
+  const progressFill = document.getElementById('welcome-progress-fill');
+  const countdownEl = document.getElementById('welcome-timer-countdown');
+
+  const DURATION = 4000; // Exactly 4 seconds
+  const startTime = performance.now();
+
+  function updateProgress(now) {
+    const elapsed = now - startTime;
+    const progress = Math.min(1, elapsed / DURATION);
+
+    if (progressFill) {
+      progressFill.style.width = `${(progress * 100).toFixed(1)}%`;
+    }
+    if (countdownEl) {
+      const remainingSeconds = Math.max(0, (DURATION - elapsed) / 1000).toFixed(1);
+      countdownEl.textContent = `${remainingSeconds}s`;
+    }
+
+    if (progress < 1) {
+      requestAnimationFrame(updateProgress);
+    } else {
+      dismissWelcomeScreen();
+    }
+  }
+
+  requestAnimationFrame(updateProgress);
+
+  // Allow clicking anywhere outside card or skip button to dismiss early
+  splash.addEventListener('click', (e) => {
+    if (!e.target.closest('.welcome-splash-content') || e.target.closest('#welcome-skip-btn')) {
+      dismissWelcomeScreen();
+    }
+  });
+
+  // Escape or Enter key dismisses early
+  window.addEventListener('keydown', function onWelcomeKey(e) {
+    if (e.key === 'Escape' || e.key === 'Enter') {
+      dismissWelcomeScreen();
+      window.removeEventListener('keydown', onWelcomeKey);
+    }
+  });
+}
+
+function dismissWelcomeScreen() {
+  const splash = document.getElementById('welcome-splash-screen');
+  if (!splash || splash.classList.contains('dismissed')) return;
+
+  splash.classList.add('dismissed');
+
+  setTimeout(() => {
+    try {
+      splash.style.display = 'none';
+      if (splash.parentNode) splash.parentNode.removeChild(splash);
+    } catch (e) {}
+  }, 500);
+}
+
+window.dismissWelcomeScreen = dismissWelcomeScreen;
+
 document.addEventListener('DOMContentLoaded', () => {
+  initWelcomeSplashScreen();
   document.body.classList.remove('auth-locked');
   initLanguageSwitcher();
   initNavbar();
@@ -1433,6 +1519,220 @@ function showDoorKnockingScene(techName) {
   }
 }
 
+// ========================================================
+// RENDER THANKS NOTE WHEN WORK & PAYMENT IS DONE (STEP 4)
+// ========================================================
+window.viewBillReceiptForActiveOrder = function () {
+  if (typeof showCustomerInvoiceFromTracker === 'function' && window._activeTrackingOrder) {
+    showCustomerInvoiceFromTracker(window._activeTrackingOrder);
+  }
+};
+
+window.rateActiveOrder = function () {
+  if (typeof openCustomerReviewModal === 'function' && window._activeTrackingOrder) {
+    openCustomerReviewModal(window._activeTrackingOrder);
+  }
+};
+
+window.openNewBookingFromThanks = function () {
+  const modal = document.getElementById('booking-modal');
+  if (modal) modal.classList.add('active');
+};
+
+function renderThanksNote(order, box) {
+  if (!box || !order) return;
+  window._activeTrackingOrder = order;
+
+  const custName = (order.customer_name || 'Valued Customer').trim();
+  const techName = order.assigned_tech && !order.assigned_tech.toLowerCase().includes('unassigned')
+    ? order.assigned_tech
+    : 'Afzal (Lead Electrical Specialist)';
+  const deviceName = order.device_name || 'Appliance';
+  const trackingCode = order.tracking_code || '---';
+  const serviceTypeLabel = order.service_type === 'home' ? '🏠 Doorstep Home Service' : '🏬 Workshop Drop-Off';
+  const priceDisplay = order.price_estimate ? `₹${parseFloat(order.price_estimate).toFixed(2)}` : 'Verified & Settled';
+  const techPhone = order.tech_phone || '+91 6351618067';
+  const cleanPhone = String(techPhone).replace(/\D/g, '');
+
+  box.innerHTML = `
+    <div class="thanks-note-container" id="tracker-thanks-card">
+      
+      <!-- Top Header & Badges -->
+      <div class="thanks-header">
+        <div class="thanks-badges-row">
+          <span class="thanks-badge-pill">
+            <i class="fas fa-circle-check"></i> STEP 4: WORK DONE & PAYMENT COMPLETED
+          </span>
+          <span class="thanks-badge-pill gold">
+            <i class="fas fa-shield-halved"></i> 100% SERVICE VERIFIED
+          </span>
+          <span class="thanks-badge-pill cyan">
+            <i class="fas fa-ticket-simple"></i> #${escapeHtml(trackingCode)}
+          </span>
+        </div>
+
+        <h2 class="thanks-hero-title">
+          🎉 Thank You, <span class="gradient-text">${escapeHtml(custName)}!</span>
+        </h2>
+        <p class="thanks-hero-subtitle">
+          Your repair service is fully completed and payment has been verified. Thank you for choosing <strong>AR Technician Work</strong> for your home electrical & appliance care!
+        </p>
+      </div>
+
+      <!-- Personal Thank You Note from Afzal -->
+      <div class="thanks-letter-card">
+        <div class="thanks-letter-header">
+          <div class="thanks-tech-identity">
+            <div class="thanks-tech-avatar">
+              <i class="fas fa-user-shield"></i>
+              <span class="thanks-avatar-check"><i class="fas fa-check"></i></span>
+            </div>
+            <div class="thanks-tech-meta">
+              <h4>${escapeHtml(techName)} <span class="thanks-verified-tag"><i class="fas fa-certificate"></i> Certified Master Technician</span></h4>
+              <p>Founder & Lead Specialist • AR Technician Work (Kosamba)</p>
+            </div>
+          </div>
+          <div class="thanks-rating-badge">
+            <i class="fas fa-star"></i> 4.9 (180+ Doorstep Visits)
+          </div>
+        </div>
+
+        <div class="thanks-letter-content">
+          <div class="thanks-quote-icon">“</div>
+          <p>
+            Dear <strong>${escapeHtml(custName)}</strong>,<br>
+            Thank you for trusting me with your <strong>${escapeHtml(deviceName)}</strong>. It was an absolute pleasure serving you! Your appliance has been thoroughly diagnosed, repaired with genuine quality parts, and tested for electrical safety and optimal performance.
+          </p>
+          <p style="margin-bottom:0; color:#94a3b8; font-size:0.92rem;">
+            Your payment is confirmed and your digital warranty is active. If you ever have any questions, require follow-up support, or need assistance with other home appliances, please never hesitate to call or message me.
+          </p>
+
+          <div class="thanks-signature-block">
+            <div>
+              <div class="thanks-signature-name">Afzal</div>
+              <div class="thanks-signature-stamp"><i class="fas fa-location-dot" style="color:#00f2fe;"></i> Kosamba, Surat District</div>
+            </div>
+            <div style="text-align:right;">
+              <span style="font-size:0.75rem; color:#64748b; text-transform:uppercase; font-weight:600;">Status</span>
+              <div style="color:#10b981; font-weight:700; font-size:0.9rem;"><i class="fas fa-circle-check"></i> Work Done & Paid</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Completed 4-Step Pipeline Bar -->
+      <div class="pipeline-steps-wrapper" style="margin-bottom: 2rem;">
+        <div class="pipeline-timeline-bar">
+          <div class="pipeline-timeline-fill" style="width: 100%;"></div>
+        </div>
+        <div class="pipeline-steps">
+          <div class="pipeline-step completed">
+            <div class="step-circle"><i class="fas fa-check"></i></div>
+            <div class="step-title">1. Booking Confirmed</div>
+            <span class="step-status-tag done">✓ Confirmed</span>
+          </div>
+          <div class="pipeline-step completed">
+            <div class="step-circle"><i class="fas fa-check"></i></div>
+            <div class="step-title">2. On The Way</div>
+            <span class="step-status-tag done">✓ Arrived</span>
+          </div>
+          <div class="pipeline-step completed">
+            <div class="step-circle"><i class="fas fa-check"></i></div>
+            <div class="step-title">3. Repair at Home</div>
+            <span class="step-status-tag done">✓ Fixed</span>
+          </div>
+          <div class="pipeline-step completed">
+            <div class="step-circle"><i class="fas fa-circle-check"></i></div>
+            <div class="step-title">4. Work Done & Payment</div>
+            <span class="step-status-tag done">✓ Completed & Paid</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Service & Payment Details Summary Grid -->
+      <div class="thanks-summary-grid">
+        <div class="thanks-summary-card">
+          <div class="thanks-summary-icon">
+            <i class="fas fa-screwdriver-wrench"></i>
+          </div>
+          <div>
+            <div class="thanks-summary-label">Appliance Serviced</div>
+            <div class="thanks-summary-val" title="${escapeHtml(deviceName)}">${escapeHtml(deviceName)}</div>
+          </div>
+        </div>
+
+        <div class="thanks-summary-card">
+          <div class="thanks-summary-icon cyan">
+            <i class="fas fa-route"></i>
+          </div>
+          <div>
+            <div class="thanks-summary-label">Service Type</div>
+            <div class="thanks-summary-val">${serviceTypeLabel}</div>
+          </div>
+        </div>
+
+        <div class="thanks-summary-card">
+          <div class="thanks-summary-icon gold">
+            <i class="fas fa-receipt"></i>
+          </div>
+          <div>
+            <div class="thanks-summary-label">Work & Payment</div>
+            <div class="thanks-summary-val" style="color:#34d399;">${priceDisplay} • Paid</div>
+          </div>
+        </div>
+
+        <div class="thanks-summary-card">
+          <div class="thanks-summary-icon purple">
+            <i class="fas fa-shield-check"></i>
+          </div>
+          <div>
+            <div class="thanks-summary-label">Warranty Protection</div>
+            <div class="thanks-summary-val">30 Days Guarantee</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="thanks-actions-container">
+        <div class="thanks-actions-title">
+          <i class="fas fa-hand-pointer" style="color:var(--primary); margin-right:4px;"></i> Customer Options & Quick Actions
+        </div>
+        <div class="thanks-actions-grid">
+          <button type="button" class="btn-thanks-action bill" onclick="window.viewBillReceiptForActiveOrder()">
+            <i class="fas fa-file-invoice-dollar"></i> Verified Bill & Receipt
+          </button>
+          <button type="button" class="btn-thanks-action rate" onclick="window.rateActiveOrder()">
+            <i class="fas fa-star"></i> Rate Us & Review
+          </button>
+          <a href="https://wa.me/91${cleanPhone.slice(-10) || '6351618067'}?text=Hello%20Afzal,%20thank%20you%20for%20completing%20repair%20order%20%23${escapeHtml(trackingCode)}" target="_blank" class="btn-thanks-action whatsapp">
+            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
+          </a>
+          <a href="tel:${techPhone}" class="btn-thanks-action call">
+            <i class="fas fa-phone"></i> Call Afzal
+          </a>
+          <button type="button" class="btn-thanks-action book" onclick="window.openNewBookingFromThanks()">
+            <i class="fas fa-calendar-plus"></i> Book Another Repair
+          </button>
+        </div>
+      </div>
+
+      <!-- Trust Badges Footer -->
+      <div class="thanks-trust-row">
+        <div class="thanks-trust-item">
+          <i class="fas fa-certificate" style="color:#10b981;"></i> 100% Genuine Spare Parts
+        </div>
+        <div class="thanks-trust-item">
+          <i class="fas fa-bolt" style="color:#fbbf24;"></i> Certified Electrical Safety Tested
+        </div>
+        <div class="thanks-trust-item">
+          <i class="fas fa-clock-rotate-left" style="color:#38bdf8;"></i> Rapid Response in Kosamba Area
+        </div>
+      </div>
+
+    </div>
+  `;
+}
+
 function initTracker() {
   const btn = document.getElementById('track-btn');
   const input = document.getElementById('track-input');
@@ -1702,6 +2002,16 @@ function initTracker() {
       statusDescription = `Electrician Afzal is on the road traveling towards your address on ${vehicleTitle} with tools.`;
     }
 
+    // IF WORK & PAYMENT IS DONE: CHANGE TRACKING INTERFACE TO THANKS NOTE!
+    if (isCompleted) {
+      if (currentTrackingInterval) {
+        clearInterval(currentTrackingInterval);
+        currentTrackingInterval = null;
+      }
+      renderThanksNote(order, box);
+      return;
+    }
+
     box.innerHTML = `
       <div class="uber-tracking-header">
         <div>
@@ -1764,7 +2074,7 @@ function initTracker() {
 
         <!-- Road Track Canvas with Moving Vehicle OR Doorstep Knocking Person -->
         <div class="tracker-road-container">
-          ${isCompleted ? getKnockingDoorSceneHtml(techName) : `
+          ${isDiagnosing ? getKnockingDoorSceneHtml(techName) : `
             <!-- Animated Moving Vehicle Element -->
             <div class="tracker-vehicle-wrapper ${canBikeRun ? '' : 'bike-stopped'}" id="tracker-vehicle-elem" style="left: ${Math.min(82, Math.max(8, progressFactor * 78))}%;">
               <!-- Floating Radar Halo -->
@@ -2059,6 +2369,12 @@ function initTracker() {
           const freshOrder = resData.order;
           if (freshOrder.status !== window._activeTrackingOrder.status || freshOrder.step !== window._activeTrackingOrder.step) {
             window._activeTrackingOrder = freshOrder;
+            const freshStatus = (freshOrder.status || '').toLowerCase();
+            const freshIsCompleted = Boolean(freshStatus.includes('complete') || freshStatus.includes('done') || freshStatus.includes('finish') || freshStatus.includes('paid') || freshOrder.step >= 4);
+            if (freshIsCompleted) {
+              doTrack(freshOrder.tracking_code);
+              return;
+            }
             if (typeof window.syncTrackerOnlineState === 'function') {
               window.syncTrackerOnlineState(window.isAdminOnline !== false);
             }
@@ -2073,8 +2389,18 @@ function initTracker() {
     if (!activeOrder) return;
 
     const statusStr = (activeOrder.status || '').trim().toLowerCase();
-    const isCompleted = Boolean(statusStr.includes('complete') || statusStr.includes('done') || statusStr.includes('finish') || activeOrder.step >= 4);
-    if (isCompleted) return;
+    const isCompleted = Boolean(statusStr.includes('complete') || statusStr.includes('done') || statusStr.includes('finish') || statusStr.includes('paid') || activeOrder.step >= 4);
+    if (isCompleted) {
+      if (currentTrackingInterval) {
+        clearInterval(currentTrackingInterval);
+        currentTrackingInterval = null;
+      }
+      const box = document.getElementById('track-result');
+      if (box && !document.getElementById('tracker-thanks-card')) {
+        renderThanksNote(activeOrder, box);
+      }
+      return;
+    }
 
     const isRejected = Boolean(statusStr.includes('reject') || statusStr.includes('cancel') || statusStr.includes('decline') || activeOrder.step === 0);
     const isDiagnosing = !isRejected && (statusStr.includes('diagnos') || statusStr.includes('repair') || activeOrder.step === 3);
@@ -4236,9 +4562,12 @@ function initAdminLogin() {
       }
 
       const rawPhone = custUser ? String(custUser.phone || custUser.identifier || '').replace(/\D/g, '') : '';
-      const isOwnerAdmin = (rawPhone === '8485991694' || rawPhone.endsWith('8485991694'));
+      const isOwnerAdmin = (
+        rawPhone === '8485991694' || rawPhone.endsWith('8485991694') ||
+        rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
+      );
 
-      // ONLY "8485991694" mobile number can access admin side while logged in on user page
+      // ONLY "8485991694" & "6351618067" mobile numbers can access admin dashboard while logged in on user page
       if (custUser && isOwnerAdmin) {
         // Pre-authorize session so Admin Panel opens seamlessly for Afzal
         sessionStorage.setItem('admin_authenticated', 'afzal');
@@ -4250,7 +4579,8 @@ function initAdminLogin() {
           }).catch(() => {});
         } catch (err) {}
 
-        showToast('🔓 Admin access verified for Afzal (8485991694). Opening Admin Portal...', 'success');
+        const verifiedPhone = rawPhone.endsWith('6351618067') ? '6351618067' : '8485991694';
+        showToast(`🔓 Admin access verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
         window.open('/admin', '_blank');
       } else {
         // Any other user clicked on admin login: show message "this side is admin access only"
@@ -4269,9 +4599,9 @@ function initAdminLogin() {
           if (subMsg) {
             if (custUser) {
               const displayPhone = rawPhone.length >= 10 ? rawPhone.slice(-10) : (rawPhone || 'another user');
-              subMsg.innerHTML = `You are currently logged in with mobile (<strong>${displayPhone}</strong>). Only owner mobile <strong>8485991694</strong> can access the Admin side.`;
+              subMsg.innerHTML = `You are currently logged in with mobile (<strong>${displayPhone}</strong>). Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin dashboard.`;
             } else {
-              subMsg.innerHTML = `Please log in with administrator mobile <strong>8485991694</strong> on this user page to access the Admin side.`;
+              subMsg.innerHTML = `Please log in with administrator mobile <strong>8485991694</strong> or <strong>6351618067</strong> on this user page to access the Admin dashboard.`;
             }
           }
           deniedDialog.classList.add('active');

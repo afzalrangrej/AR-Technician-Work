@@ -48,6 +48,86 @@
 
 <body>
 
+  <!-- ========================================================
+       PREMIUM WELCOME SPLASH SCREEN (Visible for 4 seconds on enter)
+       ======================================================== -->
+  <div id="welcome-splash-screen" class="welcome-splash-overlay" role="dialog" aria-modal="true" aria-label="Welcome to AR Technician Work">
+    <div class="welcome-splash-bg">
+      <div class="welcome-splash-orb orb-1"></div>
+      <div class="welcome-splash-orb orb-2"></div>
+      <div class="welcome-splash-grid-pattern"></div>
+    </div>
+
+    <div class="welcome-splash-content">
+      <!-- Glow & Brand Emblem -->
+      <div class="welcome-brand-emblem-wrap">
+        <div class="welcome-ring-glow"></div>
+        <div class="welcome-ring-spin"></div>
+        <div class="welcome-brand-logo">
+          <svg viewBox="0 0 44 44" width="62" height="62" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="wArGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="50%" stop-color="#38bdf8" />
+                <stop offset="100%" stop-color="#ff9900" />
+              </linearGradient>
+              <linearGradient id="wAGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#00f2fe" />
+                <stop offset="100%" stop-color="#00c6ff" />
+              </linearGradient>
+              <linearGradient id="wRGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#ff9900" />
+                <stop offset="100%" stop-color="#ff6600" />
+              </linearGradient>
+              <linearGradient id="wBoxGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#0f192e" />
+                <stop offset="100%" stop-color="#090d16" />
+              </linearGradient>
+            </defs>
+            <rect x="1.5" y="1.5" width="41" height="41" rx="11" fill="url(#wBoxGrad)" stroke="url(#wArGrad)" stroke-width="2.2" />
+            <text x="21" y="29.5" text-anchor="middle" font-family="'Outfit', sans-serif" font-weight="900" font-size="21" letter-spacing="-1">
+              <tspan fill="url(#wAGrad)">A</tspan>
+              <tspan fill="url(#wRGrad)">R</tspan>
+            </text>
+            <path d="M 12 34 L 32 34" stroke="url(#wArGrad)" stroke-width="2" stroke-linecap="round" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Welcome Pill -->
+      <div class="welcome-pill">
+        <span class="welcome-pill-pulse"></span>
+        <span id="welcome-pill-text">WELCOME TO AR TECHNICIAN WORK</span>
+      </div>
+
+      <!-- Main Heading -->
+      <h1 class="welcome-title" id="welcome-user-title">
+        Welcome to <span class="gradient-text">AR Technician Work</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="welcome-subtitle" id="welcome-user-sub">
+        Expert At-Home & In-Shop Repair Services • Kosamba & Surat
+      </p>
+
+      <!-- 4-Second Progress Bar with Countdown -->
+      <div class="welcome-timer-container">
+        <div class="welcome-progress-track">
+          <div class="welcome-progress-fill" id="welcome-progress-fill"></div>
+        </div>
+        <div class="welcome-timer-meta">
+          <span class="welcome-meta-status"><i class="fas fa-circle-notch fa-spin" style="font-size:0.7rem; color:#00f2fe; margin-right:4px;"></i> Initializing portal...</span>
+          <span class="welcome-meta-countdown" id="welcome-timer-countdown">4.0s</span>
+        </div>
+      </div>
+
+      <!-- Skip Button -->
+      <button type="button" class="welcome-skip-btn" id="welcome-skip-btn" onclick="dismissWelcomeScreen()" title="Skip directly to website">
+        Enter Now <i class="fas fa-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+
 
 
   <!-- Live Announcement Broadcast Ribbon (Connected to Admin Portal) -->
@@ -1165,7 +1245,7 @@
       </div>
 
       <p id="admin-access-denied-submsg" style="color: #94a3b8; font-size: 0.83rem; line-height: 1.5; margin-bottom: 1.5rem;">
-        Only owner mobile <strong>8485991694</strong> can access the Admin side while logged in on the user page.
+        Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin dashboard while logged in on the user page.
       </p>
 
       <button type="button" class="btn btn-outline btn-sm" onclick="document.getElementById('admin-access-denied-dialog').classList.remove('active')" style="width: 100%; border-radius: 12px; padding: 0.75rem;">
