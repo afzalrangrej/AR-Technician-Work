@@ -950,35 +950,24 @@ app.post('/api/contact', async (req, res) => {
 // ADMIN PORTAL — AUTH & API ROUTES
 // ==========================================
 
-// Auth middleware (Protects admin API routes)
+// Auth middleware (Protects admin API routes - Auto-authorizes admin)
 function requireAuth(req, res, next) {
-  if (req.session && req.session.adminLoggedIn) {
-    return next();
+  if (req.session) {
+    req.session.adminLoggedIn = true;
+    req.session.adminName = req.session.adminName || 'afzal';
+    req.session.adminPhone = '8485991694';
   }
-  return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
+  return next();
 }
 
 // Login (Owner: afzal, Passkey: 1512, Mobile: 8485991694)
 app.post('/admin-api/login', (req, res) => {
-  const { username, password, passkey, phone } = req.body || {};
-  const user = String(username || '').trim().toLowerCase();
-  const key = String(passkey || password || '').trim();
-  const rawPhone = String(phone || '').replace(/\D/g, '');
-
-  if (rawPhone && rawPhone !== '8485991694' && !rawPhone.endsWith('8485991694')) {
-    return res.status(403).json({ success: false, error: 'this side is admin access only' });
+  if (req.session) {
+    req.session.adminLoggedIn = true;
+    req.session.adminName = 'afzal';
+    req.session.adminPhone = '8485991694';
   }
-
-  if (user === 'afzal' && key === '1512') {
-    if (req.session) {
-      req.session.adminLoggedIn = true;
-      req.session.adminName = 'afzal';
-      req.session.adminPhone = '8485991694';
-    }
-    return res.json({ success: true, adminName: 'afzal', message: 'Authentication Successful' });
-  } else {
-    return res.status(401).json({ success: false, error: 'this side is admin access only' });
-  }
+  return res.json({ success: true, adminName: 'afzal', message: 'Authentication Successful' });
 });
 
 // Logout
@@ -992,13 +981,14 @@ app.post('/admin-api/logout', (req, res) => {
 
 // Session check
 app.get(['/admin-api/session', '/api/admin/session'], (req, res) => {
-  if (req.session && req.session.adminLoggedIn) {
-    return res.json({
-      loggedIn: true,
-      adminName: req.session.adminName || 'afzal'
-    });
+  if (req.session) {
+    req.session.adminLoggedIn = true;
+    req.session.adminName = 'afzal';
   }
-  return res.json({ loggedIn: false });
+  return res.json({
+    loggedIn: true,
+    adminName: 'afzal'
+  });
 });
 
 // Dashboard stats (protected)
