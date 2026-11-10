@@ -4221,8 +4221,62 @@ function initAdminLogin() {
   if (adminBtn) {
     adminBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      // Direct access to Admin Portal without login form prompt
-      window.open('/admin', '_blank');
+
+      // Retrieve customer user currently logged in on user page
+      let custUser = null;
+      try {
+        if (typeof window.getCurrentCustomerUser === 'function') {
+          custUser = window.getCurrentCustomerUser();
+        } else {
+          const raw = localStorage.getItem('ar_customer_user');
+          custUser = raw ? JSON.parse(raw) : null;
+        }
+      } catch (err) {
+        custUser = null;
+      }
+
+      const rawPhone = custUser ? String(custUser.phone || custUser.identifier || '').replace(/\D/g, '') : '';
+      const isOwnerAdmin = (rawPhone === '8485991694' || rawPhone.endsWith('8485991694'));
+
+      // ONLY "8485991694" mobile number can access admin side while logged in on user page
+      if (custUser && isOwnerAdmin) {
+        // Pre-authorize session so Admin Panel opens seamlessly for Afzal
+        sessionStorage.setItem('admin_authenticated', 'afzal');
+        try {
+          fetch('/admin-api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: 'afzal', passkey: '1512', phone: rawPhone })
+          }).catch(() => {});
+        } catch (err) {}
+
+        showToast('🔓 Admin access verified for Afzal (8485991694). Opening Admin Portal...', 'success');
+        window.open('/admin', '_blank');
+      } else {
+        // Any other user clicked on admin login: show message "this side is admin access only"
+        adminBtn.classList.remove('admin-btn-shake');
+        void adminBtn.offsetWidth; // re-trigger animation
+        adminBtn.classList.add('admin-btn-shake');
+        setTimeout(() => adminBtn.classList.remove('admin-btn-shake'), 600);
+
+        // Required message: "this side is admin access only"
+        showToast('🚫 this side is admin access only', 'error');
+
+        // Show dedicated access-denied modal
+        const deniedDialog = document.getElementById('admin-access-denied-dialog');
+        if (deniedDialog) {
+          const subMsg = document.getElementById('admin-access-denied-submsg');
+          if (subMsg) {
+            if (custUser) {
+              const displayPhone = rawPhone.length >= 10 ? rawPhone.slice(-10) : (rawPhone || 'another user');
+              subMsg.innerHTML = `You are currently logged in with mobile (<strong>${displayPhone}</strong>). Only owner mobile <strong>8485991694</strong> can access the Admin side.`;
+            } else {
+              subMsg.innerHTML = `Please log in with administrator mobile <strong>8485991694</strong> on this user page to access the Admin side.`;
+            }
+          }
+          deniedDialog.classList.add('active');
+        }
+      }
     });
   }
 

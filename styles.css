@@ -1270,6 +1270,18 @@ body:not(.user-logged-in) #tracker-real-booking-section {
   }
 }
 
+@keyframes adminBtnShake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+.admin-btn-shake {
+  animation: adminBtnShake 0.45s ease-in-out !important;
+  border-color: #ef4444 !important;
+  box-shadow: 0 0 18px rgba(239, 68, 68, 0.8) !important;
+}
+
 @keyframes hackerBlink {
   0%, 75%, 100% {
     opacity: 1;

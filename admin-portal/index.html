@@ -3877,8 +3877,8 @@
           alertBox.style.display = 'block';
           alertBox.className = 'auth-msg-box auth-failed';
           alertIcon.className = 'fas fa-circle-xmark auth-msg-icon';
-          alertTitle.textContent = 'Authentication Failed!';
-          alertDesc.textContent = 'Incorrect Owner Name or Passkey. Access Denied.';
+          alertTitle.textContent = 'this side is admin access only';
+          alertDesc.textContent = 'Only administrator mobile 8485991694 can access this side.';
         }
         if (submitBtn) {
           submitBtn.style.background = 'linear-gradient(135deg, #ef4444, #b91c1c)';
@@ -5801,7 +5801,65 @@
       checkSessionAndBoot();
     }
 
+    function showBlockedAdminAccess(phone) {
+      const loginScreen = document.getElementById('login-screen');
+      if (loginScreen) {
+        loginScreen.style.display = 'flex';
+        loginScreen.classList.remove('hidden');
+      }
+      const card = document.getElementById('admin-login-card');
+      if (card) {
+        card.innerHTML = `
+          <div style="text-align:center; padding:1.25rem 0.5rem;">
+            <div style="width:72px; height:72px; margin:0 auto 1.25rem; border-radius:50%; background:rgba(239,68,68,0.15); border:2px solid rgba(239,68,68,0.5); display:flex; align-items:center; justify-content:center; font-size:2rem; color:#ef4444; box-shadow:0 0 25px rgba(239,68,68,0.3);">
+              <i class="fas fa-ban"></i>
+            </div>
+            <h2 style="font-family:'Outfit',sans-serif; font-size:1.5rem; font-weight:800; color:#fff; margin-bottom:0.6rem;">Access Restricted</h2>
+            <div style="background:rgba(239,68,68,0.16); border:1.5px solid rgba(239,68,68,0.6); border-radius:14px; padding:1rem; margin-bottom:1.5rem; color:#fca5a5; font-size:1rem; font-weight:700;">
+              <i class="fas fa-triangle-exclamation" style="margin-right:6px; color:#ef4444;"></i> this side is admin access only
+            </div>
+            <p style="color:#94a3b8; font-size:0.85rem; line-height:1.55; margin-bottom:1.75rem;">
+              You are logged in with mobile <strong>${escHtml(phone)}</strong>. Only administrator mobile <strong>8485991694</strong> can access this side while logged in on the user page.
+            </p>
+            <a href="/" style="display:inline-flex; align-items:center; justify-content:center; gap:0.5rem; width:100%; padding:0.95rem; background:linear-gradient(135deg,#00f2fe,#4facfe); color:#060813; font-weight:700; border-radius:14px; text-decoration:none; font-size:0.95rem; box-shadow:0 4px 15px rgba(0,242,254,0.35);">
+              <i class="fas fa-arrow-left"></i> Return to Customer Website
+            </a>
+          </div>
+        `;
+      }
+    }
+
     async function checkSessionAndBoot() {
+      // Check customer user currently logged in on the user page
+      let custUser = null;
+      try {
+        const raw = localStorage.getItem('ar_customer_user');
+        custUser = raw ? JSON.parse(raw) : null;
+      } catch (e) {}
+
+      const rawPhone = custUser ? String(custUser.phone || custUser.identifier || '').replace(/\D/g, '') : '';
+      const isOwnerMobile = (rawPhone === '8485991694' || rawPhone.endsWith('8485991694'));
+
+      // If another user is logged in on the user page, block admin access
+      if (custUser && !isOwnerMobile) {
+        showBlockedAdminAccess(rawPhone);
+        return;
+      }
+
+      // If Afzal (8485991694) is logged in on the user page, automatically unlock!
+      if (custUser && isOwnerMobile) {
+        sessionStorage.setItem('admin_authenticated', 'afzal');
+        try {
+          await fetch(`${API}/admin-api/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: 'afzal', passkey: '1512', phone: rawPhone })
+          });
+        } catch (e) {}
+        unlockUI('afzal');
+        return;
+      }
+
       const stored = sessionStorage.getItem('admin_authenticated');
       if (stored === 'afzal') {
         try {

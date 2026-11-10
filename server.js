@@ -958,20 +958,26 @@ function requireAuth(req, res, next) {
   return res.status(401).json({ error: 'Unauthorized: Admin authentication required' });
 }
 
-// Login (Owner: afzal, Passkey: 1512)
+// Login (Owner: afzal, Passkey: 1512, Mobile: 8485991694)
 app.post('/admin-api/login', (req, res) => {
-  const { username, password, passkey } = req.body || {};
+  const { username, password, passkey, phone } = req.body || {};
   const user = String(username || '').trim().toLowerCase();
   const key = String(passkey || password || '').trim();
+  const rawPhone = String(phone || '').replace(/\D/g, '');
+
+  if (rawPhone && rawPhone !== '8485991694' && !rawPhone.endsWith('8485991694')) {
+    return res.status(403).json({ success: false, error: 'this side is admin access only' });
+  }
 
   if (user === 'afzal' && key === '1512') {
     if (req.session) {
       req.session.adminLoggedIn = true;
       req.session.adminName = 'afzal';
+      req.session.adminPhone = '8485991694';
     }
     return res.json({ success: true, adminName: 'afzal', message: 'Authentication Successful' });
   } else {
-    return res.status(401).json({ success: false, error: 'Authentication Failed: Invalid Owner Name or Passkey' });
+    return res.status(401).json({ success: false, error: 'this side is admin access only' });
   }
 });
 
