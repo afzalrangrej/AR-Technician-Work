@@ -3797,16 +3797,37 @@ function initUserLogin() {
 
           // 3. Dismiss login/signup modal completely
           dismissLoginModal();
+          if (dashModal) dashModal.classList.remove('active');
 
-          // 4. Remove lingering hash from address bar
+          // Check if current URL is outside the home page
+          const isNotHome = (
+            window.location.pathname !== '/' &&
+            !window.location.pathname.endsWith('/index.html') &&
+            !window.location.pathname.endsWith('index.html')
+          );
+
+          if (isNotHome) {
+            showToast(`🎉 Welcome, ${loggedUser.name}! Account created. Redirecting to home page...`, 'success');
+            setTimeout(() => {
+              window.location.href = '/';
+            }, 350);
+            return;
+          }
+
+          // 4. Remove lingering hash from address bar and redirect/scroll to home hero section
           try {
-            if (window.location.hash === '#signup' || window.location.hash === '#login') {
-              history.replaceState(null, '', window.location.pathname + window.location.search);
-            }
+            history.replaceState(null, '', window.location.pathname);
           } catch (e) {}
 
+          const heroSec = document.getElementById('hero') || document.querySelector('header');
+          if (heroSec) {
+            heroSec.scrollIntoView({ behavior: 'smooth' });
+          } else {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+
           // 5. Show celebratory toast
-          showToast(`🎉 Welcome, ${loggedUser.name}! Account created & you are logged in. No need to log in again!`, 'success');
+          showToast(`🎉 Welcome, ${loggedUser.name}! Account created & you are logged in.`, 'success');
 
           // 6. If user clicked "Book Repair" before signing up, fulfill it immediately!
           if (window._pendingAuthAction === 'booking') {
@@ -4109,12 +4130,34 @@ function initUserLogin() {
         setCurrentUser(loggedUser);
 
         dismissLoginModal();
+        if (dashModal) dashModal.classList.remove('active');
 
+        // Check if current URL is outside the home page
+        const isNotHomePage = (
+          window.location.pathname !== '/' &&
+          !window.location.pathname.endsWith('/index.html') &&
+          !window.location.pathname.endsWith('index.html')
+        );
+
+        if (isNotHomePage) {
+          showToast(`🎉 Welcome back, ${loggedUser.name}! Redirecting to home page...`, 'success');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 350);
+          return;
+        }
+
+        // On customer website: clean URL hash and redirect/scroll to home hero section
         try {
-          if (window.location.hash === '#login' || window.location.hash === '#signup') {
-            history.replaceState(null, '', window.location.pathname + window.location.search);
-          }
+          history.replaceState(null, '', window.location.pathname);
         } catch (e) {}
+
+        const heroSection = document.getElementById('hero') || document.querySelector('header');
+        if (heroSection) {
+          heroSection.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         showToast(`🎉 Welcome back, ${loggedUser.name}! You are logged in.`, 'success');
 
@@ -4132,10 +4175,7 @@ function initUserLogin() {
               if (phoneInp && !phoneInp.value) phoneInp.value = (loggedUser.phone || '').replace(/[^0-9]/g, '');
               if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
             }
-          }, 300);
-        } else {
-          // Normal manual login from nav: open dashboard to show bookings
-          setTimeout(() => openDashboard(loggedUser), 350);
+          }, 400);
         }
 
       } catch (err) {
