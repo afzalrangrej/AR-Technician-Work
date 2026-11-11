@@ -130,8 +130,8 @@ const translations = {
     contact_subtitle: "Not sure if your home is covered or need directions? Call or WhatsApp our workshop team directly.",
     contact_address_lbl: "Workshop Address:",
     contact_address_val: "Near Jain Mandir, Railway Station Road, Kosamba (R.S.), Taluka Mangrol, Surat District, Gujarat – 394120",
-    contact_hours_lbl: "Shop Hours:",
-    contact_hours_val: "Mon-Sun 10:00 AM - 7:00 PM (All 7 Days Open)",
+    contact_hours_lbl: "Shop Timing:",
+    contact_hours_val: "10 AM to 7 PM, Monday to Sunday (All 7 Days Open)",
     contact_mobile_lbl: "Mobile:",
     contact_form_title: "Send Quick Repair Message",
     contact_name_ph: "Your Name",
@@ -245,8 +245,8 @@ const translations = {
     contact_subtitle: "क्या आप खुद आकर अपना उपकरण जमा करना चाहते हैं? हमारे नजदीकी सर्विस सेंटर में आपका स्वागत है!",
     contact_address_lbl: "पता:",
     contact_address_val: "जैन मंदिर रेलवे स्टेशन रोड, कोसंबा, तालुका मांगरोल, सूरत - 394120",
-    contact_hours_lbl: "दुकान का समय:",
-    contact_hours_val: "सोमवार से रविवार: सुबह 10:00 से शाम 7:00 (सभी 7 दिन खुला)",
+    contact_hours_lbl: "दुकान का समय (Shop Timing):",
+    contact_hours_val: "सुबह 10:00 से शाम 7:00, सोमवार से रविवार (सभी 7 दिन खुला)",
     contact_mobile_lbl: "मोबाइल:",
     contact_form_title: "त्वरित रिपेयर संदेश भेजें",
     contact_name_ph: "आपका नाम",
@@ -360,8 +360,8 @@ const translations = {
     contact_subtitle: "શું તમે રૂબરૂ આવીને ઇલેક્ટ્રોનિક આઇટમ આપવા માંગો છો? અમારા નજીકના સ્ટોર પર પધારો!",
     contact_address_lbl: "સરનામું:",
     contact_address_val: "જૈન મંદિર રેલ્વે સ્ટેશન રોડ, કોસંબા, તાલુકો માંગરોળ, સુરત - 394120",
-    contact_hours_lbl: "દુકાનનો સમય:",
-    contact_hours_val: "સોમવાર થી રવિવાર: સવારે 10:00 થી સાંજે 7:00 (બધા 7 દિવસ ખુલ્લું)",
+    contact_hours_lbl: "દુકાનનો સમય (Shop Timing):",
+    contact_hours_val: "સવારે 10:00 થી સાંજે 7:00, સોમવાર થી રવિવાર (બધા 7 દિવસ ખુલ્લું)",
     contact_mobile_lbl: "મોબાઇલ:",
     contact_form_title: "ઝડપી રીપેર મેસેજ મોકલો",
     contact_name_ph: "તમારું નામ",
@@ -476,7 +476,7 @@ const translations = {
     contact_address_lbl: "Workshop Address:",
     contact_address_val: "Near Jain Mandir, Railway Station Road, Kosamba (R.S.), Taluka Mangrol, Surat District, Gujarat – 394120",
     contact_hours_lbl: "Shop Timing:",
-    contact_hours_val: "Mon-Sun 10:00 AM - 7:00 PM (All 7 Days Open)",
+    contact_hours_val: "10 AM to 7 PM, Monday to Sunday (All 7 Days Open)",
     contact_mobile_lbl: "Mobile:",
     contact_form_title: "Quick Repair Message Bhejein",
     contact_name_ph: "Aapka Naam",
@@ -5098,7 +5098,7 @@ function initShopLocation() {
           Jain Mandir Railway Station Road, Kosamba, Surat - 394120
         </div>
         <div style="font-size:11px; color:#34d399; font-weight:700; margin-bottom:10px;">
-          <i class="fas fa-circle-check"></i> Open: Mon–Sun 10am–7pm (All Days)
+          <i class="fas fa-circle-check"></i> Timing: 10 AM to 7 PM, Monday to Sunday (All Days)
         </div>
         <div style="display:flex; gap:6px; flex-wrap:wrap;">
           <a href="https://www.google.com/maps/search/?api=1&query=Jain+Mandir+railway+station+road+kosamba+taluka+Mangrol+Surat+394120" target="_blank" rel="noopener noreferrer" style="background:#00f2fe; color:#040914; font-weight:700; font-size:11px; padding:5px 10px; border-radius:6px; text-decoration:none; display:inline-flex; align-items:center; gap:4px;">
