@@ -3256,15 +3256,15 @@
         document.body.classList.remove('admin-mood-is-off');
         if (btn) {
           btn.className = 'btn-mood-toggle mood-on';
-          if (label) label.textContent = 'I am ON';
-          btn.title = 'You are currently ON (Online). Click to switch to "I am OFF" mood (Lock Dashboard).';
+          if (label) label.textContent = 'I am ON (Location ON)';
+          btn.title = 'You are ON • Location is ON. Customers can track live GPS location when departed.';
         }
       } else {
         document.body.classList.add('admin-mood-is-off');
         if (btn) {
           btn.className = 'btn-mood-toggle mood-off';
-          if (label) label.textContent = 'I am OFF';
-          btn.title = 'You are in "I am OFF" mood (Dashboard Locked). Click to switch to "I am ON" and unlock!';
+          if (label) label.textContent = 'I am OFF (Location OFF)';
+          btn.title = 'You are OFF • Location is OFF. Customer live tracking is paused until you turn ON.';
         }
       }
     }
@@ -3471,9 +3471,9 @@
       
       if (nextMood === 'ON') {
         playAlertChime();
-        showToast('🟢 "I am ON": Dashboard UNLOCKED! Website now displays Admin is ONLINE!', 'success');
+        showToast('🟢 "I am ON": Location is ON! Customers can track live location when departed from shop.', 'success');
       } else {
-        showToast('🔴 "I am OFF": Dashboard is LOCKED! Click "I am OFF" button to unlock.', 'warning');
+        showToast('🔴 "I am OFF": Location is OFF! Customer live tracking is paused until you turn "I am ON".', 'warning');
       }
 
       try {
@@ -5402,7 +5402,15 @@
       }
 
       updateOrderInLocalStorage(targetKey, payload);
-      showToast(`✨ Order #${targetKey} updated to "${nextStatus}"!`, 'success');
+      if (nextStatus === 'Departure from shop') {
+        if (currentAdminMood === 'ON') {
+          showToast(`🏍️ Order #${targetKey} departed! Location is ON — Customer is tracking live location.`, 'success');
+        } else {
+          showToast(`⚠️ Order #${targetKey} departed! NOTE: Location is OFF — Customer cannot track until you turn "I am ON"!`, 'warning');
+        }
+      } else {
+        showToast(`✨ Order #${targetKey} updated to "${nextStatus}"!`, 'success');
+      }
 
       try {
         const targetId = id || code;

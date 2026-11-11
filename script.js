@@ -2030,8 +2030,8 @@ function initTracker() {
       headlineHtml = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-circle-check"></i> DESTINATION REACHED</strong> • Order #${order.tracking_code}`;
     } else if (isRejected) {
       headlineHtml = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-circle-xmark"></i> BOOKING REJECTED • BIKE NOT DISPATCHED</strong> • Order #${order.tracking_code}`;
-    } else if (!adminIsOnline) {
-      headlineHtml = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-location-crosshairs"></i> ELECTRICIAN LOCATION OFF • TRACKING PAUSED</strong> • Order #${order.tracking_code}`;
+    } else if (isDeparture && !adminIsOnline) {
+      headlineHtml = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-location-crosshairs"></i> LOCATION OFF • LIVE TRACKING UNAVAILABLE</strong> • Order #${order.tracking_code}`;
     } else if (isAtHome) {
       headlineHtml = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-house-chimney-user"></i> AT YOUR HOME • ELECTRICIAN ARRIVED</strong> • Order #${order.tracking_code}`;
     } else if (isDeparture) {
@@ -2046,8 +2046,8 @@ function initTracker() {
       speedHtml = `<i class="fas fa-house-chimney"></i> 0 km/h • At Customer Home`;
     } else if (isRejected) {
       speedHtml = `<i class="fas fa-ban"></i> 0 km/h • Booking Rejected (Stopped)`;
-    } else if (!adminIsOnline) {
-      speedHtml = `<i class="fas fa-pause-circle"></i> Location Sharing Paused`;
+    } else if (isDeparture && !adminIsOnline) {
+      speedHtml = `<i class="fas fa-pause-circle"></i> Location Sharing OFF`;
     } else if (isDeparture) {
       speedHtml = `<i class="fas fa-gauge-high"></i> 32 km/h • Traveling to Customer`;
     } else {
@@ -2058,7 +2058,7 @@ function initTracker() {
     let etaText = '';
     if (isCompleted || isAtHome) etaText = 'Arrived at Doorstep';
     else if (isRejected) etaText = 'Declined';
-    else if (!adminIsOnline) etaText = 'Paused (Location Off)';
+    else if (isDeparture && !adminIsOnline) etaText = 'Unavailable (Location OFF)';
     else if (isDeparture) etaText = `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
     else etaText = `${order.eta_minutes || '15 mins'} (At Workshop)`;
 
@@ -2066,7 +2066,7 @@ function initTracker() {
     let distText = '';
     if (isCompleted || isAtHome) distText = '0.0 km (At Doorstep)';
     else if (isRejected) distText = '0.0 km (Booking Rejected)';
-    else if (!adminIsOnline) distText = `${((1 - progressFactor) * 3.8).toFixed(1)} km (Location Paused)`;
+    else if (isDeparture && !adminIsOnline) distText = 'Paused (Location OFF)';
     else if (isDeparture) distText = `${((1 - progressFactor) * 3.8).toFixed(1)} km away`;
     else distText = '3.8 km away (At Workshop)';
 
@@ -2074,7 +2074,7 @@ function initTracker() {
     let radarText = '';
     if (isCompleted || isAtHome) radarText = '🚪 Electrician Arrived at Your Home Doorstep!';
     else if (isRejected) radarText = '❌ Booking Request Rejected • Technician Not Dispatched';
-    else if (!adminIsOnline) radarText = `📍 Tracking Paused • Location is OFF`;
+    else if (isDeparture && !adminIsOnline) radarText = `📍 Live Tracking Unavailable • Electrician Location is OFF`;
     else if (isDeparture) radarText = '⚡ Departure from Shop • Electrician En Route';
     else radarText = '✅ Booking Accepted • Electrician Preparing at Workshop';
 
@@ -2083,14 +2083,14 @@ function initTracker() {
     if (isRejected) bikeRadarLabel = `❌ ${techShort} (Rejected)`;
     else if (isAtHome) bikeRadarLabel = `🏠 ${techShort} (At Home)`;
     else if (canBikeRun) bikeRadarLabel = `⚡ ${techShort} (32 km/h)`;
-    else if (!adminIsOnline) bikeRadarLabel = `📍 ${techShort} (Location OFF)`;
+    else if (isDeparture && !adminIsOnline) bikeRadarLabel = `📍 ${techShort} (Location OFF)`;
     else bikeRadarLabel = `🗓️ ${techShort} (At Workshop)`;
 
     // Progress text
     let progressPctText = '';
     if (isCompleted || isAtHome) progressPctText = '100% Journey Completed (At Customer Home)';
     else if (isRejected) progressPctText = '0% Journey (Booking Rejected • Bike Stopped)';
-    else if (!adminIsOnline) progressPctText = `${Math.round(progressFactor * 100)}% Journey (Paused • Location OFF)`;
+    else if (isDeparture && !adminIsOnline) progressPctText = 'Live Tracking Paused • Location is OFF';
     else if (isDeparture) progressPctText = `${Math.round(progressFactor * 100)}% Journey Completed • 32 km/h`;
     else progressPctText = '0% Journey (Parked at Kosamba Workshop)';
 
@@ -2135,9 +2135,15 @@ function initTracker() {
       timelineFillWidth = '50%';
       statusIconClass = 'dispatch';
       statusIcon = 'fa-motorcycle';
-      statusBadgeLabel = '🏍️ STEP 2: DEPARTURE FROM SHOP';
-      statusHeadline = 'Electrician is Riding to Your Home';
-      statusDescription = `Electrician Afzal has departed from the shop on ${vehicleTitle} and is traveling towards your address.`;
+      if (!adminIsOnline) {
+        statusBadgeLabel = '⚠️ STEP 2: LOCATION IS OFF';
+        statusHeadline = 'Electrician Departed • Location is OFF';
+        statusDescription = 'Electrician Afzal has departed from the shop, but location sharing is currently turned OFF. Live tracking will become active when location is switched ON.';
+      } else {
+        statusBadgeLabel = '🏍️ STEP 2: DEPARTURE FROM SHOP';
+        statusHeadline = 'Electrician is Riding to Your Home';
+        statusDescription = `Electrician Afzal has departed from the shop on ${vehicleTitle} and is traveling towards your address.`;
+      }
     }
 
     // IF WORK & PAYMENT IS DONE: CHANGE TRACKING INTERFACE TO THANKS NOTE!
@@ -2397,7 +2403,53 @@ function initTracker() {
         </div>
         ` : ''}
       </div>
+
+      <!-- Prominent Location Alert when departed but admin location is OFF -->
+      <div id="tracker-location-off-notice" style="display:${(!adminIsOnline && isDeparture) ? 'flex' : 'none'}; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); border-radius:12px; padding:0.9rem 1.15rem; margin-top:0.85rem; align-items:center; gap:12px;">
+        <div style="width:38px; height:38px; border-radius:50%; background:rgba(239,68,68,0.2); border:1px solid #ef4444; display:flex; align-items:center; justify-content:center; color:#fca5a5; font-size:1.15rem; flex-shrink:0;">
+          <i class="fas fa-location-crosshairs"></i>
+        </div>
+        <div>
+          <div style="font-weight:700; color:#fca5a5; font-size:0.92rem;">Electrician Location is OFF • Live Tracking Unavailable</div>
+          <div style="font-size:0.78rem; color:#cbd5e1; margin-top:2px;">The technician has turned OFF their GPS / location sharing. Live tracking cannot be viewed right now. It will automatically activate when technician turns location ON.</div>
+        </div>
+      </div>
+
+      <!-- Interactive Live GPS Route Navigation Map -->
+      <div class="tracker-map-container" style="margin-top:1.25rem; border-radius:14px; overflow:hidden; border:1px solid rgba(0,242,254,0.25); box-shadow:0 8px 30px rgba(0,0,0,0.45); position:relative;">
+        <div style="background:rgba(10,16,26,0.95); padding:0.6rem 1rem; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-satellite" style="color:var(--primary);"></i>
+            <strong style="color:#fff; font-size:0.85rem;">Live Route Navigation Map</strong>
+            <span class="live-pulse-dot" id="map-live-pulse" style="${canBikeRun ? 'background:#10b981;' : 'background:#ef4444;'}"></span>
+            <span id="map-live-status-label" style="font-size:0.75rem; color:${canBikeRun ? '#34d399' : '#fca5a5'}; font-weight:700;">
+              ${canBikeRun ? 'GPS Live: En Route' : (isDeparture && !adminIsOnline ? 'GPS OFF: Tracking Unavailable' : (isAtHome ? 'Arrived at Home' : 'Parked at Workshop'))}
+            </span>
+          </div>
+          <div style="font-size:0.72rem; color:var(--text-muted);">
+            Kosamba Workshop ➔ Customer Doorstep
+          </div>
+        </div>
+        <div id="uber-live-map" style="width:100%; height:260px; background:#0b111c;"></div>
+        <div id="map-location-off-overlay" style="display:${(!adminIsOnline && isDeparture) ? 'flex' : 'none'}; position:absolute; inset:36px 0 0 0; background:rgba(11,17,28,0.88); backdrop-filter:blur(3px); flex-direction:column; align-items:center; justify-content:center; z-index:1000; padding:1.5rem; text-align:center;">
+          <div style="width:46px; height:46px; border-radius:50%; background:rgba(239,68,68,0.18); border:2px solid #ef4444; display:flex; align-items:center; justify-content:center; color:#fca5a5; font-size:1.4rem; margin-bottom:0.6rem;">
+            <i class="fas fa-location-crosshairs"></i>
+          </div>
+          <div style="color:#fff; font-weight:700; font-size:0.98rem; margin-bottom:0.25rem;">Admin Location is OFF</div>
+          <div style="color:#cbd5e1; font-size:0.8rem; max-width:360px;">
+            Live GPS route tracking is unavailable because the technician turned OFF their location. Tracking will automatically start as soon as location is turned ON.
+          </div>
+        </div>
+      </div>
     `;
+
+    try {
+      setTimeout(() => {
+        initGoogleOrLeafletMap(isHomeService, progressFactor);
+      }, 50);
+    } catch (e) {
+      console.warn('Map initialization:', e);
+    }
 
     function startMovementInterval() {
       if (currentTrackingInterval) {
@@ -2456,9 +2508,15 @@ function initTracker() {
           if (radarLabel) {
             radarLabel.textContent = `⚡ ${techShort} (${currentSpeed} km/h)`;
           }
+          if (typeof window.updateTechMarkerPos === 'function') {
+            window.updateTechMarkerPos(progressFactor);
+          }
         } else {
           // Reached 100% completion: show doorstep knocking
           progressFactor = 1.0;
+          if (typeof window.updateTechMarkerPos === 'function') {
+            window.updateTechMarkerPos(1.0);
+          }
           if (etaEl) etaEl.textContent = 'Arrived & Done';
           if (distEl) distEl.textContent = '0.0 km (At Doorstep)';
           if (barFill) barFill.style.width = '100%';
@@ -2501,6 +2559,18 @@ function initTracker() {
         return;
       }
       try {
+        const statRes = await fetch('/api/admin/status');
+        const statData = await statRes.json();
+        if (statData && statData.success) {
+          const freshIsOnline = (statData.is_online === true || statData.status_mood === 'ON');
+          if (window.isAdminOnline !== freshIsOnline) {
+            window.isAdminOnline = freshIsOnline;
+            if (typeof window.syncTrackerOnlineState === 'function') {
+              window.syncTrackerOnlineState(freshIsOnline);
+            }
+          }
+        }
+
         const res = await fetch(`/api/orders/${encodeURIComponent(order.tracking_code)}`);
         const resData = await res.json();
         if (resData && resData.success && resData.order) {
@@ -2519,7 +2589,7 @@ function initTracker() {
           }
         }
       } catch (e) { }
-    }, 4000);
+    }, 3000);
   }
 
   window.syncTrackerOnlineState = function (isOnline) {
@@ -2541,11 +2611,27 @@ function initTracker() {
     }
 
     const isRejected = Boolean(statusStr.includes('reject') || statusStr.includes('cancel') || statusStr.includes('decline') || activeOrder.step === 0);
-    const isDiagnosing = !isRejected && (statusStr.includes('diagnos') || statusStr.includes('repair') || activeOrder.step === 3);
-    const isDispatched = !isRejected && !isDiagnosing && (statusStr.includes('accept') || statusStr.includes('dispatch') || statusStr.includes('route') || statusStr.includes('transit') || activeOrder.step === 2);
-    const isAtShop = !isRejected && !isDiagnosing && !isDispatched;
+    const isAtHome = !isCompleted && !isRejected && (
+      statusStr.includes('at your home') ||
+      statusStr.includes('at youe home') ||
+      statusStr.includes('at home') ||
+      statusStr.includes('doorstep') ||
+      statusStr.includes('diagnos') ||
+      statusStr.includes('repair') ||
+      activeOrder.step === 3
+    );
+    const isDeparture = !isCompleted && !isRejected && !isAtHome && (
+      statusStr.includes('departure') ||
+      statusStr.includes('depart') ||
+      statusStr.includes('dispatch') ||
+      statusStr.includes('route') ||
+      statusStr.includes('transit') ||
+      statusStr.includes('way') ||
+      activeOrder.step === 2
+    );
+    const isAtShop = !isCompleted && !isRejected && !isAtHome && !isDeparture;
 
-    const canRun = (isOnline === true) && isDispatched;
+    const canRun = (isOnline === true) && isDeparture;
     window._currentTrackingCanRun = canRun;
 
     const roadAsphalt = document.querySelector('.tracker-asphalt-road');
@@ -2560,6 +2646,10 @@ function initTracker() {
     const barFill = document.getElementById('tracker-bar-fill');
     const pctEl = document.getElementById('live-progress-pct');
     const techShort = (activeOrder.assigned_tech || 'Afzal').split(' ')[0];
+    const mapPulse = document.getElementById('map-live-pulse');
+    const mapStatusLabel = document.getElementById('map-live-status-label');
+    const mapOverlay = document.getElementById('map-location-off-overlay');
+    const locationOffNotice = document.getElementById('tracker-location-off-notice');
 
     // IF REJECTED BY ADMIN:
     if (isRejected) {
@@ -2585,62 +2675,102 @@ function initTracker() {
       if (headlineEl) {
         headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-circle-xmark"></i> BOOKING REJECTED • BIKE NOT DISPATCHED</strong> • Order #${activeOrder.tracking_code}`;
       }
-      if (statusText) {
-        statusText.textContent = '❌ Booking Request Rejected • Technician Not Dispatched';
-      }
-      if (radarLabel) {
-        radarLabel.textContent = `❌ ${techShort} (Rejected)`;
-      }
+      if (statusText) statusText.textContent = '❌ Booking Request Rejected • Technician Not Dispatched';
+      if (radarLabel) radarLabel.textContent = `❌ ${techShort} (Rejected)`;
       if (radarBadge) {
         radarBadge.style.borderColor = 'rgba(239,68,68,0.4)';
         radarBadge.style.color = '#fca5a5';
+      }
+      if (mapOverlay) mapOverlay.style.display = 'none';
+      if (locationOffNotice) locationOffNotice.style.display = 'none';
+      return;
+    }
+
+    if (isAtHome) {
+      if (currentTrackingInterval) {
+        clearInterval(currentTrackingInterval);
+        currentTrackingInterval = null;
+      }
+      if (roadAsphalt) roadAsphalt.classList.add('road-stopped');
+      if (vehicleElem) vehicleElem.classList.add('bike-stopped');
+      if (barFill) barFill.style.width = '100%';
+      if (pctEl) pctEl.textContent = '100% Journey Completed (At Customer Home)';
+      if (distEl) distEl.textContent = '0.0 km (At Doorstep)';
+      if (etaEl) etaEl.textContent = 'Arrived at Doorstep';
+      if (speedEl) {
+        speedEl.style.background = 'rgba(16,185,129,0.18)';
+        speedEl.style.borderColor = 'rgba(16,185,129,0.4)';
+        speedEl.style.color = '#34d399';
+        speedEl.innerHTML = '<i class="fas fa-house-chimney"></i> 0 km/h • At Customer Home';
+      }
+      if (headlineEl) {
+        headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-house-chimney-user"></i> AT YOUR HOME • ELECTRICIAN ARRIVED</strong> • Order #${activeOrder.tracking_code}`;
+      }
+      if (statusText) statusText.textContent = '🚪 Electrician Arrived at Your Home Doorstep!';
+      if (radarLabel) radarLabel.textContent = `🏠 ${techShort} (At Home)`;
+      if (mapOverlay) mapOverlay.style.display = 'none';
+      if (locationOffNotice) locationOffNotice.style.display = 'none';
+      if (mapPulse) mapPulse.style.background = '#10b981';
+      if (mapStatusLabel) {
+        mapStatusLabel.textContent = 'Arrived at Customer Doorstep';
+        mapStatusLabel.style.color = '#34d399';
       }
       return;
     }
 
-    if (!isOnline) {
-      // 1. ADMIN LOCATION IS OFF -> STOP BIKE & ROAD, SHOW LOCATION PAUSED
-      if (roadAsphalt) roadAsphalt.classList.add('road-stopped');
-      if (vehicleElem) vehicleElem.classList.add('bike-stopped');
-      if (speedEl) {
-        speedEl.style.background = 'rgba(239,68,68,0.15)';
-        speedEl.style.borderColor = 'rgba(239,68,68,0.3)';
-        speedEl.style.color = '#fca5a5';
-        speedEl.innerHTML = '<i class="fas fa-pause-circle"></i> Location Sharing Paused';
-      }
-      if (headlineEl) {
-        headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-location-crosshairs"></i> ELECTRICIAN LOCATION OFF • TRACKING PAUSED</strong> • Order #${activeOrder.tracking_code}`;
-      }
-      if (statusText) {
-        statusText.textContent = `📍 Tracking Paused • Location is OFF`;
-      }
-      if (radarLabel) {
-        radarLabel.textContent = `📍 ${techShort} (Location OFF)`;
-      }
-      if (radarBadge) {
-        radarBadge.style.borderColor = 'rgba(239,68,68,0.4)';
-        radarBadge.style.color = '#fca5a5';
-      }
-      if (etaEl && !etaEl.textContent.includes('Paused')) {
-        etaEl.textContent = 'Paused (Location Off)';
-      }
-    } else {
-      // 2. ADMIN LOCATION IS ON
-      if (canRun) {
-        // Dispatched/Accepted & Location is ON -> BIKE RUNS!
+    if (isDeparture) {
+      if (!isOnline) {
+        // ADMIN LOCATION IS OFF -> USER CANNOT TRACK!
+        if (currentTrackingInterval) {
+          clearInterval(currentTrackingInterval);
+          currentTrackingInterval = null;
+        }
+        if (roadAsphalt) roadAsphalt.classList.add('road-stopped');
+        if (vehicleElem) vehicleElem.classList.add('bike-stopped');
+        if (speedEl) {
+          speedEl.style.background = 'rgba(239,68,68,0.15)';
+          speedEl.style.borderColor = 'rgba(239,68,68,0.3)';
+          speedEl.style.color = '#fca5a5';
+          speedEl.innerHTML = '<i class="fas fa-pause-circle"></i> Location Sharing OFF';
+        }
+        if (headlineEl) {
+          headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-location-crosshairs"></i> LOCATION OFF • LIVE TRACKING UNAVAILABLE</strong> • Order #${activeOrder.tracking_code}`;
+        }
+        if (statusText) {
+          statusText.textContent = `📍 Live Tracking Unavailable • Electrician Location is OFF`;
+        }
+        if (radarLabel) {
+          radarLabel.textContent = `📍 ${techShort} (Location OFF)`;
+        }
+        if (radarBadge) {
+          radarBadge.style.borderColor = 'rgba(239,68,68,0.4)';
+          radarBadge.style.color = '#fca5a5';
+        }
+        if (etaEl) etaEl.textContent = 'Unavailable (Location OFF)';
+        if (distEl) distEl.textContent = 'Paused (Location OFF)';
+        if (pctEl) pctEl.textContent = 'Live Tracking Paused • Location is OFF';
+        if (mapOverlay) mapOverlay.style.display = 'flex';
+        if (locationOffNotice) locationOffNotice.style.display = 'flex';
+        if (mapPulse) mapPulse.style.background = '#ef4444';
+        if (mapStatusLabel) {
+          mapStatusLabel.textContent = 'GPS OFF: Tracking Unavailable';
+          mapStatusLabel.style.color = '#fca5a5';
+        }
+      } else {
+        // ADMIN LOCATION IS ON -> USER CAN TRACK LIVE!
         if (roadAsphalt) roadAsphalt.classList.remove('road-stopped');
         if (vehicleElem) vehicleElem.classList.remove('bike-stopped');
         if (speedEl) {
           speedEl.style.background = '';
           speedEl.style.borderColor = '';
           speedEl.style.color = '';
-          speedEl.innerHTML = '<i class="fas fa-gauge-high"></i> 32 km/h • Smooth Traffic';
+          speedEl.innerHTML = '<i class="fas fa-gauge-high"></i> 32 km/h • Traveling to Customer';
         }
         if (headlineEl) {
-          headlineEl.innerHTML = `<span class="live-pulse-dot"></span> <strong style="color:#60a5fa;"><i class="fas fa-location-arrow"></i> BOOKING ACCEPTED • LIVE GPS ROUTE ACTIVE</strong> • Order #${activeOrder.tracking_code}`;
+          headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-location-arrow"></i> DEPARTURE FROM SHOP • LIVE GPS TRACKING ACTIVE</strong> • Order #${activeOrder.tracking_code}`;
         }
         if (statusText) {
-          statusText.textContent = '⚡ Booking Accepted • Electrician En Route';
+          statusText.textContent = '⚡ Departure from Shop • Electrician En Route';
         }
         if (radarLabel) {
           radarLabel.textContent = `⚡ ${techShort} (32 km/h)`;
@@ -2649,38 +2779,57 @@ function initTracker() {
           radarBadge.style.borderColor = '';
           radarBadge.style.color = '';
         }
+        if (mapOverlay) mapOverlay.style.display = 'none';
+        if (locationOffNotice) locationOffNotice.style.display = 'none';
+        if (mapPulse) mapPulse.style.background = '#10b981';
+        if (mapStatusLabel) {
+          mapStatusLabel.textContent = 'GPS Live: En Route';
+          mapStatusLabel.style.color = '#34d399';
+        }
         if (!currentTrackingInterval && typeof window._resumeTrackingInterval === 'function') {
           window._resumeTrackingInterval();
         }
-      } else if (isAtShop) {
-        // At Workshop -> BIKE DOES NOT RUN, PARKED AT SHOP!
-        if (roadAsphalt) roadAsphalt.classList.add('road-stopped');
-        if (vehicleElem) {
-          vehicleElem.classList.add('bike-stopped');
-          vehicleElem.style.left = '8%';
-        }
-        if (barFill) barFill.style.width = '0%';
-        if (pctEl) pctEl.textContent = '0% Journey (Parked at Kosamba Workshop)';
-        if (distEl) distEl.textContent = '3.8 km away (At Workshop)';
-        if (speedEl) {
-          speedEl.style.background = '';
-          speedEl.style.borderColor = '';
-          speedEl.style.color = '';
-          speedEl.innerHTML = '<i class="fas fa-warehouse"></i> 0 km/h • Parked at Workshop';
-        }
-        if (headlineEl) {
-          headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#38bdf8;"></span> <strong style="color:#38bdf8;"><i class="fas fa-clock"></i> AT KOSAMBA WORKSHOP • AWAITING ADMIN ACCEPTANCE</strong> • Order #${activeOrder.tracking_code}`;
-        }
-        if (statusText) {
-          statusText.textContent = '🗓️ At Workshop • Awaiting Admin Acceptance';
-        }
-        if (radarLabel) {
-          radarLabel.textContent = `🗓️ ${techShort} (At Workshop)`;
-        }
-        if (radarBadge) {
-          radarBadge.style.borderColor = '';
-          radarBadge.style.color = '';
-        }
+      }
+    } else {
+      // isAtShop (Booking Accepted, at Workshop preparing)
+      if (currentTrackingInterval) {
+        clearInterval(currentTrackingInterval);
+        currentTrackingInterval = null;
+      }
+      if (roadAsphalt) roadAsphalt.classList.add('road-stopped');
+      if (vehicleElem) {
+        vehicleElem.classList.add('bike-stopped');
+        vehicleElem.style.left = '8%';
+      }
+      if (barFill) barFill.style.width = '0%';
+      if (pctEl) pctEl.textContent = '0% Journey (Parked at Kosamba Workshop)';
+      if (distEl) distEl.textContent = '3.8 km away (At Workshop)';
+      if (etaEl) etaEl.textContent = '15 mins (At Workshop)';
+      if (speedEl) {
+        speedEl.style.background = '';
+        speedEl.style.borderColor = '';
+        speedEl.style.color = '';
+        speedEl.innerHTML = '<i class="fas fa-warehouse"></i> 0 km/h • Parked at Workshop';
+      }
+      if (headlineEl) {
+        headlineEl.innerHTML = `<span class="live-pulse-dot" style="background:#38bdf8;"></span> <strong style="color:#38bdf8;"><i class="fas fa-circle-check"></i> BOOKING ACCEPTED • AT WORKSHOP PREPARING</strong> • Order #${activeOrder.tracking_code}`;
+      }
+      if (statusText) {
+        statusText.textContent = '✅ Booking Accepted • Electrician Preparing at Workshop';
+      }
+      if (radarLabel) {
+        radarLabel.textContent = `🗓️ ${techShort} (At Workshop)`;
+      }
+      if (radarBadge) {
+        radarBadge.style.borderColor = '';
+        radarBadge.style.color = '';
+      }
+      if (mapOverlay) mapOverlay.style.display = 'none';
+      if (locationOffNotice) locationOffNotice.style.display = 'none';
+      if (mapPulse) mapPulse.style.background = '#38bdf8';
+      if (mapStatusLabel) {
+        mapStatusLabel.textContent = 'Parked at Kosamba Workshop';
+        mapStatusLabel.style.color = '#38bdf8';
       }
     }
   };
