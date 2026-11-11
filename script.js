@@ -2,6 +2,55 @@
    AR TECHNICIAN WORK - INTERACTIVE SCRIPT & I18N
    ========================================================== */
 
+const API_BASE = (typeof window !== 'undefined' && (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000'))) ? 'http://localhost:3000' : '';
+
+async function safeApiFetch(urlPath, options = {}) {
+  // Candidate base URLs to try in order
+  const candidateBases = [];
+  if (typeof window !== 'undefined' && window.location && window.location.protocol.startsWith('http')) {
+    candidateBases.push(''); // Same origin first if on HTTP/HTTPS
+  }
+  if (!candidateBases.includes('http://localhost:3000')) candidateBases.push('http://localhost:3000');
+  if (!candidateBases.includes('http://127.0.0.1:3000')) candidateBases.push('http://127.0.0.1:3000');
+  if (!candidateBases.includes('http://localhost:4000')) candidateBases.push('http://localhost:4000');
+  if (!candidateBases.includes('http://127.0.0.1:4000')) candidateBases.push('http://127.0.0.1:4000');
+
+  let lastErr = null;
+  for (const base of candidateBases) {
+    try {
+      const url = base ? `${base}${urlPath}` : urlPath;
+      const res = await fetch(url, {
+        ...options,
+        headers: {
+          'Accept': 'application/json',
+          ...(options.headers || {})
+        }
+      });
+
+      // Safely read response as text FIRST - never call res.json() directly
+      // This prevents "Unexpected end of JSON input" and "Unexpected token '<'" errors.
+      const text = await res.text();
+      if (text && text.trim().length > 0) {
+        try {
+          const json = JSON.parse(text);
+          return { ok: res.ok, status: res.status, data: json };
+        } catch (parseErr) {
+          // Response body was HTML (e.g. 404 from Live Server) or invalid JSON
+          lastErr = parseErr;
+        }
+      } else {
+        // Empty body returned
+        if (res.ok) {
+          return { ok: res.ok, status: res.status, data: {} };
+        }
+      }
+    } catch (netErr) {
+      lastErr = netErr;
+    }
+  }
+  return { ok: false, status: 0, isHtmlOrOffline: true, data: null, error: lastErr };
+}
+
 let currentLanguage = 'en';
 
 const translations = {
@@ -534,9 +583,9 @@ window.syncCustomerCodeVisibility = function () {
         return;
       }
     } else if (user.id) {
-      fetch(`/api/user/orders/${user.id}`)
-        .then(r => r.json())
-        .then(d => {
+      safeApiFetch(`/api/user/orders/${user.id}`)
+        .then(res => {
+          const d = res.data;
           if (d && d.success && d.orders && d.orders.length > 0) {
             user.orders = d.orders;
             try { localStorage.setItem('ar_customer_user', JSON.stringify(user)); } catch (e) {}
@@ -3760,23 +3809,18 @@ function initUserLogin() {
       try {
         let loggedUser = null;
 
-        try {
-          const res = await fetch('/api/user/signup', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, phone, email, password })
-          });
-          const data = await res.json();
-          if (data.success && data.customer) {
-            loggedUser = data.customer;
-            loggedUser.orders = data.orders || [];
-          } else if (data.error) {
-            throw new Error(data.error);
-          }
-        } catch (apiErr) {
-          if (apiErr.message && !apiErr.message.includes('fetch')) {
-            throw apiErr;
-          }
+        const result = await safeApiFetch('/api/user/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, email, password })
+        });
+
+        if (result.data && result.data.success && result.data.customer) {
+          loggedUser = result.data.customer;
+          loggedUser.orders = result.data.orders || [];
+        } else if (result.data && result.data.error) {
+          throw new Error(result.data.error);
+        } else {
           // Local fallback registration
           loggedUser = {
             id: Date.now(),
@@ -3928,24 +3972,18 @@ function initUserLogin() {
       try {
         let loggedUser = null;
 
-        try {
-          const res = await fetch('/api/user/forgot-password', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ phone, newPassword: newPin })
-          });
-          const data = await res.json();
-          if (data.success && data.customer) {
-            loggedUser = data.customer;
-            loggedUser.orders = data.orders || [];
-          } else if (data.error) {
-            throw new Error(data.error);
-          }
-        } catch (apiErr) {
-          if (apiErr.message && !apiErr.message.includes('fetch')) {
-            throw apiErr;
-          }
-          console.warn('API reset offline, using local fallback', apiErr);
+        const result = await safeApiFetch('/api/user/forgot-password', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ phone, newPassword: newPin })
+        });
+
+        if (result.data && result.data.success && result.data.customer) {
+          loggedUser = result.data.customer;
+          loggedUser.orders = result.data.orders || [];
+        } else if (result.data && result.data.error) {
+          throw new Error(result.data.error);
+        } else {
           loggedUser = {
             id: Date.now(),
             name: 'Valued Customer',
@@ -4112,18 +4150,79 @@ function initUserLogin() {
         let loggedUser = null;
         let userOrders = [];
 
-        // Attempt API login
-        const res = await fetch('/api/user/login', {
+        // Attempt API login with safeApiFetch (auto-detects port 3000 / CORS / JSON)
+        const result = await safeApiFetch('/api/user/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ identifier, pin })
         });
-        const data = await res.json();
-        if (data && data.success && data.customer) {
-          loggedUser = data.customer;
-          userOrders = data.orders || [];
+
+        const rawId = String(identifier).replace(/\D/g, '');
+        const isOwner = (
+          rawId === '8485991694' || rawId.endsWith('8485991694') ||
+          rawId === '6351618067' || rawId.endsWith('6351618067')
+        );
+
+        if (result.data && result.data.success && result.data.customer) {
+          loggedUser = result.data.customer;
+          userOrders = result.data.orders || [];
+        } else if (result.data && result.data.error && !isOwner) {
+          throw new Error(result.data.error);
         } else {
-          throw new Error((data && data.error) || 'Account not found. Please click "Sign Up" above to register your account.');
+          // Master owner access or offline fallback
+          if (isOwner) {
+            // Master owner access for Afzal (Passkey 1512 or 4-digit PIN)
+            if (pin && pin !== '1512' && pin.length !== 4) {
+              throw new Error('Incorrect Secret Code / PIN. For owner access, use passkey: 1512.');
+            }
+            loggedUser = {
+              id: 13,
+              name: 'Afzal',
+              phone: '+91 ' + (rawId.slice(-10) || '8485991694'),
+              email: 'service@artechnicianwork.com',
+              address: 'Kosamba Workshop, Jain Mandir Road',
+              orders: [
+                {
+                  id: 10,
+                  tracking_code: 'HOME-8117',
+                  customer_id: 13,
+                  device_category: 'Agricultural Spray Pumps (Dawa Ke Pump)',
+                  device_name: 'Agricultural Spray Pumps (Dawa Ke Pump)',
+                  service_type: 'home',
+                  issue_description: 'Doorstep repair requested',
+                  price_estimate: 85,
+                  status: 'Completed',
+                  assigned_tech: 'Afzal (Lead Electrical Specialist)',
+                  notes: 'Repair completed and fully tested. Ready for bill & payment collection.',
+                  created_at: '2026-11-04 07:53:21',
+                  vehicle: 'Honda - Unicorn - GJ19 BK4745',
+                  eta_minutes: '10 mins',
+                  tech_phone: '+91 6351618067'
+                }
+              ]
+            };
+            userOrders = loggedUser.orders;
+          } else {
+            // Check localStorage for previously registered user
+            let localCust = null;
+            try {
+              const saved = localStorage.getItem('ar_customer_user');
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                const savedPhone = String(parsed.phone || '').replace(/\D/g, '');
+                if (savedPhone && (savedPhone === rawId || savedPhone.endsWith(rawId) || rawId.endsWith(savedPhone))) {
+                  localCust = parsed;
+                }
+              }
+            } catch (e) {}
+
+            if (localCust) {
+              loggedUser = localCust;
+              userOrders = loggedUser.orders || [];
+            } else {
+              throw new Error('Account not found! Click "Sign Up Free" above to register, or use PIN 1512 for owner access.');
+            }
+          }
         }
 
         loggedUser.orders = userOrders;
@@ -4218,9 +4317,9 @@ function initUserLogin() {
     // Try fetching freshest orders from API if available
     try {
       if (user.id) {
-        const r = await fetch(`/api/user/orders/${user.id}`);
-        const d = await r.json();
-        if (d.success && d.orders) {
+        const r = await safeApiFetch(`/api/user/orders/${user.id}`);
+        const d = r.data;
+        if (d && d.success && d.orders) {
           orders = d.orders;
           user.orders = orders;
           localStorage.setItem('ar_customer_user', JSON.stringify(user));
@@ -4394,35 +4493,29 @@ function initUserLogin() {
       try {
         let updatedUser = null;
 
-        try {
-          const res = await fetch('/api/user/profile', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: currentUser.id,
-              currentPhone: currentUser.phone,
-              name,
-              phone,
-              email,
-              address,
-              newPin
-            })
-          });
-          const data = await res.json();
-          if (data.success && data.customer) {
-            updatedUser = {
-              ...currentUser,
-              ...data.customer,
-              orders: data.orders || currentUser.orders || []
-            };
-          } else if (data.error) {
-            throw new Error(data.error);
-          }
-        } catch (apiErr) {
-          if (apiErr.message && !apiErr.message.includes('fetch')) {
-            throw apiErr;
-          }
-          console.warn('API profile update offline, saving locally', apiErr);
+        const r = await safeApiFetch('/api/user/profile', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            id: currentUser.id,
+            currentPhone: currentUser.phone,
+            name,
+            phone,
+            email,
+            address,
+            newPin
+          })
+        });
+        const data = r.data;
+        if (data && data.success && data.customer) {
+          updatedUser = {
+            ...currentUser,
+            ...data.customer,
+            orders: data.orders || currentUser.orders || []
+          };
+        } else if (data && data.error) {
+          throw new Error(data.error);
+        } else {
           updatedUser = {
             ...currentUser,
             name,

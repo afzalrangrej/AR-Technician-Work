@@ -432,11 +432,12 @@ app.post('/api/user/login', async (req, res) => {
     }
 
     const term = identifier.trim();
+    const clean10 = term.replace(/\D/g, '').slice(-10);
 
     // 1. Check in users table
     const userRecord = await dbDriver.get(
-      `SELECT * FROM users WHERE phone = ? OR email = ? OR name LIKE ? LIMIT 1`,
-      [term, term, `%${term}%`]
+      `SELECT * FROM users WHERE phone = ? OR phone LIKE ? OR email = ? OR name = ? LIMIT 1`,
+      [term, `%${clean10 || term}%`, term, term]
     );
 
     // If registered user with a password and a pin was provided, verify it
@@ -447,7 +448,7 @@ app.post('/api/user/login', async (req, res) => {
     // 2. Search customer in customers table
     let customer = await dbDriver.get(
       `SELECT * FROM customers WHERE phone = ? OR phone LIKE ? OR email = ? OR name = ? LIMIT 1`,
-      [term, `%${term.slice(-10)}%`, term, term]
+      [term, `%${clean10 || term}%`, term, term]
     );
 
     if (!customer && userRecord) {

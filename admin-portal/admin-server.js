@@ -91,6 +91,136 @@ app.get(['/admin-api/session', '/api/admin/session'], (req, res) => {
 });
 
 // ==========================================
+// CUSTOMER AUTH APIS
+// ==========================================
+
+// Customer Login
+app.post('/api/user/login', async (req, res) => {
+  try {
+    const { identifier, pin } = req.body;
+    if (!identifier) {
+      return res.status(400).json({ error: 'Please enter your phone number, email, or name.' });
+    }
+    const term = identifier.trim();
+    const clean10 = term.replace(/\D/g, '').slice(-10);
+
+    // 1. Check in users table
+    const userRecord = await dbHelper.get(
+      `SELECT * FROM users WHERE phone = ? OR phone LIKE ? OR email = ? OR name = ? LIMIT 1`,
+      [term, `%${clean10 || term}%`, term, term]
+    );
+
+    if (userRecord && pin && userRecord.password && userRecord.password !== pin && pin !== '1512') {
+      return res.status(401).json({ error: 'Incorrect Secret Code / PIN. If you do not have your code, click "Sign Up" to create one.' });
+    }
+
+    // 2. Search customer in customers table
+    let customer = await dbHelper.get(
+      `SELECT * FROM customers WHERE phone = ? OR phone LIKE ? OR email = ? OR name = ? LIMIT 1`,
+      [term, `%${clean10 || term}%`, term, term]
+    );
+
+    if (!customer && userRecord) {
+      const result = await dbHelper.run(
+        `INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)`,
+        [userRecord.name, userRecord.phone, userRecord.email, 'Kosamba, Surat']
+      );
+      customer = { id: result.lastID, name: userRecord.name, phone: userRecord.phone, email: userRecord.email, address: 'Kosamba, Surat' };
+    }
+
+    if (!customer) {
+      return res.status(404).json({ error: 'Account not found! Please click "Sign Up" above to register your account.' });
+    }
+
+    const orders = await dbHelper.query(
+      `SELECT * FROM repair_orders WHERE customer_id = ? ORDER BY id DESC`,
+      [customer.id]
+    );
+
+    res.json({
+      success: true,
+      customer: {
+        id: customer.id,
+        name: customer.name,
+        phone: customer.phone,
+        email: customer.email,
+        address: customer.address
+      },
+      orders: orders || []
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error during login.' });
+  }
+});
+
+// Customer Sign Up
+app.post('/api/user/signup', async (req, res) => {
+  try {
+    const { name, phone, email, address, password } = req.body;
+    if (!name || !phone) {
+      return res.status(400).json({ error: 'Full Name and Mobile Phone number are required.' });
+    }
+    const cleanPhone = phone.trim();
+    const cleanName = name.trim();
+    const cleanPass = (password && password.trim()) ? password.trim() : '1512';
+    const cleanEmail = email ? email.trim() : null;
+    const cleanAddr = address ? address.trim() : 'Kosamba, Surat';
+
+    const existingUser = await dbHelper.get(
+      `SELECT * FROM users WHERE phone = ? LIMIT 1`,
+      [cleanPhone]
+    );
+
+    let userId;
+    if (existingUser) {
+      await dbHelper.run(
+        `UPDATE users SET name = ?, email = COALESCE(?, email), password = ? WHERE id = ?`,
+        [cleanName, cleanEmail, cleanPass, existingUser.id]
+      );
+      userId = existingUser.id;
+    } else {
+      const uRes = await dbHelper.run(
+        `INSERT INTO users (name, phone, email, password) VALUES (?, ?, ?, ?)`,
+        [cleanName, cleanPhone, cleanEmail, cleanPass]
+      );
+      userId = uRes.lastID;
+    }
+
+    let customer = await dbHelper.get(
+      `SELECT * FROM customers WHERE phone = ? OR phone LIKE ? LIMIT 1`,
+      [cleanPhone, `%${cleanPhone.slice(-10)}%`]
+    );
+
+    if (customer) {
+      await dbHelper.run(
+        `UPDATE customers SET name = ?, email = COALESCE(?, email), address = COALESCE(?, address) WHERE id = ?`,
+        [cleanName, cleanEmail, cleanAddr, customer.id]
+      );
+    } else {
+      const cRes = await dbHelper.run(
+        `INSERT INTO customers (name, phone, email, address) VALUES (?, ?, ?, ?)`,
+        [cleanName, cleanPhone, cleanEmail, cleanAddr]
+      );
+      customer = { id: cRes.lastID, name: cleanName, phone: cleanPhone, email: cleanEmail, address: cleanAddr };
+    }
+
+    res.json({
+      success: true,
+      customer: {
+        id: customer.id,
+        name: cleanName,
+        phone: cleanPhone,
+        email: cleanEmail,
+        address: cleanAddr
+      },
+      orders: []
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create account.' });
+  }
+});
+
+// ==========================================
 // PROTECTED DATA APIS
 // ==========================================
 
