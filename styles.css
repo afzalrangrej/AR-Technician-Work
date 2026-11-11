@@ -3798,8 +3798,25 @@ body.admin-offline .btn-service-book.trigger-booking {
 
 .footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 2.5rem;
+  grid-template-columns: 1.8fr 1fr;
+  gap: 3rem;
+  justify-content: space-between;
+  align-items: start;
+}
+
+.footer-services-col {
+  justify-self: end;
+  min-width: 240px;
+}
+
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+  .footer-services-col {
+    justify-self: start;
+  }
 }
 
 @media (max-width: 1260px) and (min-width: 992px) {
