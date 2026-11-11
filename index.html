@@ -1047,9 +1047,19 @@
             required data-i18n-ph="modal_name_ph">
 
           <div class="phone-input-wrap">
-            <span class="phone-prefix-badge">🇮🇳 +91</span>
+            <div class="phone-prefix-badge" id="book-phone-prefix" aria-hidden="true">
+              <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14" style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);" aria-hidden="true">
+                <path fill="#FF9933" d="M0 0h640v160H0z"/>
+                <path fill="#FFFFFF" d="M0 160h640v160H0z"/>
+                <path fill="#128807" d="M0 320h640v160H0z"/>
+                <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8"/>
+              </svg>
+              <span class="phone-prefix-code">+91</span>
+              <span class="phone-prefix-sep"></span>
+            </div>
             <input type="tel" id="book-phone-input" class="form-control phone-input-field"
-              placeholder="10-digit Mobile Number" required maxlength="10">
+              placeholder="10-digit Mobile Number" required
+              maxlength="10" minlength="10" pattern="[0-9]{10}" inputmode="numeric" autocomplete="tel">
           </div>
 
           <div id="booking-addr-wrap">
@@ -1413,11 +1423,19 @@
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
               MOBILE NUMBER (10 Digits)
             </label>
-            <div style="position: relative;">
-              <i class="fas fa-mobile-screen"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
-              <input type="tel" id="user-login-ident" class="form-control" placeholder="10-digit Mobile Number" required
-                maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" style="padding-left: 2.5rem;"
+            <div class="phone-input-wrap">
+              <div class="phone-prefix-badge" aria-hidden="true">
+                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14" style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);" aria-hidden="true">
+                  <path fill="#FF9933" d="M0 0h640v160H0z"/>
+                  <path fill="#FFFFFF" d="M0 160h640v160H0z"/>
+                  <path fill="#128807" d="M0 320h640v160H0z"/>
+                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8"/>
+                </svg>
+                <span class="phone-prefix-code">+91</span>
+                <span class="phone-prefix-sep"></span>
+              </div>
+              <input type="tel" id="user-login-ident" class="form-control phone-input-field" placeholder="10-digit Mobile Number" required
+                maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
                 autocomplete="username">
             </div>
           </div>
@@ -1517,12 +1535,19 @@
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
               MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
             </label>
-            <div style="position: relative;">
-              <i class="fas fa-phone"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
-              <input type="tel" id="user-signup-phone" class="form-control" placeholder="10-digit Mobile Number"
-                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
-                style="padding-left: 2.5rem;" autocomplete="tel">
+            <div class="phone-input-wrap">
+              <div class="phone-prefix-badge" aria-hidden="true">
+                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14" style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);" aria-hidden="true">
+                  <path fill="#FF9933" d="M0 0h640v160H0z"/>
+                  <path fill="#FFFFFF" d="M0 160h640v160H0z"/>
+                  <path fill="#128807" d="M0 320h640v160H0z"/>
+                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8"/>
+                </svg>
+                <span class="phone-prefix-code">+91</span>
+                <span class="phone-prefix-sep"></span>
+              </div>
+              <input type="tel" id="user-signup-phone" class="form-control phone-input-field" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel">
             </div>
           </div>
 
@@ -1618,12 +1643,19 @@
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
               REGISTERED MOBILE PHONE (10 Digits) <span style="color: #38bdf8;">*</span>
             </label>
-            <div style="position: relative;">
-              <i class="fas fa-mobile-screen"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
-              <input type="tel" id="user-forgot-phone" class="form-control" placeholder="10-digit Mobile Number"
-                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
-                style="padding-left: 2.5rem;" autocomplete="tel">
+            <div class="phone-input-wrap">
+              <div class="phone-prefix-badge" aria-hidden="true">
+                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14" style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);" aria-hidden="true">
+                  <path fill="#FF9933" d="M0 0h640v160H0z"/>
+                  <path fill="#FFFFFF" d="M0 160h640v160H0z"/>
+                  <path fill="#128807" d="M0 320h640v160H0z"/>
+                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8"/>
+                </svg>
+                <span class="phone-prefix-code">+91</span>
+                <span class="phone-prefix-sep"></span>
+              </div>
+              <input type="tel" id="user-forgot-phone" class="form-control phone-input-field" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel">
             </div>
             <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Enter your
               10-digit registered mobile number.</small>
@@ -1818,12 +1850,19 @@
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
               MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
             </label>
-            <div style="position: relative;">
-              <i class="fas fa-mobile-screen"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--primary);"></i>
-              <input type="tel" id="user-profile-phone" class="form-control" placeholder="10-digit Mobile Number"
-                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}"
-                style="padding-left: 2.5rem;" autocomplete="tel">
+            <div class="phone-input-wrap">
+              <div class="phone-prefix-badge" aria-hidden="true">
+                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14" style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);" aria-hidden="true">
+                  <path fill="#FF9933" d="M0 0h640v160H0z"/>
+                  <path fill="#FFFFFF" d="M0 160h640v160H0z"/>
+                  <path fill="#128807" d="M0 320h640v160H0z"/>
+                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8"/>
+                </svg>
+                <span class="phone-prefix-code">+91</span>
+                <span class="phone-prefix-sep"></span>
+              </div>
+              <input type="tel" id="user-profile-phone" class="form-control phone-input-field" placeholder="10-digit Mobile Number"
+                required maxlength="10" minlength="10" inputmode="numeric" pattern="[0-9]{10}" autocomplete="tel">
             </div>
             <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Primary contact
               number for doorstep technician calls and booking updates.</small>
@@ -1893,7 +1932,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261111_v5"></script>
+  <script src="script.js?v=20261111_v6"></script>
 </body>
 
 </html>

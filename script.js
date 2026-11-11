@@ -609,6 +609,49 @@ window.syncCustomerCodeVisibility = function () {
   }
 };
 
+// Universal 10-Digit Mobile Phone Sanitizer & Enforcer
+function extract10DigitPhone(val) {
+  if (!val) return '';
+  let digits = String(val).replace(/\D/g, '');
+  if (digits.length > 10) {
+    if (digits.startsWith('91') && digits.length === 12) {
+      digits = digits.slice(2);
+    } else if (digits.startsWith('0') && digits.length === 11) {
+      digits = digits.slice(1);
+    } else if (digits.startsWith('91')) {
+      digits = digits.slice(2);
+    } else {
+      digits = digits.slice(0, 10);
+    }
+  }
+  return digits.slice(0, 10);
+}
+window.extract10DigitPhone = extract10DigitPhone;
+
+function attach10DigitPhoneEnforcer(element) {
+  if (!element) return;
+  element.setAttribute('maxlength', '10');
+  element.setAttribute('minlength', '10');
+  element.setAttribute('inputmode', 'numeric');
+  element.setAttribute('pattern', '[0-9]{10}');
+
+  element.addEventListener('input', function() {
+    const clean = extract10DigitPhone(this.value);
+    if (this.value !== clean) {
+      this.value = clean;
+    }
+  });
+
+  element.addEventListener('paste', function(e) {
+    e.preventDefault();
+    const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
+    const clean = extract10DigitPhone(pasteText);
+    this.value = clean;
+    this.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+}
+window.attach10DigitPhoneEnforcer = attach10DigitPhoneEnforcer;
+
 window.requireCustomerLogin = function (reason, actionType = null) {
   if (window.isCustomerLoggedIn()) {
     return; // Already logged in, no lock required!
@@ -3048,6 +3091,9 @@ function initBookingModal() {
   const addrInput = document.getElementById('book-addr-input');
   const nameInput = document.getElementById('book-name-input');
   const phoneInput = document.getElementById('book-phone-input');
+  if (phoneInput) {
+    attach10DigitPhoneEnforcer(phoneInput);
+  }
   const issueInput = document.getElementById('book-issue-input');
   const itemInput = document.getElementById('book-item-input');
   const selectedBadge = document.getElementById('chip-selected-badge');
@@ -3058,7 +3104,7 @@ function initBookingModal() {
     if (!waBtn) return;
     const item = itemInput ? itemInput.value : 'Appliance Repair';
     const name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : '';
-    const phone = phoneInput && phoneInput.value.trim() ? phoneInput.value.trim() : '';
+    const phone = phoneInput ? extract10DigitPhone(phoneInput.value) : '';
     const addr = addrInput && addrInput.value.trim() ? addrInput.value.trim() : '';
     const issue = issueInput && issueInput.value.trim() ? issueInput.value.trim() : '';
 
@@ -3126,7 +3172,7 @@ function initBookingModal() {
       const user = window.getCurrentCustomerUser();
       if (user) {
         if (nameInput && !nameInput.value) nameInput.value = user.name || '';
-        if (phoneInput && !phoneInput.value) phoneInput.value = (user.phone || '').replace(/[^0-9]/g, '');
+        if (phoneInput && !phoneInput.value) phoneInput.value = extract10DigitPhone(user.phone);
         if (addrInput && !addrInput.value) addrInput.value = user.address || '';
       }
     });
@@ -3160,6 +3206,18 @@ function initBookingModal() {
 
       const submitBtn = form.querySelector('button[type="submit"]');
       const originalText = submitBtn ? submitBtn.innerHTML : '<i class="fas fa-paper-plane"></i> <span data-i18n="modal_submit_btn">Send Request</span>';
+
+      const rawPhone = phoneInput ? extract10DigitPhone(phoneInput.value) : '';
+      if (!rawPhone || rawPhone.length !== 10) {
+        showToast('⚠️ Please enter a valid 10-digit mobile number.', 'warning');
+        if (phoneInput) {
+          phoneInput.focus();
+          phoneInput.style.borderColor = '#ef4444';
+          setTimeout(() => { phoneInput.style.borderColor = ''; }, 3000);
+        }
+        return;
+      }
+
       if (submitBtn) submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Saving Request...';
 
       const deviceCat = itemInput ? itemInput.value : 'General Electronics';
@@ -3168,7 +3226,7 @@ function initBookingModal() {
 
       const payload = {
         name: nameInput && nameInput.value.trim() ? nameInput.value.trim() : 'Customer',
-        phone: phoneInput && phoneInput.value.trim() ? '+91 ' + phoneInput.value.trim() : 'N/A',
+        phone: '+91 ' + rawPhone,
         email: '',
         address: address,
         zipCode: window.lastZipChecked || '394120',
@@ -3746,10 +3804,11 @@ function initUserLogin() {
   }
 
   // Apply to all mobile inputs (10 digits)
-  enforceNumericLimit(identInput, 10);
-  enforceNumericLimit(document.getElementById('user-signup-phone'), 10);
-  enforceNumericLimit(document.getElementById('user-forgot-phone'), 10);
-  enforceNumericLimit(profilePhoneInput, 10);
+  attach10DigitPhoneEnforcer(identInput);
+  attach10DigitPhoneEnforcer(document.getElementById('user-signup-phone'));
+  attach10DigitPhoneEnforcer(document.getElementById('user-forgot-phone'));
+  attach10DigitPhoneEnforcer(profilePhoneInput);
+  attach10DigitPhoneEnforcer(document.getElementById('book-phone-input'));
 
   // Apply to all PIN inputs (4 digits)
   enforceNumericLimit(pinInput, 4);
@@ -3965,7 +4024,7 @@ function initUserLogin() {
                 const phoneInp = document.getElementById('book-phone-input');
                 const addrInp = document.getElementById('book-addr-input');
                 if (nameInp && !nameInp.value) nameInp.value = loggedUser.name || '';
-                if (phoneInp && !phoneInp.value) phoneInp.value = (loggedUser.phone || '').replace(/[^0-9]/g, '');
+                if (phoneInp && !phoneInp.value) phoneInp.value = extract10DigitPhone(loggedUser.phone);
                 if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
               }
             }, 300);
@@ -4352,7 +4411,7 @@ function initUserLogin() {
               const phoneInp = document.getElementById('book-phone-input');
               const addrInp = document.getElementById('book-addr-input');
               if (nameInp && !nameInp.value) nameInp.value = loggedUser.name || '';
-              if (phoneInp && !phoneInp.value) phoneInp.value = (loggedUser.phone || '').replace(/[^0-9]/g, '');
+              if (phoneInp && !phoneInp.value) phoneInp.value = extract10DigitPhone(loggedUser.phone);
               if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
             }
           }, 400);
@@ -4622,7 +4681,7 @@ function initUserLogin() {
           const bookPhone = document.getElementById('book-phone-input');
           const bookAddr = document.getElementById('book-addr-input');
           if (bookName) bookName.value = updatedUser.name;
-          if (bookPhone) bookPhone.value = (updatedUser.phone || '').replace(/[^0-9]/g, '');
+          if (bookPhone) bookPhone.value = extract10DigitPhone(updatedUser.phone);
           if (bookAddr && updatedUser.address) bookAddr.value = updatedUser.address;
 
           // 4. Show success banner
