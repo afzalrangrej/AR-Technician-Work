@@ -1974,30 +1974,36 @@ function initTracker() {
       order.step >= 4
     );
 
-    // Diagnosing / On-Site: Arrived at Doorstep and working inside customer home
-    const isDiagnosing = !isCompleted && !isRejected && (
+    // At Your Home: Arrived at Doorstep and ready for inspection & repair
+    const isAtHome = !isCompleted && !isRejected && (
+      statusLower.includes('at your home') ||
+      statusLower.includes('at youe home') ||
+      statusLower.includes('at home') ||
+      statusLower.includes('doorstep') ||
       statusLower.includes('diagnos') ||
       statusLower.includes('repair') ||
       order.step === 3
     );
 
-    // Dispatched / Accepted: Admin has ACCEPTED the booking! Bike is allowed to track and run!
-    const isDispatched = !isCompleted && !isRejected && !isDiagnosing && (
-      statusLower.includes('accept') ||
+    // Departure from Shop: Admin has DISPATCHED the technician! Bike tracks and runs live!
+    const isDeparture = !isCompleted && !isRejected && !isAtHome && (
+      statusLower.includes('departure') ||
+      statusLower.includes('depart') ||
       statusLower.includes('dispatch') ||
       statusLower.includes('route') ||
       statusLower.includes('transit') ||
+      statusLower.includes('way') ||
       order.step === 2
     );
 
-    // At Shop / Booked: Waiting at Kosamba Workshop (Awaiting decision)
-    const isAtShop = !isCompleted && !isRejected && !isDiagnosing && !isDispatched;
+    // At Shop / Accept: Waiting at Kosamba Workshop (Accepted by admin, preparing tools)
+    const isAtShop = !isCompleted && !isRejected && !isAtHome && !isDeparture;
 
-    // The bike can ONLY run if:
+    // The bike can ONLY run on the map if:
     // 1) Admin's (electrician) location is ON (adminIsOnline === true)
-    // 2) The booking is ACCEPTED / Dispatched (isDispatched === true)
-    // 3) Not rejected/cancelled, diagnosing or completed!
-    const canBikeRun = adminIsOnline && isDispatched && !isCompleted && !isRejected && !isDiagnosing;
+    // 2) Status is "Departure from shop" (isDeparture === true)
+    // 3) Not rejected, at home or completed!
+    const canBikeRun = adminIsOnline && isDeparture && !isCompleted && !isRejected && !isAtHome;
 
     window._currentTrackingCanRun = canBikeRun;
     window._activeTrackingOrder = order;
@@ -2010,8 +2016,8 @@ function initTracker() {
       }
     } catch (e) { }
 
-    let progressFactor = (isCompleted || isDiagnosing) ? 1.0 : (isDispatched ? 0.28 : 0.08);
-    let secondsLeft = (isCompleted || isDiagnosing) ? 0 : (isDispatched ? (isHomeService ? 780 : 1150) : 900);
+    let progressFactor = (isCompleted || isAtHome) ? 1.0 : (isDeparture ? 0.32 : 0.08);
+    let secondsLeft = (isCompleted || isAtHome) ? 0 : (isDeparture ? (isHomeService ? 780 : 1150) : 900);
     const startOtp = order.otp || `${(Math.abs(order.tracking_code.split('').reduce((a, b) => a + b.charCodeAt(0), 1000)) % 8999) + 1000}`;
 
     const vehicleTitle = order.vehicle || 'Honda - Unicorn - GJ19 BK4745';
@@ -2026,78 +2032,73 @@ function initTracker() {
       headlineHtml = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-circle-xmark"></i> BOOKING REJECTED • BIKE NOT DISPATCHED</strong> • Order #${order.tracking_code}`;
     } else if (!adminIsOnline) {
       headlineHtml = `<span class="live-pulse-dot" style="background:#ef4444;"></span> <strong style="color:#f87171;"><i class="fas fa-location-crosshairs"></i> ELECTRICIAN LOCATION OFF • TRACKING PAUSED</strong> • Order #${order.tracking_code}`;
-    } else if (isAtShop) {
-      headlineHtml = `<span class="live-pulse-dot" style="background:#38bdf8;"></span> <strong style="color:#38bdf8;"><i class="fas fa-clock"></i> AT KOSAMBA WORKSHOP • AWAITING ADMIN ACCEPTANCE</strong> • Order #${order.tracking_code}`;
-    } else if (isDiagnosing) {
-      headlineHtml = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-house-chimney-user"></i> AT CUSTOMER DOORSTEP • DIAGNOSING</strong> • Order #${order.tracking_code}`;
+    } else if (isAtHome) {
+      headlineHtml = `<span class="live-pulse-dot" style="background:#10b981;"></span> <strong style="color:#34d399;"><i class="fas fa-house-chimney-user"></i> AT YOUR HOME • ELECTRICIAN ARRIVED</strong> • Order #${order.tracking_code}`;
+    } else if (isDeparture) {
+      headlineHtml = `<span class="live-pulse-dot"></span> <strong style="color:#60a5fa;"><i class="fas fa-location-arrow"></i> DEPARTURE FROM SHOP • LIVE GPS ROUTE ACTIVE</strong> • Order #${order.tracking_code}`;
     } else {
-      headlineHtml = `<span class="live-pulse-dot"></span> <strong style="color:#60a5fa;"><i class="fas fa-location-arrow"></i> BOOKING ACCEPTED • LIVE GPS ROUTE ACTIVE</strong> • Order #${order.tracking_code}`;
+      headlineHtml = `<span class="live-pulse-dot" style="background:#38bdf8;"></span> <strong style="color:#38bdf8;"><i class="fas fa-clock"></i> BOOKING ACCEPTED • AT WORKSHOP PREPARING</strong> • Order #${order.tracking_code}`;
     }
 
     // Build speed pill HTML
     let speedHtml = '';
-    if (isCompleted) {
-      speedHtml = `<i class="fas fa-door-open"></i> At Customer Door`;
+    if (isCompleted || isAtHome) {
+      speedHtml = `<i class="fas fa-house-chimney"></i> 0 km/h • At Customer Home`;
     } else if (isRejected) {
       speedHtml = `<i class="fas fa-ban"></i> 0 km/h • Booking Rejected (Stopped)`;
     } else if (!adminIsOnline) {
       speedHtml = `<i class="fas fa-pause-circle"></i> Location Sharing Paused`;
-    } else if (isAtShop) {
-      speedHtml = `<i class="fas fa-warehouse"></i> 0 km/h • Parked at Workshop`;
-    } else if (isDiagnosing) {
-      speedHtml = `<i class="fas fa-wrench"></i> 0 km/h • At Customer Home`;
-    } else {
+    } else if (isDeparture) {
       speedHtml = `<i class="fas fa-gauge-high"></i> 32 km/h • Traveling to Customer`;
+    } else {
+      speedHtml = `<i class="fas fa-warehouse"></i> 0 km/h • Parked at Workshop`;
     }
 
     // Build ETA text
     let etaText = '';
-    if (isCompleted) etaText = 'Arrived & Done';
+    if (isCompleted || isAtHome) etaText = 'Arrived at Doorstep';
     else if (isRejected) etaText = 'Declined';
-    else if (isDiagnosing) etaText = 'On-Site Diagnostic';
     else if (!adminIsOnline) etaText = 'Paused (Location Off)';
-    else if (isAtShop) etaText = `${order.eta_minutes || '15 mins'} (Awaiting Decision)`;
-    else etaText = `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
+    else if (isDeparture) etaText = `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
+    else etaText = `${order.eta_minutes || '15 mins'} (At Workshop)`;
 
     // Build Distance text
     let distText = '';
-    if (isCompleted || isDiagnosing) distText = '0.0 km (At Doorstep)';
+    if (isCompleted || isAtHome) distText = '0.0 km (At Doorstep)';
     else if (isRejected) distText = '0.0 km (Booking Rejected)';
     else if (!adminIsOnline) distText = `${((1 - progressFactor) * 3.8).toFixed(1)} km (Location Paused)`;
-    else if (isAtShop) distText = '3.8 km away (At Workshop)';
-    else distText = `${((1 - progressFactor) * 3.8).toFixed(1)} km away`;
+    else if (isDeparture) distText = `${((1 - progressFactor) * 3.8).toFixed(1)} km away`;
+    else distText = '3.8 km away (At Workshop)';
 
     // Build Middle Radar text (concise to keep stations row clean on 1 line)
     let radarText = '';
-    if (isCompleted) radarText = '🚪 Electrician Arrived at Doorstep!';
+    if (isCompleted || isAtHome) radarText = '🚪 Electrician Arrived at Your Home Doorstep!';
     else if (isRejected) radarText = '❌ Booking Request Rejected • Technician Not Dispatched';
     else if (!adminIsOnline) radarText = `📍 Tracking Paused • Location is OFF`;
-    else if (isAtShop) radarText = '🗓️ At Workshop • Awaiting Admin Acceptance';
-    else if (isDiagnosing) radarText = '🔍 On-Site • Doorstep Diagnostic Active';
-    else radarText = '⚡ Booking Accepted • Electrician En Route';
+    else if (isDeparture) radarText = '⚡ Departure from Shop • Electrician En Route';
+    else radarText = '✅ Booking Accepted • Electrician Preparing at Workshop';
 
     // Build Radar pill label over bike
     let bikeRadarLabel = '';
     if (isRejected) bikeRadarLabel = `❌ ${techShort} (Rejected)`;
+    else if (isAtHome) bikeRadarLabel = `🏠 ${techShort} (At Home)`;
     else if (canBikeRun) bikeRadarLabel = `⚡ ${techShort} (32 km/h)`;
-    else if (isAtShop) bikeRadarLabel = `🗓️ ${techShort} (At Workshop)`;
     else if (!adminIsOnline) bikeRadarLabel = `📍 ${techShort} (Location OFF)`;
-    else bikeRadarLabel = `⚡ ${techShort}`;
+    else bikeRadarLabel = `🗓️ ${techShort} (At Workshop)`;
 
     // Progress text
     let progressPctText = '';
-    if (isCompleted) progressPctText = '100% Journey Completed';
-    else if (isRejected) progressPctText = '0% Journey (Booking Rejected by Admin • Bike Stopped)';
-    else if (isDiagnosing) progressPctText = '100% Journey Completed (On-Site)';
-    else if (isAtShop) progressPctText = '0% Journey (Parked at Kosamba Workshop)';
+    if (isCompleted || isAtHome) progressPctText = '100% Journey Completed (At Customer Home)';
+    else if (isRejected) progressPctText = '0% Journey (Booking Rejected • Bike Stopped)';
     else if (!adminIsOnline) progressPctText = `${Math.round(progressFactor * 100)}% Journey (Paused • Location OFF)`;
-    else progressPctText = `${Math.round(progressFactor * 100)}% Journey Completed • 32 km/h`;
+    else if (isDeparture) progressPctText = `${Math.round(progressFactor * 100)}% Journey Completed • 32 km/h`;
+    else progressPctText = '0% Journey (Parked at Kosamba Workshop)';
 
-    // Calculate current step number (1 = Booked, 2 = Dispatched, 3 = Diagnosing, 4 = Completed)
+    // Calculate current step number (1 = Accept, 2 = Departure from Shop, 3 = At Your Home, 4 = Completed)
     let currentStepNumber = 1;
     if (isCompleted) currentStepNumber = 4;
-    else if (isDiagnosing) currentStepNumber = 3;
-    else if (isDispatched) currentStepNumber = 2;
+    else if (isAtHome) currentStepNumber = 3;
+    else if (isDeparture) currentStepNumber = 2;
     else if (isRejected) currentStepNumber = 0;
     else currentStepNumber = 1;
 
@@ -2105,9 +2106,9 @@ function initTracker() {
     let timelineFillWidth = '0%';
     let statusIconClass = 'booked';
     let statusIcon = 'fa-calendar-check';
-    let statusBadgeLabel = '🗓️ STEP 1: BOOKING CONFIRMED';
-    let statusHeadline = 'Electrician Preparing at Workshop';
-    let statusDescription = 'Your booking is accepted. Electrician Afzal is gathering tools & parts at Kosamba Workshop.';
+    let statusBadgeLabel = '✅ STEP 1: BOOKING ACCEPTED';
+    let statusHeadline = 'Booking Confirmed • At Workshop';
+    let statusDescription = 'Your booking is accepted! Electrician Afzal is preparing specialized tools at Kosamba Workshop.';
 
     if (isRejected) {
       timelineFillWidth = '0%';
@@ -2123,20 +2124,20 @@ function initTracker() {
       statusBadgeLabel = '✅ STEP 4: WORK DONE & PAYMENT';
       statusHeadline = 'Appliance Repaired & Work Done';
       statusDescription = 'All repair work is completed and verified. Your digital bill receipt and payment confirmation are ready!';
-    } else if (isDiagnosing) {
-      timelineFillWidth = '66%';
+    } else if (isAtHome) {
+      timelineFillWidth = '100%';
       statusIconClass = 'diagnose';
-      statusIcon = 'fa-screwdriver-wrench';
-      statusBadgeLabel = '🔧 STEP 3: AT YOUR DOORSTEP';
-      statusHeadline = 'Electrician Working at Your Home';
-      statusDescription = 'Afzal has arrived at your address and is actively checking & fixing your appliance right now.';
-    } else if (isDispatched) {
-      timelineFillWidth = '33%';
+      statusIcon = 'fa-house-chimney';
+      statusBadgeLabel = '🏠 STEP 3: AT YOUR HOME';
+      statusHeadline = 'Electrician Arrived at Your Home';
+      statusDescription = 'Electrician Afzal has arrived at your home doorstep for inspection & repair.';
+    } else if (isDeparture) {
+      timelineFillWidth = '50%';
       statusIconClass = 'dispatch';
       statusIcon = 'fa-motorcycle';
-      statusBadgeLabel = '🏍️ STEP 2: ON THE WAY (LIVE)';
+      statusBadgeLabel = '🏍️ STEP 2: DEPARTURE FROM SHOP';
       statusHeadline = 'Electrician is Riding to Your Home';
-      statusDescription = `Electrician Afzal is on the road traveling towards your address on ${vehicleTitle} with tools.`;
+      statusDescription = `Electrician Afzal has departed from the shop on ${vehicleTitle} and is traveling towards your address.`;
     }
 
     // IF WORK & PAYMENT IS DONE: CHANGE TRACKING INTERFACE TO THANKS NOTE!
@@ -4484,6 +4485,12 @@ function initUserLogin() {
       } else {
         dashOrdersList.innerHTML = orders.map(o => {
           const statusColors = {
+            'Accept': '#34d399',
+            'Accepted': '#34d399',
+            'Reject': '#f87171',
+            'Rejected': '#f87171',
+            'Departure from shop': '#38bdf8',
+            'At your home': '#a855f7',
             'Booked': '#38bdf8',
             'Dispatch': '#fbbf24',
             'Diagnosing': '#a855f7',
