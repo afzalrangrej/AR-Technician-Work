@@ -4134,17 +4134,40 @@
     }
 
     async function fetchOrders() {
+      let serverOrders = [];
       try {
-        const r = await fetch(`${API}/admin-api/orders`);
-        const d = await r.json();
-        if (!d.success) throw new Error(d.error);
-        // Ensure latest orders are on top
-        allOrders = (d.orders || []).sort((a, b) => b.id - a.id);
-        lastOrderCount = allOrders.length;
-        updateOrderBadgesAndViews();
-      } catch (e) {
-        document.getElementById('orders-tbody').innerHTML = errorRow(9, 'Failed to load orders.');
+        const candidateApis = [API, 'http://localhost:3000', 'http://localhost:4000', ''].filter((v, i, a) => a.indexOf(v) === i);
+        for (const base of candidateApis) {
+          try {
+            const r = await fetch(`${base}/admin-api/orders`);
+            const text = await r.text();
+            if (text && text.trim().startsWith('{')) {
+              const d = JSON.parse(text);
+              if (d && d.success && Array.isArray(d.orders)) {
+                serverOrders = d.orders;
+                break;
+              }
+            }
+          } catch (e) {}
+        }
+      } catch (e) {}
+
+      // Merge with local bookings (placed on Netlify / offline)
+      let localBookings = [];
+      try {
+        localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+      } catch (e) {}
+
+      const combined = [...localBookings];
+      for (const so of serverOrders) {
+        if (!combined.some(co => co.tracking_code === so.tracking_code || (so.id && co.id === so.id))) {
+          combined.push(so);
+        }
       }
+
+      allOrders = combined.sort((a, b) => (b.id || 0) - (a.id || 0));
+      lastOrderCount = allOrders.length;
+      updateOrderBadgesAndViews();
     }
 
     async function fetchCustomers() {

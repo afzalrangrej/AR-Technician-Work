@@ -221,6 +221,89 @@ app.post('/api/user/signup', async (req, res) => {
 });
 
 // ==========================================
+// CUSTOMER BOOKINGS & ORDERS APIS
+// ==========================================
+
+app.post('/api/bookings', async (req, res) => {
+  try {
+    const adminStatusRow = await dbHelper.get(
+      `SELECT is_online, status_mood FROM admin_status ORDER BY id DESC LIMIT 1`
+    );
+    const isOnline = adminStatusRow ? (adminStatusRow.is_online === 1 || adminStatusRow.status_mood === 'ON') : true;
+    if (!isOnline) {
+      return res.status(403).json({
+        success: false,
+        is_offline: true,
+        error: 'Admin is currently offline. Repair booking requests are temporarily paused.'
+      });
+    }
+
+    const {
+      name,
+      phone,
+      email,
+      address,
+      zipCode,
+      deviceCategory,
+      deviceName,
+      serviceType,
+      issueDescription,
+      priceEstimate
+    } = req.body;
+
+    if (!name || !phone) {
+      return res.status(400).json({ error: 'Customer Name and Phone number are required.' });
+    }
+
+    let customer = await dbHelper.get(
+      `SELECT * FROM customers WHERE phone = ? LIMIT 1`,
+      [phone.trim()]
+    );
+
+    let customerId = customer ? customer.id : null;
+    if (!customerId) {
+      const custResult = await dbHelper.run(
+        `INSERT INTO customers (name, email, phone, address, zip_code) VALUES (?, ?, ?, ?, ?)`,
+        [name.trim(), email ? email.trim() : null, phone.trim(), address ? address.trim() : null, zipCode ? zipCode.trim() : null]
+      );
+      customerId = custResult.lastID;
+    }
+
+    const prefix = (serviceType || 'home').toUpperCase() === 'SHOP' ? 'SHOP' : 'HOME';
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const trackingCode = `${prefix}-${randomNum}`;
+    const estPrice = parseFloat(priceEstimate) || (prefix === 'HOME' ? 85.00 : 65.00);
+
+    const orderResult = await dbHelper.run(
+      `INSERT INTO repair_orders (tracking_code, customer_id, device_category, device_name, service_type, issue_description, price_estimate, status, assigned_tech, notes)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      [
+        trackingCode,
+        customerId,
+        deviceCategory || 'General Electronics',
+        deviceName || 'Electronic Device',
+        serviceType || 'home',
+        issueDescription || 'Repair inspection requested',
+        estPrice,
+        'Booked',
+        'Unassigned',
+        'New customer booking logged in database.'
+      ]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: 'Booking stored successfully in database!',
+      trackingCode: trackingCode,
+      orderId: orderResult.lastID,
+      customerId: customerId
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Database error storing booking record.' });
+  }
+});
+
+// ==========================================
 // PROTECTED DATA APIS
 // ==========================================
 
