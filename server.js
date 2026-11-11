@@ -1116,7 +1116,8 @@ app.patch('/admin-api/orders/:id', requireAuth, async (req, res) => {
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update.' });
     updates.push('updated_at = CURRENT_TIMESTAMP');
     params.push(req.params.id);
-    await dbDriver.run(`UPDATE repair_orders SET ${updates.join(', ')} WHERE id = ?`, params);
+    params.push(req.params.id);
+    await dbDriver.run(`UPDATE repair_orders SET ${updates.join(', ')} WHERE id = ? OR UPPER(tracking_code) = UPPER(?)`, params);
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: 'Update failed.' }); }
 });
@@ -1124,7 +1125,7 @@ app.patch('/admin-api/orders/:id', requireAuth, async (req, res) => {
 // Delete order (protected)
 app.delete('/admin-api/orders/:id', requireAuth, async (req, res) => {
   try {
-    await dbDriver.run(`DELETE FROM repair_orders WHERE id = ?`, [req.params.id]);
+    await dbDriver.run(`DELETE FROM repair_orders WHERE id = ? OR UPPER(tracking_code) = UPPER(?)`, [req.params.id, req.params.id]);
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: 'Delete failed.' }); }
 });

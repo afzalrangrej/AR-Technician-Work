@@ -6129,6 +6129,33 @@ function initAdminLiveStatusWatcher() {
     if (e.key === 'ar_admin_mood' || e.key === 'electro_admin_mood') {
       checkAdminLiveStatus();
     }
+    if (e.key === 'ar_local_bookings' || e.key === 'ar_customer_user' || !e.key) {
+      if (typeof window.syncCustomerCodeVisibility === 'function') {
+        window.syncCustomerCodeVisibility();
+      }
+      const trackInput = document.getElementById('track-input');
+      const trackModal = document.getElementById('tracking-modal');
+      if (trackInput && trackInput.value && trackModal && trackModal.classList.contains('active')) {
+        const trackForm = document.getElementById('track-form');
+        if (trackForm) {
+          trackForm.dispatchEvent(new Event('submit'));
+        }
+      }
+    }
+  });
+
+  window.addEventListener('ar:order_updated', () => {
+    if (typeof window.syncCustomerCodeVisibility === 'function') {
+      window.syncCustomerCodeVisibility();
+    }
+    const trackInput = document.getElementById('track-input');
+    const trackModal = document.getElementById('tracking-modal');
+    if (trackInput && trackInput.value && trackModal && trackModal.classList.contains('active')) {
+      const trackForm = document.getElementById('track-form');
+      if (trackForm) {
+        trackForm.dispatchEvent(new Event('submit'));
+      }
+    }
   });
 }
 
