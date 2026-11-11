@@ -5162,30 +5162,43 @@ async function initLiveBroadcast() {
   const banner = document.getElementById('live-broadcast-banner');
   if (!banner) return;
 
+  let activeAnnouncement = null;
   try {
-    const res = await fetch('/api/announcements');
-    const data = await res.json();
-    if (data.success && data.announcement && data.announcement.is_active) {
-      const a = data.announcement;
-      const gradClass = a.bg_gradient ? `ribbon-${a.bg_gradient}` : 'ribbon-cyan';
-      
-      banner.className = `live-broadcast-bar ${gradClass}`;
-      banner.innerHTML = `
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center;">
-          <span class="live-pulse-dot"></span>
-          <span class="broadcast-badge">${escapeHtml(a.badge_text || 'NOTICE')}</span>
-          <span>${escapeHtml(a.message)}</span>
-        </div>
-        <div style="display:flex; align-items:center; gap:8px;">
-          ${a.link_url ? `<a href="${escapeHtml(a.link_url)}" class="broadcast-btn">${escapeHtml(a.link_text || 'Learn More')} →</a>` : ''}
-          <button type="button" class="broadcast-close" onclick="dismissBroadcast()" aria-label="Dismiss announcement">&times;</button>
-        </div>
-      `;
-      banner.classList.remove('hidden');
-    } else {
-      banner.classList.add('hidden');
+    const res = await safeApiFetch('/api/announcements');
+    const data = res.data;
+    if (data && data.success && data.announcement && data.announcement.is_active) {
+      activeAnnouncement = data.announcement;
     }
-  } catch (e) {
+  } catch (e) {}
+
+  // Fallback to localStorage if offline or running on Netlify
+  if (!activeAnnouncement) {
+    try {
+      const local = JSON.parse(localStorage.getItem('ar_site_broadcast') || 'null');
+      if (local && local.is_active) {
+        activeAnnouncement = local;
+      }
+    } catch (e) {}
+  }
+
+  if (activeAnnouncement && activeAnnouncement.is_active) {
+    const a = activeAnnouncement;
+    const gradClass = a.bg_gradient ? `ribbon-${a.bg_gradient}` : 'ribbon-cyan';
+    
+    banner.className = `live-broadcast-bar ${gradClass}`;
+    banner.innerHTML = `
+      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center;">
+        <span class="live-pulse-dot"></span>
+        <span class="broadcast-badge">${escapeHtml(a.badge_text || 'NOTICE')}</span>
+        <span>${escapeHtml(a.message)}</span>
+      </div>
+      <div style="display:flex; align-items:center; gap:8px;">
+        ${a.link_url ? `<a href="${escapeHtml(a.link_url)}" class="broadcast-btn">${escapeHtml(a.link_text || 'Learn More')} →</a>` : ''}
+        <button type="button" class="broadcast-close" onclick="dismissBroadcast()" aria-label="Dismiss announcement">&times;</button>
+      </div>
+    `;
+    banner.classList.remove('hidden');
+  } else {
     banner.classList.add('hidden');
   }
 }
@@ -5210,14 +5223,45 @@ async function fetchUserNotices() {
   const container = document.getElementById('user-notices-feed');
   if (!container) return;
 
+  let serverNotices = [];
   try {
-    const res = await fetch('/api/notices');
-    const data = await res.json();
-    if (data.success && Array.isArray(data.notices)) {
-      renderUserNotices(data.notices);
+    const res = await safeApiFetch('/api/notices');
+    const data = res.data;
+    if (data && data.success && Array.isArray(data.notices)) {
+      serverNotices = data.notices;
     }
   } catch (err) {
     console.warn('[Notice Board] Offline or loading error:', err);
+  }
+
+  // Merge with localStorage notices (synced from Admin Portal when running on Netlify / offline)
+  let localNotices = [];
+  try {
+    localNotices = JSON.parse(localStorage.getItem('ar_admin_notices') || '[]');
+  } catch (e) {}
+
+  const combined = [...localNotices];
+  for (const sn of serverNotices) {
+    if (!combined.some(cn => String(cn.id) === String(sn.id) || (cn.message && cn.message.trim() === sn.message.trim()))) {
+      combined.push(sn);
+    }
+  }
+
+  if (combined.length > 0) {
+    renderUserNotices(combined);
+  } else {
+    // Default active notice if empty
+    renderUserNotices([
+      {
+        id: 1,
+        author_name: 'Afzal (Lead Electrical Specialist & Admin)',
+        category: '📢 Workshop Notice',
+        message: 'Welcome to AR Technician Work! Doorstep repair visits are available today across Kosamba, Mangrol & Surat. For quick bookings or emergency queries, reach out directly or book via website.',
+        priority: 'normal',
+        is_active: 1,
+        created_at: 'Active'
+      }
+    ]);
   }
 }
 

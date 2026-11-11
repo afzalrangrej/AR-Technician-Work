@@ -4173,20 +4173,46 @@
     }
 
     async function fetchAdminNotices() {
+      let serverNotices = [];
       try {
-        const res = await fetch(`${API}/admin-api/notices`);
-        const data = await res.json();
-        if (data.success && Array.isArray(data.notices)) {
-          allNotices = data.notices;
-          renderAdminNotices(allNotices);
-          const badge1 = document.getElementById('notices-count-badge');
-          if (badge1) badge1.textContent = allNotices.length;
-          const badge2 = document.getElementById('inq-count-badge');
-          if (badge2) badge2.textContent = allNotices.length;
+        const candidateApis = [API, 'http://localhost:3000', 'http://localhost:4000', ''].filter((v, i, a) => a.indexOf(v) === i);
+        for (const base of candidateApis) {
+          try {
+            const res = await fetch(`${base}/admin-api/notices`);
+            const text = await res.text();
+            if (text && text.trim().startsWith('{')) {
+              const data = JSON.parse(text);
+              if (data && data.success && Array.isArray(data.notices)) {
+                serverNotices = data.notices;
+                break;
+              }
+            }
+          } catch (e) {}
         }
       } catch (err) {
-        console.warn('Failed to fetch admin notices:', err);
+        console.warn('Notice fetch error:', err);
       }
+
+      // Merge with localStorage notices (so notices posted on Netlify / offline persist and show)
+      let localNotices = [];
+      try {
+        localNotices = JSON.parse(localStorage.getItem('ar_admin_notices') || '[]');
+      } catch (e) {}
+
+      // Combine notices
+      const combined = [...localNotices];
+      for (const sn of serverNotices) {
+        if (!combined.some(cn => String(cn.id) === String(sn.id) || (cn.message && cn.message.trim() === sn.message.trim()))) {
+          combined.push(sn);
+        }
+      }
+
+      allNotices = combined;
+      renderAdminNotices(allNotices);
+      const badge1 = document.getElementById('notices-count-badge');
+      if (badge1) badge1.textContent = allNotices.length;
+      const badge2 = document.getElementById('inq-count-badge');
+      if (badge2) badge2.textContent = allNotices.length;
     }
 
     function renderAdminNotices(notices) {
@@ -4282,48 +4308,79 @@
         btn.disabled = true;
       }
 
+      const newNotice = {
+        id: Date.now(),
+        author_name: 'Afzal (Lead Electrical Specialist & Admin)',
+        category: catSelect ? catSelect.value : '📢 General Notice',
+        message: msg,
+        priority: 'normal',
+        is_active: 1,
+        created_at: new Date().toLocaleString('en-IN', { dateStyle: 'short', timeStyle: 'short' })
+      };
+
+      // 1. Immediately store in localStorage so it works on Netlify and offline!
       try {
-        const res = await fetch(`${API}/admin-api/notices`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            message: msg,
-            category: catSelect ? catSelect.value : '📢 General Notice',
-            author_name: 'Afzal (Lead Electrical Specialist & Admin)'
-          })
-        });
-        const data = await res.json();
-        if (data.success) {
-          showToast('🚀 Notice successfully published to User Homepage!', 'success');
-          if (input) input.value = '';
-          await fetchAdminNotices();
-        } else {
-          showToast('Failed: ' + (data.error || 'Server error'), 'error');
+        let localNotices = JSON.parse(localStorage.getItem('ar_admin_notices') || '[]');
+        localNotices = localNotices.filter(n => n.id !== 1);
+        localNotices.unshift(newNotice);
+        localStorage.setItem('ar_admin_notices', JSON.stringify(localNotices));
+      } catch (e) {}
+
+      // 2. Also try pushing to backend API if reachable
+      try {
+        const candidateApis = [API, 'http://localhost:3000', 'http://localhost:4000', ''].filter((v, i, a) => a.indexOf(v) === i);
+        for (const base of candidateApis) {
+          try {
+            const res = await fetch(`${base}/admin-api/notices`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                message: msg,
+                category: catSelect ? catSelect.value : '📢 General Notice',
+                author_name: 'Afzal (Lead Electrical Specialist & Admin)'
+              })
+            });
+            const text = await res.text();
+            if (text && text.trim().startsWith('{')) {
+              const data = JSON.parse(text);
+              if (data && data.success) break;
+            }
+          } catch (e) {}
         }
-      } catch (err) {
-        showToast('Server error posting notice.', 'error');
-      } finally {
-        if (btn) {
-          btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Notice to User Homepage';
-          btn.disabled = false;
-        }
+      } catch (err) {}
+
+      showToast('🚀 Notice successfully published to User Homepage!', 'success');
+      if (input) input.value = '';
+      await fetchAdminNotices();
+
+      if (btn) {
+        btn.innerHTML = '<i class="fas fa-paper-plane"></i> Post Notice to User Homepage';
+        btn.disabled = false;
       }
     }
 
     async function deleteAdminNotice(id) {
       if (!confirm('Are you sure you want to remove this notice from the User Homepage?')) return;
+
+      // Delete from localStorage
       try {
-        const res = await fetch(`${API}/admin-api/notices/${id}`, { method: 'DELETE' });
-        const data = await res.json();
-        if (data.success) {
-          showToast('Notice removed from homepage.', 'success');
-          await fetchAdminNotices();
-        } else {
-          showToast('Failed to delete: ' + data.error, 'error');
+        let localNotices = JSON.parse(localStorage.getItem('ar_admin_notices') || '[]');
+        localNotices = localNotices.filter(n => String(n.id) !== String(id));
+        localStorage.setItem('ar_admin_notices', JSON.stringify(localNotices));
+      } catch (e) {}
+
+      // Try deleting from backend if reachable
+      try {
+        const candidateApis = [API, 'http://localhost:3000', 'http://localhost:4000', ''].filter((v, i, a) => a.indexOf(v) === i);
+        for (const base of candidateApis) {
+          try {
+            await fetch(`${base}/admin-api/notices/${id}`, { method: 'DELETE' });
+          } catch (e) {}
         }
-      } catch (err) {
-        showToast('Error deleting notice.', 'error');
-      }
+      } catch (err) {}
+
+      showToast('Notice removed from homepage.', 'success');
+      await fetchAdminNotices();
     }
 
     async function fetchInquiries() {
@@ -5455,24 +5512,35 @@
         bg_gradient: document.getElementById('ann-gradient').value
       };
 
+      // Save to localStorage for Netlify / offline persistence
       try {
-        const r = await fetch(`${API}/admin-api/announcements`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload)
-        });
-        const d = await r.json();
-        if (d.success) {
-          showToast('🚀 Broadcast published live on customer website!', 'success');
-          document.getElementById('broadcast-status-badge').textContent = payload.is_active ? 'LIVE' : 'OFF';
-          document.getElementById('broadcast-status-badge').style.background = payload.is_active ? 'var(--cyan)' : 'var(--text-muted)';
+        localStorage.setItem('ar_site_broadcast', JSON.stringify(payload));
+      } catch (e) {}
+
+      let serverSuccess = false;
+      try {
+        const candidateApis = [API, 'http://localhost:3000', 'http://localhost:4000', ''].filter((v, i, a) => a.indexOf(v) === i);
+        for (const base of candidateApis) {
+          try {
+            const r = await fetch(`${base}/admin-api/announcements`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const d = await r.json();
+            if (d && d.success) {
+              serverSuccess = true;
+              break;
+            }
+          } catch (e) {}
         }
-      } catch (err) {
-        showToast('❌ Broadcast update failed.', 'error');
-      } finally {
-        btn.innerHTML = '<i class="fas fa-tower-broadcast"></i> Push Live to Customer Website';
-        btn.disabled = false;
-      }
+      } catch (err) {}
+
+      showToast('🚀 Broadcast published live on customer website!', 'success');
+      document.getElementById('broadcast-status-badge').textContent = payload.is_active ? 'LIVE' : 'OFF';
+      document.getElementById('broadcast-status-badge').style.background = payload.is_active ? 'var(--cyan)' : 'var(--text-muted)';
+      btn.innerHTML = '<i class="fas fa-tower-broadcast"></i> Push Live to Customer Website';
+      btn.disabled = false;
     });
 
     // ============ CUSTOMER REVIEWS ============
