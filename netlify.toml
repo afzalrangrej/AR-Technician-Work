@@ -1,0 +1,21 @@
+# Netlify Configuration for AR Technician Work
+
+[build]
+  publish = "."
+
+# Disable collaborative deploy previews and Netlify feedback drawer / badge
+[build.environment]
+  NETLIFY_DRAWER = "false"
+  NETLIFY_ENABLE_DRAWER = "false"
+
+[context.production.environment]
+  NETLIFY_DRAWER = "false"
+  NETLIFY_ENABLE_DRAWER = "false"
+
+[context.deploy-preview.environment]
+  NETLIFY_DRAWER = "false"
+  NETLIFY_ENABLE_DRAWER = "false"
+
+[context.branch-deploy.environment]
+  NETLIFY_DRAWER = "false"
+  NETLIFY_ENABLE_DRAWER = "false"

@@ -7271,3 +7271,75 @@ input, select, textarea, button {
     font-size: 0.88rem !important;
   }
 }
+
+/* ==========================================================
+   NETLIFY BADGE / DRAWER SUPPRESSION & SAFE-AREA PROTECTION
+   Ensures the floating Netlify badge, drawer, or third-party
+   widgets NEVER cover buttons, labels, or content on any device.
+   ========================================================== */
+#netlify-badge,
+.netlify-badge,
+netlify-drawer,
+#netlify-feedback-drawer,
+.netlify-feedback-drawer,
+[data-netlify-drawer],
+[class*="netlify-feedback"],
+[id*="netlify-feedback"],
+iframe[src*="netlify"],
+iframe[title*="Netlify" i],
+iframe[id*="netlify" i],
+iframe[class*="netlify" i],
+div[class*="netlify-badge"],
+div[id*="netlify-badge"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  max-width: 0 !important;
+  max-height: 0 !important;
+  clip: rect(0, 0, 0, 0) !important;
+  clip-path: inset(100%) !important;
+  position: fixed !important;
+  bottom: -9999px !important;
+  left: -9999px !important;
+  z-index: -999999 !important;
+}
+
+/* Guarantee bottom buttons & content are never obscured */
+.modal-card {
+  padding-bottom: max(1.75rem, env(safe-area-inset-bottom, 1.75rem)) !important;
+}
+
+.modal-card .booking-actions-group,
+.modal-card .auth-gate-form,
+.modal-card .offline-modal-actions,
+.modal-card .invoice-footer-actions {
+  margin-bottom: 0.5rem !important;
+}
+
+/* Ensure mobile header buttons fit comfortably on narrow screens (<= 420px) */
+@media (max-width: 420px) {
+  .navbar .container,
+  .navbar-container {
+    padding: 0 0.55rem;
+    gap: 0.35rem;
+  }
+  .nav-actions {
+    gap: 0.3rem;
+  }
+  .btn-amber.btn-sm.trigger-booking {
+    padding: 0.38rem 0.55rem;
+    font-size: 0.74rem;
+  }
+  .nav-hacker-btn {
+    width: 34px;
+    height: 34px;
+  }
+  .mobile-toggle {
+    width: 36px;
+    height: 36px;
+    font-size: 1.1rem;
+  }
+}

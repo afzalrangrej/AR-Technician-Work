@@ -2,6 +2,59 @@
    AR TECHNICIAN WORK - INTERACTIVE SCRIPT & I18N
    ========================================================== */
 
+/* Netlify Badge Suppression: Prevents floating Netlify badge or drawer from covering buttons/text */
+(function suppressNetlifyBadge() {
+  function purgeNetlifyElements() {
+    const selectors = [
+      'iframe[src*="netlify"]',
+      'iframe[title*="netlify" i]',
+      'iframe[id*="netlify" i]',
+      'iframe[class*="netlify" i]',
+      '#netlify-badge',
+      '.netlify-badge',
+      'netlify-drawer',
+      '#netlify-feedback-drawer',
+      '.netlify-feedback-drawer',
+      '[data-netlify-drawer]',
+      'div[class*="netlify-badge"]',
+      'div[id*="netlify-badge"]'
+    ];
+    selectors.forEach(sel => {
+      try {
+        const found = document.querySelectorAll(sel);
+        found.forEach(el => {
+          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
+          el.style.setProperty('pointer-events', 'none', 'important');
+          el.style.setProperty('opacity', '0', 'important');
+          el.style.setProperty('position', 'fixed', 'important');
+          el.style.setProperty('bottom', '-9999px', 'important');
+          try { el.remove(); } catch (e) {}
+        });
+      } catch (e) {}
+    });
+  }
+
+  purgeNetlifyElements();
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', purgeNetlifyElements);
+    }
+    if (typeof window !== 'undefined') {
+      window.addEventListener('load', purgeNetlifyElements);
+      setTimeout(purgeNetlifyElements, 300);
+      setTimeout(purgeNetlifyElements, 1000);
+      setTimeout(purgeNetlifyElements, 2500);
+    }
+    if (typeof MutationObserver !== 'undefined' && document.documentElement) {
+      try {
+        const obs = new MutationObserver(purgeNetlifyElements);
+        obs.observe(document.documentElement, { childList: true, subtree: true });
+      } catch (e) {}
+    }
+  }
+})();
+
 const API_BASE = (typeof window !== 'undefined' && (window.location.protocol === 'file:' || (window.location.port && window.location.port !== '3000'))) ? 'http://localhost:3000' : '';
 
 async function safeApiFetch(urlPath, options = {}) {
