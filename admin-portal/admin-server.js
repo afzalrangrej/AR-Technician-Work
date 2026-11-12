@@ -221,6 +221,83 @@ app.post('/api/user/signup', async (req, res) => {
 });
 
 // ==========================================
+// ADMIN ONLINE / OFFLINE MOOD STATUS APIS
+// ==========================================
+app.get('/api/admin/status', async (req, res) => {
+  try {
+    const row = await dbHelper.get(`SELECT is_online, status_mood, status_message, updated_at FROM admin_status ORDER BY id DESC LIMIT 1`);
+    if (row) {
+      const isOnline = row.is_online === 1 || row.status_mood === 'ON';
+      res.json({
+        success: true,
+        is_online: isOnline,
+        status_mood: isOnline ? 'ON' : 'OFF',
+        status_message: row.status_message || (isOnline ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)'),
+        updated_at: row.updated_at
+      });
+    } else {
+      res.json({
+        success: true,
+        is_online: true,
+        status_mood: 'ON',
+        status_message: 'Admin is Online & Available',
+        updated_at: new Date()
+      });
+    }
+  } catch (err) {
+    res.json({ success: true, is_online: true, status_mood: 'ON', status_message: 'Admin is Online & Available' });
+  }
+});
+
+app.get('/admin-api/status', requireAuth, async (req, res) => {
+  try {
+    const row = await dbHelper.get(`SELECT * FROM admin_status ORDER BY id DESC LIMIT 1`);
+    const isOnline = row ? (row.is_online === 1 || row.status_mood === 'ON') : true;
+    res.json({
+      success: true,
+      is_online: isOnline,
+      status_mood: isOnline ? 'ON' : 'OFF',
+      status_message: row ? row.status_message : 'Admin is Online & Available'
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to read admin status' });
+  }
+});
+
+app.post(['/admin-api/status', '/api/admin/status'], requireAuth, async (req, res) => {
+  try {
+    const { is_online, status_mood, status_message } = req.body;
+    const mood = status_mood ? (status_mood.toUpperCase() === 'ON' ? 'ON' : 'OFF') : (is_online ? 'ON' : 'OFF');
+    const isOnlineInt = mood === 'ON' ? 1 : 0;
+    const message = status_message || (mood === 'ON' ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)');
+
+    const existing = await dbHelper.get(`SELECT id FROM admin_status ORDER BY id DESC LIMIT 1`);
+    if (existing) {
+      await dbHelper.run(
+        `UPDATE admin_status SET is_online = ?, status_mood = ?, status_message = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`,
+        [isOnlineInt, mood, message, existing.id]
+      );
+    } else {
+      await dbHelper.run(
+        `INSERT INTO admin_status (is_online, status_mood, status_message) VALUES (?, ?, ?)`,
+        [isOnlineInt, mood, message]
+      );
+    }
+
+    res.json({
+      success: true,
+      is_online: mood === 'ON',
+      status_mood: mood,
+      status_message: message,
+      message: `Admin mood status successfully set to: I am ${mood}`
+    });
+  } catch (err) {
+    console.error('Failed to update admin mood:', err);
+    res.status(500).json({ error: 'Failed to update admin status.' });
+  }
+});
+
+// ==========================================
 // CUSTOMER BOOKINGS & ORDERS APIS
 // ==========================================
 

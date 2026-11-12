@@ -3449,6 +3449,8 @@
 
     let currentAdminMood = 'ON'; // 'ON' or 'OFF'
 
+    const adminMoodBroadcast = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('ar_admin_mood_channel') : null;
+
     async function loadAdminMood() {
       const saved = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood') || 'ON';
       updateAdminMoodUI(saved);
@@ -3488,13 +3490,11 @@
       }
 
       // Broadcast immediately to customer website across all open tabs/windows
-      try {
-        if (typeof BroadcastChannel !== 'undefined') {
-          const bc = new BroadcastChannel('ar_admin_mood_channel');
-          bc.postMessage({ mood: currentAdminMood, is_online: currentAdminMood === 'ON' });
-          bc.close();
-        }
-      } catch (e) { }
+      if (adminMoodBroadcast) {
+        try {
+          adminMoodBroadcast.postMessage({ mood: currentAdminMood, is_online: currentAdminMood === 'ON' });
+        } catch (e) { }
+      }
 
       try {
         window.dispatchEvent(new CustomEvent('ar_admin_mood_change', { detail: { mood: currentAdminMood, is_online: currentAdminMood === 'ON' } }));

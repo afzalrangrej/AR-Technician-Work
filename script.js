@@ -1720,6 +1720,15 @@ window.rateActiveOrder = function () {
 };
 
 window.openNewBookingFromThanks = function () {
+  const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+  if (window.isAdminOnline === false || isMoodOff) {
+    if (typeof window.showAdminOfflineNotice === 'function') {
+      window.showAdminOfflineNotice();
+    } else {
+      showToast('🔴 Admin is currently offline. Repair bookings are paused.', 'warning');
+    }
+    return;
+  }
   const modal = document.getElementById('booking-modal');
   if (modal) modal.classList.add('active');
 };
@@ -4261,6 +4270,13 @@ function initUserLogin() {
           // 6. If user clicked "Book Repair" before signing up, fulfill it immediately!
           if (window._pendingAuthAction === 'booking') {
             window._pendingAuthAction = null;
+            const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+            if (window.isAdminOnline === false || isMoodOff) {
+              if (typeof window.showAdminOfflineNotice === 'function') {
+                window.showAdminOfflineNotice();
+              }
+              return;
+            }
             setTimeout(() => {
               const bookModal = document.getElementById('booking-modal');
               if (bookModal) {
@@ -4648,6 +4664,13 @@ function initUserLogin() {
         // Check if there was a pending action like booking
         if (window._pendingAuthAction === 'booking') {
           window._pendingAuthAction = null;
+          const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+          if (window.isAdminOnline === false || isMoodOff) {
+            if (typeof window.showAdminOfflineNotice === 'function') {
+              window.showAdminOfflineNotice();
+            }
+            return;
+          }
           setTimeout(() => {
             const bookModal = document.getElementById('booking-modal');
             if (bookModal) {
@@ -4970,6 +4993,16 @@ function initUserLogin() {
   // Dashboard New Repair button
   if (dashBookBtn) {
     dashBookBtn.addEventListener('click', () => {
+      const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+      if (window.isAdminOnline === false || isMoodOff) {
+        if (dashModal) dashModal.classList.remove('active');
+        if (typeof window.showAdminOfflineNotice === 'function') {
+          window.showAdminOfflineNotice();
+        } else {
+          showToast('🔴 Admin is currently offline. Repair bookings are paused.', 'warning');
+        }
+        return;
+      }
       if (dashModal) dashModal.classList.remove('active');
       const bookModal = document.getElementById('booking-modal');
       if (bookModal) bookModal.classList.add('active');
@@ -6322,15 +6355,17 @@ function initAdminLiveStatusWatcher() {
     }
 
     // 1. Hero live status indicator pill
-    if (badge && label) {
+    const currentBadge = document.getElementById('admin-status-indicator') || badge;
+    const currentLabel = document.getElementById('admin-status-label') || label;
+    if (currentBadge && currentLabel) {
       if (isOnline) {
-        badge.className = 'admin-status-pill online';
-        label.textContent = 'Admin: Online';
-        badge.title = customMsg || 'Afzal (Admin) is Online • Ready for Home Service & Repairs';
+        currentBadge.className = 'admin-status-pill online';
+        currentLabel.textContent = 'Admin: Online';
+        currentBadge.title = customMsg || 'Afzal (Admin) is Online • Ready for Home Service & Repairs';
       } else {
-        badge.className = 'admin-status-pill offline';
-        label.textContent = 'Admin: Offline';
-        badge.title = customMsg || 'Admin is currently Offline (Away) • Repair bookings are paused';
+        currentBadge.className = 'admin-status-pill offline';
+        currentLabel.textContent = 'Admin: Offline';
+        currentBadge.title = customMsg || 'Admin is currently Offline (Away) • Repair bookings are paused';
       }
     }
 
@@ -6418,16 +6453,27 @@ function initAdminLiveStatusWatcher() {
     try {
       const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const timeoutId = setTimeout(() => controller.abort(), 2000);
       const res = await fetch(apiEndpoint, { signal: controller.signal });
       clearTimeout(timeoutId);
       if (res && res.ok) {
         const data = await res.json();
         if (data && data.success) {
-          isOnline = data.is_online === true || data.status_mood === 'ON';
-          customMsg = data.status_message || (isOnline ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)');
-          localStorage.setItem('ar_admin_mood', isOnline ? 'ON' : 'OFF');
-          localStorage.setItem('electro_admin_mood', isOnline ? 'ON' : 'OFF');
+          const serverIsOnline = (data.is_online === true || data.status_mood === 'ON');
+          // If server reports offline, mark offline
+          if (!serverIsOnline) {
+            isOnline = false;
+            customMsg = data.status_message || 'Admin is currently Offline (Away) • Repair bookings are paused';
+            localStorage.setItem('ar_admin_mood', 'OFF');
+            localStorage.setItem('electro_admin_mood', 'OFF');
+          } else if (localMood === 'OFF') {
+            // Local mood was set to OFF by admin; keep OFF so stale server default does not clobber it
+            isOnline = false;
+            customMsg = 'Admin is currently Offline (Away) • Repair bookings are paused';
+          } else {
+            isOnline = true;
+            customMsg = data.status_message || 'Admin is Online & Available';
+          }
         }
       }
     } catch (e) {
@@ -6439,7 +6485,50 @@ function initAdminLiveStatusWatcher() {
 
   if (badge) {
     badge.addEventListener('click', () => {
-      if (currentOnlineState === false) {
+      // Check if logged-in customer is administrator Afzal
+      let custUser = null;
+      try {
+        const raw = localStorage.getItem('ar_customer_user');
+        custUser = raw ? JSON.parse(raw) : null;
+      } catch (e) { }
+      const rawPhone = custUser ? String(custUser.phone || custUser.identifier || '').replace(/\D/g, '') : '';
+      const isAdminUser = Boolean(
+        sessionStorage.getItem('admin_authenticated') === 'afzal' ||
+        rawPhone === '8485991694' || rawPhone.endsWith('8485991694') ||
+        rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
+      );
+
+      if (isAdminUser) {
+        const currentMood = (window.isAdminOnline === false) ? 'OFF' : 'ON';
+        const targetMood = (currentMood === 'ON') ? 'OFF' : 'ON';
+        const confirmMsg = targetMood === 'OFF'
+          ? '⚙️ Admin Quick Control:\nSwitch live status to "I am OFF"?\n(This will pause repair bookings and show Admin Offline on the website)'
+          : '⚙️ Admin Quick Control:\nSwitch live status to "I am ON"?\n(This will resume repair bookings and show Admin Online on the website)';
+
+        if (confirm(confirmMsg)) {
+          localStorage.setItem('ar_admin_mood', targetMood);
+          localStorage.setItem('electro_admin_mood', targetMood);
+          applyAdminStatus(targetMood === 'ON');
+          try {
+            if (typeof BroadcastChannel !== 'undefined') {
+              const moodChannel = new BroadcastChannel('ar_admin_mood_channel');
+              moodChannel.postMessage({ mood: targetMood, is_online: targetMood === 'ON' });
+            }
+          } catch (e) { }
+          try {
+            const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
+            fetch(apiEndpoint, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ status_mood: targetMood, is_online: targetMood === 'ON' })
+            }).catch(() => {});
+          } catch (e) { }
+          showToast(targetMood === 'ON' ? '🟢 Admin status set to ONLINE!' : '🔴 Admin status set to OFFLINE! Bookings are paused.', targetMood === 'ON' ? 'success' : 'warning');
+          return;
+        }
+      }
+
+      if (window.isAdminOnline === false) {
         window.showAdminOfflineNotice();
       } else {
         showToast('🟢 Admin is Online & Active right now! Ready for fast doorstep repairs.', 'success');

@@ -1428,7 +1428,7 @@ app.get('/admin-api/status', requireAuth, async (req, res) => {
 });
 
 // Admin: Update Online / Offline mood status (protected)
-app.post('/admin-api/status', requireAuth, async (req, res) => {
+app.post(['/admin-api/status', '/api/admin/status'], requireAuth, async (req, res) => {
   try {
     const { is_online, status_mood, status_message } = req.body;
     const mood = status_mood ? (status_mood.toUpperCase() === 'ON' ? 'ON' : 'OFF') : (is_online ? 'ON' : 'OFF');

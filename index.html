@@ -340,6 +340,11 @@
                     if (el) el.className = 'admin-status-pill offline';
                     if (lb) lb.textContent = 'Admin: Offline';
                     document.body.classList.add('admin-offline');
+                    var hb = document.getElementById('hero-book-btn');
+                    if (hb) {
+                      hb.classList.add('btn-offline-paused');
+                      hb.innerHTML = '<i class="fas fa-ban"></i> <span>Admin Offline (Services Paused)</span>';
+                    }
                   }
                 } catch (e) { }
               })();
