@@ -3959,37 +3959,61 @@ body.admin-offline .btn-service-book.trigger-booking {
 @media (max-width: 576px) {
   .navbar .container,
   .navbar-container {
-    padding: 0 0.85rem;
+    padding: 0 0.75rem;
     height: 68px;
-    gap: 0.5rem;
-  }
-  .logo {
-    gap: 0.5rem;
-  }
-  .logo-icon {
-    width: 36px;
-    height: 36px;
-  }
-  .ar-logo-svg {
-    width: 36px;
-    height: 36px;
-  }
-  .logo-text .brand-ar {
-    font-size: 1.35rem;
-  }
-  .logo-text .brand-name {
-    display: none;
-  }
-  .nav-actions {
     gap: 0.45rem;
   }
+  .logo {
+    gap: 0.45rem;
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+  .logo-icon {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+  .ar-logo-svg {
+    width: 34px;
+    height: 34px;
+  }
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1;
+    gap: 1px;
+  }
+  .logo-text .brand-ar {
+    font-size: 1.15rem;
+    line-height: 1;
+    font-weight: 900;
+  }
+  .logo-text .brand-name {
+    display: block !important;
+    font-size: 0.74rem;
+    font-weight: 800;
+    line-height: 1.1;
+    color: #e2e8f0;
+    white-space: nowrap;
+    letter-spacing: 0.2px;
+  }
+  .logo-text .brand-highlight {
+    color: var(--secondary);
+    font-weight: 800;
+  }
+  .nav-actions {
+    gap: 0.35rem;
+  }
   .btn-user-login {
-    padding: 0.4rem 0.65rem;
-    font-size: 0.8rem;
+    padding: 0.38rem 0.6rem;
+    font-size: 0.78rem;
   }
   .btn-amber.btn-sm {
-    padding: 0.4rem 0.75rem;
-    font-size: 0.8rem;
+    padding: 0.38rem 0.65rem;
+    font-size: 0.78rem;
   }
 }
 
@@ -7323,23 +7347,65 @@ div[id*="netlify-badge"] {
 @media (max-width: 420px) {
   .navbar .container,
   .navbar-container {
-    padding: 0 0.55rem;
+    padding: 0 0.5rem;
+    gap: 0.25rem;
+  }
+  .logo {
     gap: 0.35rem;
   }
-  .nav-actions {
-    gap: 0.3rem;
+  .logo-icon {
+    width: 30px;
+    height: 30px;
   }
-  .btn-amber.btn-sm.trigger-booking {
-    padding: 0.38rem 0.55rem;
+  .ar-logo-svg {
+    width: 30px;
+    height: 30px;
+  }
+  .logo-text .brand-ar {
+    font-size: 1.05rem;
+  }
+  .logo-text .brand-name {
+    display: block !important;
+    font-size: 0.68rem;
+    letter-spacing: 0px;
+  }
+  .nav-actions {
+    gap: 0.25rem;
+  }
+  .btn-user-login {
+    padding: 0.32rem 0.5rem;
     font-size: 0.74rem;
   }
+  .btn-amber.btn-sm.trigger-booking {
+    padding: 0.32rem 0.5rem;
+    font-size: 0.74rem;
+  }
+  .btn-amber.btn-sm.trigger-booking span {
+    display: none;
+  }
+  .btn-amber.btn-sm.trigger-booking i {
+    margin: 0;
+    font-size: 0.85rem;
+  }
   .nav-hacker-btn {
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
   }
   .mobile-toggle {
-    width: 36px;
-    height: 36px;
-    font-size: 1.1rem;
+    width: 34px;
+    height: 34px;
+    font-size: 1.05rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .logo-text .brand-ar {
+    font-size: 0.98rem;
+  }
+  .logo-text .brand-name {
+    font-size: 0.62rem;
+  }
+  .btn-user-login span {
+    display: none;
   }
 }
