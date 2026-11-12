@@ -746,7 +746,8 @@ window.requireCustomerLogin = function (reason, actionType = null) {
 document.addEventListener('click', (e) => {
   const bookingTrigger = e.target.closest('.trigger-booking');
   if (bookingTrigger) {
-    if (window.isAdminOnline === false) {
+    const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+    if (window.isAdminOnline === false || isMoodOff) {
       e.preventDefault();
       e.stopPropagation();
       e.stopImmediatePropagation();
@@ -3388,7 +3389,8 @@ function initBookingModal() {
 
   triggers.forEach(t => {
     t.addEventListener('click', (e) => {
-      if (window.isAdminOnline === false) {
+      const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+      if (window.isAdminOnline === false || isMoodOff) {
         e.preventDefault();
         e.stopPropagation();
         if (typeof window.showAdminOfflineNotice === 'function') {
@@ -3431,7 +3433,8 @@ function initBookingModal() {
   if (form) {
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
-      if (window.isAdminOnline === false) {
+      const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+      if (window.isAdminOnline === false || isMoodOff) {
         modal.classList.remove('active');
         if (typeof window.showAdminOfflineNotice === 'function') {
           window.showAdminOfflineNotice();
@@ -6282,23 +6285,11 @@ function initAdminLiveStatusWatcher() {
   let currentOnlineState = null;
   initAdminOfflineModal();
 
-  async function checkAdminLiveStatus() {
-    try {
-      const res = await fetch('/api/admin/status');
-      const data = await res.json();
-      if (data && data.success) {
-        const isOnline = data.is_online === true || data.status_mood === 'ON';
-        applyAdminStatus(isOnline, data.status_message);
-      }
-    } catch (e) { }
-  }
-
   function applyAdminStatus(isOnline, customMsg) {
     window.isAdminOnline = isOnline;
     if (typeof window.syncTrackerOnlineState === 'function') {
       window.syncTrackerOnlineState(isOnline);
     }
-    if (currentOnlineState === isOnline) return;
     currentOnlineState = isOnline;
 
     const offlineBanner = document.getElementById('booking-offline-banner');
@@ -6330,6 +6321,7 @@ function initAdminLiveStatusWatcher() {
       }
     }
 
+    // 1. Hero live status indicator pill
     if (badge && label) {
       if (isOnline) {
         badge.className = 'admin-status-pill online';
@@ -6338,10 +6330,65 @@ function initAdminLiveStatusWatcher() {
       } else {
         badge.className = 'admin-status-pill offline';
         label.textContent = 'Admin: Offline';
-        badge.title = customMsg || 'Admin is currently Offline (Away) • Bookings are paused';
+        badge.title = customMsg || 'Admin is currently Offline (Away) • Repair bookings are paused';
       }
     }
 
+    // 2. Hero main CTA button
+    const heroBtn = document.getElementById('hero-book-btn') || document.querySelector('.hero-cta-group .trigger-booking');
+    if (heroBtn) {
+      if (isOnline) {
+        heroBtn.classList.remove('btn-offline-paused');
+        heroBtn.innerHTML = '<i class="fas fa-calendar-plus"></i> <span data-i18n="hero_btn_book">Request Home Technician</span>';
+        heroBtn.title = 'Request Home Technician';
+      } else {
+        heroBtn.classList.add('btn-offline-paused');
+        heroBtn.innerHTML = '<i class="fas fa-ban"></i> <span>Admin Offline (Services Paused)</span>';
+        heroBtn.title = 'Admin is currently offline. Repair services are paused.';
+      }
+    }
+
+    // 3. Navbar booking button
+    const navBtn = document.getElementById('nav-book-btn') || document.querySelector('header .trigger-booking');
+    if (navBtn) {
+      if (isOnline) {
+        navBtn.classList.remove('btn-offline-paused');
+        navBtn.innerHTML = '<i class="fas fa-screwdriver-wrench"></i> <span data-i18n="nav_book">Book Repair</span>';
+        navBtn.title = 'Book Repair';
+      } else {
+        navBtn.classList.add('btn-offline-paused');
+        navBtn.innerHTML = '<i class="fas fa-ban"></i> <span>Offline (Paused)</span>';
+        navBtn.title = 'Admin is currently offline. Bookings paused.';
+      }
+    }
+
+    // 4. Service cards booking buttons
+    const serviceBtns = document.querySelectorAll('.btn-service-book.trigger-booking');
+    serviceBtns.forEach(btn => {
+      if (isOnline) {
+        btn.classList.remove('btn-offline-paused');
+        btn.innerHTML = '<i class="fas fa-calendar-check"></i> <span data-i18n="srv_card_btn">Book Repair</span>';
+        btn.title = 'Book Repair';
+      } else {
+        btn.classList.add('btn-offline-paused');
+        btn.innerHTML = '<i class="fas fa-ban"></i> <span>Paused (Admin Offline)</span>';
+        btn.title = 'Admin is currently offline. Repair bookings are paused.';
+      }
+    });
+
+    // 5. Location section doorstep button
+    const locBtn = document.querySelector('.address-action-buttons .trigger-booking');
+    if (locBtn) {
+      if (isOnline) {
+        locBtn.classList.remove('btn-offline-paused');
+        locBtn.innerHTML = '<i class="fas fa-calendar-check"></i> <span data-i18n="loc_home_btn">Book Doorstep Visit</span>';
+      } else {
+        locBtn.classList.add('btn-offline-paused');
+        locBtn.innerHTML = '<i class="fas fa-ban"></i> <span>Admin Offline (Visit Paused)</span>';
+      }
+    }
+
+    // 6. Chat label & indicator
     if (chatLabel) {
       if (isOnline) {
         if (chatDot) chatDot.style.background = '#10b981';
@@ -6351,6 +6398,43 @@ function initAdminLiveStatusWatcher() {
         chatLabel.textContent = 'Admin: Offline (Away) • Bookings Paused';
       }
     }
+  }
+
+  async function checkAdminLiveStatus() {
+    let isOnline = true;
+    let customMsg = '';
+
+    // Step 1: Read localStorage first (works offline, on Netlify, and across tabs)
+    const localMood = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood');
+    if (localMood === 'OFF') {
+      isOnline = false;
+      customMsg = 'Admin is currently Offline (Away) • Repair bookings are paused';
+    } else {
+      isOnline = true;
+      customMsg = 'Admin is Online & Available';
+    }
+
+    // Step 2: Also query live backend API if server is running
+    try {
+      const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 2500);
+      const res = await fetch(apiEndpoint, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (res && res.ok) {
+        const data = await res.json();
+        if (data && data.success) {
+          isOnline = data.is_online === true || data.status_mood === 'ON';
+          customMsg = data.status_message || (isOnline ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)');
+          localStorage.setItem('ar_admin_mood', isOnline ? 'ON' : 'OFF');
+          localStorage.setItem('electro_admin_mood', isOnline ? 'ON' : 'OFF');
+        }
+      }
+    } catch (e) {
+      // Backend not reached; localMood holds
+    }
+
+    applyAdminStatus(isOnline, customMsg);
   }
 
   if (badge) {
@@ -6363,11 +6447,35 @@ function initAdminLiveStatusWatcher() {
     });
   }
 
-  // Initial check immediately
+  // 1. Initial immediate synchronous check from localStorage (instant 0ms response, no flicker)
+  const initialSavedMood = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood') || 'ON';
+  applyAdminStatus(initialSavedMood !== 'OFF', initialSavedMood === 'OFF' ? 'Admin is currently Offline (Away) • Repair bookings are paused' : 'Admin is Online');
+
+  // 2. Initial async verification against backend
   checkAdminLiveStatus();
 
-  // Poll every 4 seconds for instant real-time sync with Admin mood switch
-  setInterval(checkAdminLiveStatus, 4000);
+  // 3. Poll every 2.5 seconds for instant real-time sync with Admin mood switch
+  setInterval(checkAdminLiveStatus, 2500);
+
+  // 4. Cross-tab and BroadcastChannel listeners for instant 0-second sync
+  try {
+    if (typeof BroadcastChannel !== 'undefined') {
+      const moodChannel = new BroadcastChannel('ar_admin_mood_channel');
+      moodChannel.onmessage = (e) => {
+        if (e && e.data) {
+          const isOnline = e.data.mood === 'ON' || e.data.is_online === true;
+          applyAdminStatus(isOnline, isOnline ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)');
+        }
+      };
+    }
+  } catch (e) { }
+
+  window.addEventListener('ar_admin_mood_change', (e) => {
+    if (e && e.detail) {
+      const isOnline = e.detail.mood === 'ON' || e.detail.is_online === true;
+      applyAdminStatus(isOnline, isOnline ? 'Admin is Online & Available' : 'Admin is currently Offline (Away)');
+    }
+  });
 
   // Sync when user re-focuses tab or admin toggles mood in another tab
   document.addEventListener('visibilitychange', () => {

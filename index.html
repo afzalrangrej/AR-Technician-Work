@@ -193,7 +193,7 @@
         <button id="user-login-btn" class="btn btn-user-login btn-sm" aria-label="Customer Login">
           <i class="fas fa-user-circle"></i> <span id="user-login-label" data-i18n="nav_login">Login</span>
         </button>
-        <button class="btn btn-amber btn-sm trigger-booking">
+        <button class="btn btn-amber btn-sm trigger-booking" id="nav-book-btn">
           <i class="fas fa-screwdriver-wrench"></i> <span data-i18n="nav_book">Book Repair</span>
         </button>
         <button id="admin-btn" class="nav-hacker-btn" title="Admin Portal" aria-label="Admin Portal">
@@ -314,7 +314,7 @@
           </div>
 
           <div class="hero-cta-group">
-            <button class="btn btn-amber btn-lg trigger-booking">
+            <button class="btn btn-amber btn-lg trigger-booking" id="hero-book-btn">
               <i class="fas fa-calendar-plus"></i> <span data-i18n="hero_btn_book">Request Home Technician</span>
             </button>
             <a href="#location" class="btn btn-secondary btn-lg">
@@ -330,6 +330,20 @@
               <span class="status-dot"></span>
               <span id="admin-status-label" class="status-label">Admin: Online</span>
             </div>
+            <script>
+              (function () {
+                try {
+                  var m = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood');
+                  if (m === 'OFF') {
+                    var el = document.getElementById('admin-status-indicator');
+                    var lb = document.getElementById('admin-status-label');
+                    if (el) el.className = 'admin-status-pill offline';
+                    if (lb) lb.textContent = 'Admin: Offline';
+                    document.body.classList.add('admin-offline');
+                  }
+                } catch (e) { }
+              })();
+            </script>
 
             <!-- "My code" Section (Visible only when user is logged in with active booking) -->
             <div id="user-code-pill" class="user-code-pill" title="Click to copy your tracking code" role="button"

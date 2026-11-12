@@ -601,16 +601,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .admin-status-pill.offline {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1.5px solid rgba(239, 68, 68, 0.4);
+  background: rgba(239, 68, 68, 0.16);
+  border: 1.5px solid rgba(239, 68, 68, 0.55);
   color: #fca5a5;
-  box-shadow: 0 0 10px rgba(239, 68, 68, 0.15);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.25);
 }
 
 .admin-status-pill.offline:hover {
-  background: rgba(239, 68, 68, 0.22);
+  background: rgba(239, 68, 68, 0.26);
   border-color: #ef4444;
-  box-shadow: 0 0 16px rgba(239, 68, 68, 0.28);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.38);
 }
 
 .admin-status-pill .status-dot {
@@ -629,13 +629,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .admin-status-pill.offline .status-dot {
   background: #ef4444;
-  box-shadow: 0 0 4px #ef4444;
+  box-shadow: 0 0 8px #ef4444;
+  animation: adminOfflinePulse 1.8s infinite;
 }
 
 @keyframes adminOnlinePulse {
   0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
   70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
   100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+@keyframes adminOfflinePulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.75); }
+  70% { transform: scale(1.15); box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
 }
 
 /* ========================================================
@@ -3241,9 +3248,24 @@ body:not(.user-logged-in) #tracker-real-booking-section {
 }
 
 body.admin-offline .btn.trigger-booking,
-body.admin-offline .btn-service-book.trigger-booking {
-  cursor: not-allowed;
+body.admin-offline .btn-service-book.trigger-booking,
+body.admin-offline .btn-offline-paused {
+  cursor: not-allowed !important;
   filter: saturate(0.85);
+  border-color: rgba(239, 68, 68, 0.45) !important;
+  color: #fca5a5 !important;
+}
+
+body.admin-offline .hero-cta-group .btn.trigger-booking {
+  background: linear-gradient(135deg, #b91c1c 0%, #7f1d1d 100%) !important;
+  border-color: rgba(239, 68, 68, 0.65) !important;
+  color: #fee2e2 !important;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.35) !important;
+}
+
+body.admin-offline .btn.trigger-booking:hover,
+body.admin-offline .btn-service-book.trigger-booking:hover {
+  transform: none !important;
 }
 
 .form-control {

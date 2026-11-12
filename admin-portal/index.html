@@ -3450,21 +3450,24 @@
     let currentAdminMood = 'ON'; // 'ON' or 'OFF'
 
     async function loadAdminMood() {
+      const saved = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood') || 'ON';
+      updateAdminMoodUI(saved);
       try {
         const r = await fetch(`${API}/admin-api/status`);
-        const d = await r.json();
-        if (d && d.success) {
-          updateAdminMoodUI(d.status_mood || (d.is_online ? 'ON' : 'OFF'));
+        if (r && r.ok) {
+          const d = await r.json();
+          if (d && d.success) {
+            updateAdminMoodUI(d.status_mood || (d.is_online ? 'ON' : 'OFF'));
+          }
         }
       } catch (e) {
-        const saved = localStorage.getItem('ar_admin_mood') || 'ON';
-        updateAdminMoodUI(saved);
       }
     }
 
     function updateAdminMoodUI(mood) {
       currentAdminMood = (mood === 'OFF') ? 'OFF' : 'ON';
       localStorage.setItem('ar_admin_mood', currentAdminMood);
+      localStorage.setItem('electro_admin_mood', currentAdminMood);
       const btn = document.getElementById('btn-admin-mood');
       const label = document.getElementById('admin-mood-label');
       
@@ -3480,9 +3483,22 @@
         if (btn) {
           btn.className = 'btn-mood-toggle mood-off';
           if (label) label.textContent = 'I am OFF (Location OFF)';
-          btn.title = 'You are OFF • Location is OFF. Customer live tracking is paused until you turn ON.';
+          btn.title = 'You are OFF • Location is OFF. Customer repair service and live tracking are paused until you turn ON.';
         }
       }
+
+      // Broadcast immediately to customer website across all open tabs/windows
+      try {
+        if (typeof BroadcastChannel !== 'undefined') {
+          const bc = new BroadcastChannel('ar_admin_mood_channel');
+          bc.postMessage({ mood: currentAdminMood, is_online: currentAdminMood === 'ON' });
+          bc.close();
+        }
+      } catch (e) { }
+
+      try {
+        window.dispatchEvent(new CustomEvent('ar_admin_mood_change', { detail: { mood: currentAdminMood, is_online: currentAdminMood === 'ON' } }));
+      } catch (e) { }
     }
 
     // ============ RED MOUSE CLICK EFFECT & SOUND ============
@@ -3689,7 +3705,7 @@
         playAlertChime();
         showToast('🟢 "I am ON": Location is ON! Customers can track live location when departed from shop.', 'success');
       } else {
-        showToast('🔴 "I am OFF": Location is OFF! Customer live tracking is paused until you turn "I am ON".', 'warning');
+        showToast('🔴 "I am OFF": Location is OFF! Customer repair bookings and live tracking are paused until you turn "I am ON".', 'warning');
       }
 
       try {
