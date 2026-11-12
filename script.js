@@ -6435,6 +6435,9 @@ function initAdminLiveStatusWatcher() {
     }
   }
 
+  const CLOUD_SYNC_GET_URL = 'https://keyvalue.immanuel.co/api/KeyVal/GetValue/ar_technician_live_status_afzal3282/mood';
+  const CLOUD_SYNC_SET_URL = 'https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/ar_technician_live_status_afzal3282/mood';
+
   async function checkAdminLiveStatus() {
     let isOnline = true;
     let customMsg = '';
@@ -6449,7 +6452,29 @@ function initAdminLiveStatusWatcher() {
       customMsg = 'Admin is Online & Available';
     }
 
-    // Step 2: Also query live backend API if server is running
+    // Step 2: Query Universal Cloud Sync (Cross-device real-time sync across Netlify, mobile, PC)
+    try {
+      const cloudCtrl = new AbortController();
+      const cloudTimer = setTimeout(() => cloudCtrl.abort(), 2000);
+      const cloudRes = await fetch(CLOUD_SYNC_GET_URL, { signal: cloudCtrl.signal });
+      clearTimeout(cloudTimer);
+      if (cloudRes && cloudRes.ok) {
+        const cloudMood = await cloudRes.json();
+        if (cloudMood === 'OFF') {
+          isOnline = false;
+          customMsg = 'Admin is currently Offline (Away) • Repair bookings are paused';
+          localStorage.setItem('ar_admin_mood', 'OFF');
+          localStorage.setItem('electro_admin_mood', 'OFF');
+        } else if (cloudMood === 'ON') {
+          isOnline = true;
+          customMsg = 'Admin is Online & Available';
+          localStorage.setItem('ar_admin_mood', 'ON');
+          localStorage.setItem('electro_admin_mood', 'ON');
+        }
+      }
+    } catch (e) { }
+
+    // Step 3: Also query live backend API if server is running
     try {
       const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
       const controller = new AbortController();
@@ -6483,6 +6508,42 @@ function initAdminLiveStatusWatcher() {
     applyAdminStatus(isOnline, customMsg);
   }
 
+  function broadcastAndSyncAdminMood(targetMood) {
+    localStorage.setItem('ar_admin_mood', targetMood);
+    localStorage.setItem('electro_admin_mood', targetMood);
+    applyAdminStatus(targetMood === 'ON');
+
+    // 1. Cross-device universal cloud sync
+    try {
+      fetch(`${CLOUD_SYNC_SET_URL}/${targetMood}`, { method: 'POST' }).catch(() => {});
+    } catch (e) { }
+
+    // 2. BroadcastChannel for instant same-browser cross-tab sync
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const moodChannel = new BroadcastChannel('ar_admin_mood_channel');
+        moodChannel.postMessage({ mood: targetMood, is_online: targetMood === 'ON' });
+      }
+    } catch (e) { }
+
+    // 3. Custom event
+    try {
+      window.dispatchEvent(new CustomEvent('ar_admin_mood_change', { detail: { mood: targetMood, is_online: targetMood === 'ON' } }));
+    } catch (e) { }
+
+    // 4. Local backend server
+    try {
+      const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
+      fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status_mood: targetMood, is_online: targetMood === 'ON' })
+      }).catch(() => {});
+    } catch (e) { }
+
+    showToast(targetMood === 'ON' ? '🟢 Admin status set to ONLINE across all devices!' : '🔴 Admin status set to OFFLINE across all devices! Repair bookings are paused.', targetMood === 'ON' ? 'success' : 'warning');
+  }
+
   if (badge) {
     badge.addEventListener('click', () => {
       // Check if logged-in customer is administrator Afzal
@@ -6498,32 +6559,29 @@ function initAdminLiveStatusWatcher() {
         rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
       );
 
+      const currentMood = (window.isAdminOnline === false) ? 'OFF' : 'ON';
+      const targetMood = (currentMood === 'ON') ? 'OFF' : 'ON';
+
       if (isAdminUser) {
-        const currentMood = (window.isAdminOnline === false) ? 'OFF' : 'ON';
-        const targetMood = (currentMood === 'ON') ? 'OFF' : 'ON';
         const confirmMsg = targetMood === 'OFF'
-          ? '⚙️ Admin Quick Control:\nSwitch live status to "I am OFF"?\n(This will pause repair bookings and show Admin Offline on the website)'
-          : '⚙️ Admin Quick Control:\nSwitch live status to "I am ON"?\n(This will resume repair bookings and show Admin Online on the website)';
+          ? '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "I am OFF"?\n(This will pause repair bookings and show Admin: Offline across all devices)'
+          : '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "I am ON"?\n(This will resume repair bookings and show Admin: Online across all devices)';
 
         if (confirm(confirmMsg)) {
-          localStorage.setItem('ar_admin_mood', targetMood);
-          localStorage.setItem('electro_admin_mood', targetMood);
-          applyAdminStatus(targetMood === 'ON');
-          try {
-            if (typeof BroadcastChannel !== 'undefined') {
-              const moodChannel = new BroadcastChannel('ar_admin_mood_channel');
-              moodChannel.postMessage({ mood: targetMood, is_online: targetMood === 'ON' });
-            }
-          } catch (e) { }
-          try {
-            const apiEndpoint = (typeof API_BASE !== 'undefined' ? API_BASE : '') + '/api/admin/status';
-            fetch(apiEndpoint, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ status_mood: targetMood, is_online: targetMood === 'ON' })
-            }).catch(() => {});
-          } catch (e) { }
-          showToast(targetMood === 'ON' ? '🟢 Admin status set to ONLINE!' : '🔴 Admin status set to OFFLINE! Bookings are paused.', targetMood === 'ON' ? 'success' : 'warning');
+          broadcastAndSyncAdminMood(targetMood);
+          return;
+        }
+      } else {
+        // Not currently logged in as admin phone: allow Admin PIN verification to switch on any device
+        const promptInput = prompt(
+          `⚙️ Admin Quick Control:\nCurrent Status: ${currentMood === 'ON' ? 'ONLINE (Green)' : 'OFFLINE (Red)'}\n\nEnter Admin PIN (1512) to switch status to "I am ${targetMood}":`
+        );
+        if (promptInput && promptInput.trim() === '1512') {
+          broadcastAndSyncAdminMood(targetMood);
+          return;
+        }
+        if (promptInput !== null && promptInput.trim() !== '') {
+          showToast('❌ Incorrect Admin PIN. Status unchanged.', 'error');
           return;
         }
       }

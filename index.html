@@ -334,7 +334,7 @@
               (function () {
                 try {
                   var m = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood');
-                  if (m === 'OFF') {
+                  function setOfflineUI() {
                     var el = document.getElementById('admin-status-indicator');
                     var lb = document.getElementById('admin-status-label');
                     if (el) el.className = 'admin-status-pill offline';
@@ -346,6 +346,33 @@
                       hb.innerHTML = '<i class="fas fa-ban"></i> <span>Admin Offline (Services Paused)</span>';
                     }
                   }
+                  function setOnlineUI() {
+                    var el = document.getElementById('admin-status-indicator');
+                    var lb = document.getElementById('admin-status-label');
+                    if (el) el.className = 'admin-status-pill online';
+                    if (lb) lb.textContent = 'Admin: Online';
+                    document.body.classList.remove('admin-offline');
+                    var hb = document.getElementById('hero-book-btn');
+                    if (hb && hb.classList.contains('btn-offline-paused')) {
+                      hb.classList.remove('btn-offline-paused');
+                      hb.innerHTML = '<i class="fas fa-calendar-check"></i> <span>Request Home Technician</span>';
+                    }
+                  }
+                  if (m === 'OFF') {
+                    setOfflineUI();
+                  }
+                  // Universal Cloud Sync Pre-fetch (cross-device: mobile, PC, Netlify)
+                  fetch('https://keyvalue.immanuel.co/api/KeyVal/GetValue/ar_technician_live_status_afzal3282/mood')
+                    .then(function(res) { return res.json(); })
+                    .then(function(val) {
+                      if (val === 'OFF') {
+                        try { localStorage.setItem('ar_admin_mood', 'OFF'); localStorage.setItem('electro_admin_mood', 'OFF'); } catch (e) {}
+                        setOfflineUI();
+                      } else if (val === 'ON') {
+                        try { localStorage.setItem('ar_admin_mood', 'ON'); localStorage.setItem('electro_admin_mood', 'ON'); } catch (e) {}
+                        setOnlineUI();
+                      }
+                    }).catch(function(){});
                 } catch (e) { }
               })();
             </script>

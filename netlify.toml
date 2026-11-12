@@ -20,3 +20,14 @@
   NETLIFY_DRAWER = "false"
   NETLIFY_ENABLE_DRAWER = "false"
 
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
+
+[[redirects]]
+  from = "/admin-portal"
+  to = "/admin-portal/index.html"
+  status = 200
+
+

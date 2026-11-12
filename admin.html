@@ -3659,9 +3659,28 @@
 
     const adminMoodBroadcast = (typeof BroadcastChannel !== 'undefined') ? new BroadcastChannel('ar_admin_mood_channel') : null;
 
+    const CLOUD_SYNC_GET_URL = 'https://keyvalue.immanuel.co/api/KeyVal/GetValue/ar_technician_live_status_afzal3282/mood';
+    const CLOUD_SYNC_SET_URL = 'https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/ar_technician_live_status_afzal3282/mood';
+
     async function loadAdminMood() {
       const saved = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood') || 'ON';
       updateAdminMoodUI(saved);
+
+      // Query Universal Cloud Sync (Cross-device sync across Netlify, mobile, PC)
+      try {
+        const cloudCtrl = new AbortController();
+        const cloudTimer = setTimeout(() => cloudCtrl.abort(), 2000);
+        const cloudRes = await fetch(CLOUD_SYNC_GET_URL, { signal: cloudCtrl.signal });
+        clearTimeout(cloudTimer);
+        if (cloudRes && cloudRes.ok) {
+          const cloudMood = await cloudRes.json();
+          if (cloudMood === 'ON' || cloudMood === 'OFF') {
+            updateAdminMoodUI(cloudMood);
+            return;
+          }
+        }
+      } catch (e) { }
+
       try {
         const r = await fetch(`${API}/admin-api/status`);
         if (r && r.ok) {
@@ -3915,6 +3934,11 @@
       } else {
         showToast('🔴 "I am OFF": Location is OFF! Customer repair bookings and live tracking are paused until you turn "I am ON".', 'warning');
       }
+
+      // 1. Universal Cloud Sync: Real-time cross-device sync across Netlify, mobile phones & PC
+      try {
+        fetch(`${CLOUD_SYNC_SET_URL}/${nextMood}`, { method: 'POST' }).catch(() => {});
+      } catch (e) { }
 
       try {
         const res = await fetch(`${API}/admin-api/status`, {

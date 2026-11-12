@@ -284,6 +284,10 @@ app.post(['/admin-api/status', '/api/admin/status'], requireAuth, async (req, re
       );
     }
 
+    try {
+      fetch(`https://keyvalue.immanuel.co/api/KeyVal/UpdateValue/ar_technician_live_status_afzal3282/mood/${mood}`, { method: 'POST' }).catch(() => {});
+    } catch (e) { }
+
     res.json({
       success: true,
       is_online: mood === 'ON',
