@@ -722,24 +722,14 @@ window.requireCustomerLogin = function (reason, actionType = null) {
       const title = alertBanner.querySelector('.compulsory-alert-title span');
       if (title) title.textContent = 'Customer Access';
       const tag = alertBanner.querySelector('.compulsory-tag');
-      if (tag) tag.textContent = '1-TIME LOGIN / SIGNUP';
+      if (tag) tag.textContent = 'CUSTOMER LOGIN';
     }
-
-    // Switch to Login Tab
-    const tabLogin = document.getElementById('tab-btn-login');
-    const tabSignup = document.getElementById('tab-btn-signup');
-    const loginSection = document.getElementById('user-login-section');
-    const signupSection = document.getElementById('user-signup-section');
-    if (tabLogin) tabLogin.classList.add('active');
-    if (tabSignup) tabSignup.classList.remove('active');
-    if (loginSection) loginSection.style.display = 'block';
-    if (signupSection) signupSection.style.display = 'none';
 
     loginModal.classList.add('active');
     const identInput = document.getElementById('user-login-ident');
     if (identInput) setTimeout(() => identInput.focus(), 150);
   }
-  showToast(reason || '🔒 Please log in or sign up once on this device.', 'warning');
+  showToast(reason || '🔒 Please log in with your 10-digit mobile number.', 'warning');
 };
 
 // Capturing phase listener: intercept all booking and tracking actions if not logged in or admin offline
@@ -4025,20 +4015,6 @@ function initUserLogin() {
     }
   });
 
-  // Tab Switching
-  const tabLogin = document.getElementById('tab-btn-login');
-  const tabSignup = document.getElementById('tab-btn-signup');
-  const tabForgot = document.getElementById('tab-btn-forgot');
-  const loginSection = document.getElementById('user-login-section');
-  const signupSection = document.getElementById('user-signup-section');
-  const forgotSection = document.getElementById('user-forgot-section');
-  const linkGotoSignup = document.getElementById('link-goto-signup');
-  const linkGotoLogin = document.getElementById('link-goto-login');
-  const linkGotoForgot = document.getElementById('link-goto-forgot');
-  const linkGotoForgotBottom = document.getElementById('link-goto-forgot-bottom');
-  const linkForgotBack = document.getElementById('link-forgot-back-to-login');
-  const linkForgotSignup = document.getElementById('link-forgot-goto-signup');
-
   // Enforce 10-digit mobile limit and 4-digit PIN limit
   function enforceNumericLimit(element, maxDigits) {
     if (!element) return;
@@ -4057,390 +4033,14 @@ function initUserLogin() {
     });
   }
 
-  // Apply to all mobile inputs (10 digits)
+  // Apply to mobile inputs (10 digits)
   attach10DigitPhoneEnforcer(identInput);
-  attach10DigitPhoneEnforcer(document.getElementById('user-signup-phone'));
-  attach10DigitPhoneEnforcer(document.getElementById('user-forgot-phone'));
   attach10DigitPhoneEnforcer(profilePhoneInput);
   attach10DigitPhoneEnforcer(document.getElementById('book-phone-input'));
 
-  // Apply to all PIN inputs (4 digits)
+  // Apply to PIN inputs (4 digits)
   enforceNumericLimit(pinInput, 4);
-  enforceNumericLimit(document.getElementById('user-signup-pin'), 4);
-  enforceNumericLimit(document.getElementById('user-forgot-new-pin'), 4);
-  enforceNumericLimit(document.getElementById('user-forgot-confirm-pin'), 4);
   enforceNumericLimit(profPinInput, 4);
-
-  function showLoginTab(clearSuccess = true) {
-    if (tabLogin) tabLogin.classList.add('active');
-    if (tabSignup) tabSignup.classList.remove('active');
-    if (tabForgot) tabForgot.classList.remove('active', 'active-forgot');
-    if (loginSection) loginSection.style.display = 'block';
-    if (signupSection) signupSection.style.display = 'none';
-    if (forgotSection) forgotSection.style.display = 'none';
-    if (errorBanner) errorBanner.style.display = 'none';
-    if (clearSuccess && successBanner) successBanner.style.display = 'none';
-    setTimeout(() => { if (identInput) identInput.focus(); }, 100);
-  }
-
-  function showSignupTab() {
-    if (tabSignup) tabSignup.classList.add('active');
-    if (tabLogin) tabLogin.classList.remove('active');
-    if (tabForgot) tabForgot.classList.remove('active', 'active-forgot');
-    if (loginSection) loginSection.style.display = 'none';
-    if (signupSection) signupSection.style.display = 'block';
-    if (forgotSection) forgotSection.style.display = 'none';
-    const signupError = document.getElementById('user-signup-error');
-    if (signupError) signupError.style.display = 'none';
-    if (successBanner) successBanner.style.display = 'none';
-    const signupName = document.getElementById('user-signup-name');
-    setTimeout(() => { if (signupName) signupName.focus(); }, 100);
-  }
-
-  function showForgotTab() {
-    if (tabForgot) {
-      tabForgot.classList.add('active', 'active-forgot');
-    }
-    if (tabLogin) tabLogin.classList.remove('active');
-    if (tabSignup) tabSignup.classList.remove('active');
-    if (loginSection) loginSection.style.display = 'none';
-    if (signupSection) signupSection.style.display = 'none';
-    if (forgotSection) forgotSection.style.display = 'block';
-    const forgotError = document.getElementById('user-forgot-error');
-    if (forgotError) forgotError.style.display = 'none';
-    const forgotSuccess = document.getElementById('user-forgot-success');
-    if (forgotSuccess) forgotSuccess.style.display = 'none';
-    if (errorBanner) errorBanner.style.display = 'none';
-    if (successBanner) successBanner.style.display = 'none';
-
-    // Auto copy mobile from login input if already typed
-    const forgotPhone = document.getElementById('user-forgot-phone');
-    const forgotNewPin = document.getElementById('user-forgot-new-pin');
-    if (identInput && identInput.value.trim() && forgotPhone && !forgotPhone.value) {
-      forgotPhone.value = identInput.value.trim();
-    }
-    setTimeout(() => {
-      if (forgotPhone && !forgotPhone.value) {
-        forgotPhone.focus();
-      } else if (forgotNewPin) {
-        forgotNewPin.focus();
-      }
-    }, 100);
-  }
-
-  if (tabLogin) tabLogin.addEventListener('click', () => showLoginTab(true));
-  if (tabSignup) tabSignup.addEventListener('click', showSignupTab);
-  if (tabForgot) tabForgot.addEventListener('click', showForgotTab);
-  if (linkGotoSignup) linkGotoSignup.addEventListener('click', (e) => { e.preventDefault(); showSignupTab(); });
-  if (linkGotoLogin) linkGotoLogin.addEventListener('click', (e) => { e.preventDefault(); showLoginTab(true); });
-  if (linkGotoForgot) linkGotoForgot.addEventListener('click', (e) => { e.preventDefault(); showForgotTab(); });
-  if (linkGotoForgotBottom) linkGotoForgotBottom.addEventListener('click', (e) => { e.preventDefault(); showForgotTab(); });
-  if (linkForgotBack) linkForgotBack.addEventListener('click', (e) => { e.preventDefault(); showLoginTab(true); });
-  if (linkForgotSignup) linkForgotSignup.addEventListener('click', (e) => { e.preventDefault(); showSignupTab(); });
-
-  // Toggle Signup PIN visibility
-  const signupTogglePin = document.getElementById('user-signup-toggle-pin');
-  const signupPinInput = document.getElementById('user-signup-pin');
-  const signupPinEye = document.getElementById('user-signup-pin-eye');
-  if (signupTogglePin && signupPinInput && signupPinEye) {
-    signupTogglePin.addEventListener('click', () => {
-      const isPass = signupPinInput.type === 'password';
-      signupPinInput.type = isPass ? 'text' : 'password';
-      signupPinEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
-      signupTogglePin.style.color = isPass ? 'var(--secondary)' : 'var(--text-muted)';
-    });
-  }
-
-  // Handle Signup submission
-  const signupForm = document.getElementById('user-signup-form');
-  const signupName = document.getElementById('user-signup-name');
-  const signupPhone = document.getElementById('user-signup-phone');
-  const signupEmail = document.getElementById('user-signup-email');
-  const signupSubmitBtn = document.getElementById('user-signup-submit');
-  const signupError = document.getElementById('user-signup-error');
-  const signupErrorText = document.getElementById('user-signup-error-text');
-
-  if (signupForm) {
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = signupName ? signupName.value.trim() : '';
-      const phone = signupPhone ? signupPhone.value.replace(/[^0-9]/g, '').trim() : '';
-      const email = signupEmail ? signupEmail.value.trim() : '';
-      const password = signupPinInput ? signupPinInput.value.replace(/[^0-9]/g, '').trim() : '';
-
-      if (!name || !phone) {
-        if (signupError && signupErrorText) {
-          signupError.style.display = 'flex';
-          signupErrorText.textContent = 'Please enter both your Full Name and Mobile Number.';
-        }
-        return;
-      }
-
-      if (phone.length !== 10) {
-        if (signupError && signupErrorText) {
-          signupError.style.display = 'flex';
-          signupErrorText.textContent = 'Mobile phone number must be exactly 10 digits.';
-        }
-        if (signupPhone) signupPhone.focus();
-        return;
-      }
-
-      if (!password || password.length !== 4) {
-        if (signupError && signupErrorText) {
-          signupError.style.display = 'flex';
-          signupErrorText.textContent = 'Secret PIN must be exactly 4 digits (e.g. 1234).';
-        }
-        if (signupPinInput) signupPinInput.focus();
-        return;
-      }
-
-      if (signupSubmitBtn) {
-        signupSubmitBtn.disabled = true;
-        signupSubmitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating Your Account...`;
-      }
-      if (signupError) signupError.style.display = 'none';
-
-      try {
-        let loggedUser = null;
-
-        const result = await safeApiFetch('/api/user/signup', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, phone, email, password })
-        });
-
-        if (result.data && result.data.success && result.data.customer) {
-          loggedUser = result.data.customer;
-          loggedUser.orders = result.data.orders || [];
-        } else if (result.data && result.data.error) {
-          throw new Error(result.data.error);
-        } else {
-          // Local fallback registration
-          loggedUser = {
-            id: Date.now(),
-            name: name,
-            phone: phone,
-            email: email,
-            address: 'Kosamba, Surat',
-            orders: []
-          };
-        }
-
-        if (loggedUser) {
-          // 1. Reset signup form
-          signupForm.reset();
-
-          // 2. Auto-login immediately upon registration (No login tension!)
-          setCurrentUser(loggedUser);
-
-          // 3. Dismiss login/signup modal completely
-          dismissLoginModal();
-          if (dashModal) dashModal.classList.remove('active');
-
-          // Check if current URL is outside the home page
-          const isNotHome = (
-            window.location.pathname !== '/' &&
-            !window.location.pathname.endsWith('/index.html') &&
-            !window.location.pathname.endsWith('index.html')
-          );
-
-          if (isNotHome) {
-            showToast(`🎉 Welcome, ${loggedUser.name}! Account created. Redirecting to home page...`, 'success');
-            setTimeout(() => {
-              window.location.href = '/';
-            }, 350);
-            return;
-          }
-
-          // 4. Remove lingering hash from address bar and redirect/scroll to home hero section
-          try {
-            history.replaceState(null, '', window.location.pathname);
-          } catch (e) {}
-
-          const heroSec = document.getElementById('hero') || document.querySelector('header');
-          if (heroSec) {
-            heroSec.scrollIntoView({ behavior: 'smooth' });
-          } else {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }
-
-          // 5. Show celebratory toast
-          showToast(`🎉 Welcome, ${loggedUser.name}! Account created & you are logged in.`, 'success');
-
-          // 6. If user clicked "Book Repair" before signing up, fulfill it immediately!
-          if (window._pendingAuthAction === 'booking') {
-            window._pendingAuthAction = null;
-            const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
-            if (window.isAdminOnline === false || isMoodOff) {
-              if (typeof window.showAdminOfflineNotice === 'function') {
-                window.showAdminOfflineNotice();
-              }
-              return;
-            }
-            setTimeout(() => {
-              const bookModal = document.getElementById('booking-modal');
-              if (bookModal) {
-                bookModal.classList.add('active');
-                const nameInp = document.getElementById('book-name-input');
-                const phoneInp = document.getElementById('book-phone-input');
-                const addrInp = document.getElementById('book-addr-input');
-                if (nameInp && !nameInp.value) nameInp.value = loggedUser.name || '';
-                if (phoneInp && !phoneInp.value) phoneInp.value = extract10DigitPhone(loggedUser.phone);
-                if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
-              }
-            }, 300);
-          }
-        }
-
-      } catch (err) {
-        if (signupError && signupErrorText) {
-          signupError.style.display = 'flex';
-          signupErrorText.textContent = err.message || 'Failed to create account. Please try again.';
-        }
-      } finally {
-        if (signupSubmitBtn) {
-          signupSubmitBtn.disabled = false;
-          signupSubmitBtn.innerHTML = `<i class="fas fa-user-check"></i> Sign Up & Start Using Website`;
-        }
-      }
-    });
-  }
-
-  // Toggle Forgot PIN visibility
-  const forgotTogglePin = document.getElementById('user-forgot-toggle-pin');
-  const forgotNewPinInput = document.getElementById('user-forgot-new-pin');
-  const forgotPinEye = document.getElementById('user-forgot-pin-eye');
-  if (forgotTogglePin && forgotNewPinInput && forgotPinEye) {
-    forgotTogglePin.addEventListener('click', () => {
-      const isPass = forgotNewPinInput.type === 'password';
-      forgotNewPinInput.type = isPass ? 'text' : 'password';
-      forgotPinEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
-      forgotTogglePin.style.color = isPass ? '#38bdf8' : 'var(--text-muted)';
-    });
-  }
-
-  // Handle Forgot PIN / Password submission
-  const forgotForm = document.getElementById('user-forgot-form');
-  const forgotPhone = document.getElementById('user-forgot-phone');
-  const forgotConfirmPin = document.getElementById('user-forgot-confirm-pin');
-  const forgotSubmitBtn = document.getElementById('user-forgot-submit');
-  const forgotError = document.getElementById('user-forgot-error');
-  const forgotErrorText = document.getElementById('user-forgot-error-text');
-  const forgotSuccess = document.getElementById('user-forgot-success');
-  const forgotSuccessText = document.getElementById('user-forgot-success-text');
-
-  if (forgotForm) {
-    forgotForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const phone = forgotPhone ? forgotPhone.value.replace(/[^0-9]/g, '').trim() : '';
-      const newPin = forgotNewPinInput ? forgotNewPinInput.value.replace(/[^0-9]/g, '').trim() : '';
-      const confirmPin = forgotConfirmPin ? forgotConfirmPin.value.replace(/[^0-9]/g, '').trim() : '';
-
-      if (!phone || phone.length !== 10) {
-        if (forgotError && forgotErrorText) {
-          forgotError.style.display = 'flex';
-          forgotErrorText.textContent = 'Please enter a valid 10-digit registered mobile number.';
-        }
-        if (forgotPhone) forgotPhone.focus();
-        return;
-      }
-
-      if (!newPin || newPin.length !== 4) {
-        if (forgotError && forgotErrorText) {
-          forgotError.style.display = 'flex';
-          forgotErrorText.textContent = 'New Secret PIN must be exactly 4 digits (e.g. 1234).';
-        }
-        if (forgotNewPinInput) forgotNewPinInput.focus();
-        return;
-      }
-
-      if (newPin !== confirmPin) {
-        if (forgotError && forgotErrorText) {
-          forgotError.style.display = 'flex';
-          forgotErrorText.textContent = 'Confirm PIN does not match. Please re-enter identical 4 digits.';
-        }
-        if (forgotConfirmPin) forgotConfirmPin.focus();
-        return;
-      }
-
-      if (forgotSubmitBtn) {
-        forgotSubmitBtn.disabled = true;
-        forgotSubmitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Resetting Secret PIN...`;
-      }
-      if (forgotError) forgotError.style.display = 'none';
-      if (forgotSuccess) forgotSuccess.style.display = 'none';
-
-      try {
-        let loggedUser = null;
-
-        const result = await safeApiFetch('/api/user/forgot-password', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ phone, newPassword: newPin })
-        });
-
-        if (result.data && result.data.success && result.data.customer) {
-          loggedUser = result.data.customer;
-          loggedUser.orders = result.data.orders || [];
-        } else if (result.data && result.data.error) {
-          throw new Error(result.data.error);
-        } else {
-          loggedUser = {
-            id: Date.now(),
-            name: 'Valued Customer',
-            phone: phone,
-            email: '',
-            address: 'Kosamba, Surat',
-            orders: []
-          };
-        }
-
-        if (loggedUser) {
-          // 1. Reset forgot form
-          forgotForm.reset();
-
-          // 2. Redirect to Login Page/Tab
-          showLoginTab(false);
-
-          // 3. Pre-fill login credentials with the reset mobile number and new 4-digit PIN!
-          if (identInput) identInput.value = phone;
-          if (pinInput) pinInput.value = newPin;
-
-          // 4. Show success banner on login form
-          if (successBanner) {
-            successBanner.style.display = 'flex';
-            if (successText) {
-              successText.innerHTML = `<strong>PIN Reset Successfully!</strong> Your new 4-digit PIN has been set for <strong>${escapeHtml(phone)}</strong>. Click <strong>"Login to Customer Account"</strong> below to continue.`;
-            }
-          }
-
-          // 5. Update URL hash to #login
-          try {
-            history.replaceState(null, '', window.location.pathname + '#login');
-          } catch (e) {}
-
-          // 6. Show toast notification
-          showToast(`🎉 PIN updated successfully! Redirected to login page. Please log in with your new PIN.`, 'success');
-
-          // 7. Focus the login submit button
-          setTimeout(() => {
-            if (submitBtn) submitBtn.focus();
-          }, 150);
-        }
-
-      } catch (err) {
-        if (forgotError && forgotErrorText) {
-          forgotError.style.display = 'flex';
-          forgotErrorText.textContent = err.message || 'Failed to reset PIN. Please check your phone number.';
-        }
-      } finally {
-        if (forgotSubmitBtn) {
-          forgotSubmitBtn.disabled = false;
-          forgotSubmitBtn.innerHTML = `<i class="fas fa-check-circle"></i> Reset PIN & Sign In`;
-        }
-      }
-    });
-  }
 
   function openLoginModal(fromCompulsory = false) {
     const user = getCurrentUser();
@@ -4449,7 +4049,6 @@ function initUserLogin() {
       openDashboard(user);
       return;
     }
-    showLoginTab(true);
     if (errorBanner) errorBanner.style.display = 'none';
     if (successBanner) successBanner.style.display = 'none';
     if (!fromCompulsory) {
@@ -4621,7 +4220,31 @@ function initUserLogin() {
               loggedUser = localCust;
               userOrders = loggedUser.orders || [];
             } else {
-              throw new Error('Account not found! Click "Sign Up Free" above to register, or use PIN 1512 for owner access.');
+              // Seamless auto-login: create new customer session for this phone number
+              let matchedName = '';
+              let matchedAddr = '';
+              try {
+                const locals = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+                const found = locals.find(b => {
+                  const bp = String(b.customer_phone || b.phone || '').replace(/\D/g, '');
+                  return bp && (bp === rawId || bp.endsWith(rawId) || rawId.endsWith(bp));
+                });
+                if (found) {
+                  matchedName = found.customer_name || found.name || '';
+                  matchedAddr = found.customer_address || found.address || '';
+                }
+              } catch (e) {}
+
+              const customerName = matchedName || (rawId.length >= 4 ? `Customer (${rawId.slice(-4)})` : 'Valued Customer');
+              loggedUser = {
+                id: Date.now(),
+                name: customerName,
+                phone: '+91 ' + (rawId.slice(-10) || rawId),
+                email: '',
+                address: matchedAddr || 'Kosamba, Surat',
+                orders: []
+              };
+              userOrders = [];
             }
           }
         }
@@ -4640,7 +4263,7 @@ function initUserLogin() {
         );
 
         if (isNotHomePage) {
-          showToast(`🎉 Welcome back, ${loggedUser.name}! Redirecting to home page...`, 'success');
+          showToast(`🎉 Welcome, ${loggedUser.name}! Redirecting to home page...`, 'success');
           setTimeout(() => {
             window.location.href = '/';
           }, 350);
@@ -4659,7 +4282,7 @@ function initUserLogin() {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        showToast(`🎉 Welcome back, ${loggedUser.name}! You are logged in.`, 'success');
+        showToast(`🎉 Welcome, ${loggedUser.name}! You are logged in.`, 'success');
 
         // Check if there was a pending action like booking
         if (window._pendingAuthAction === 'booking') {
@@ -4688,7 +4311,7 @@ function initUserLogin() {
       } catch (err) {
         if (errorBanner) {
           errorBanner.style.display = 'flex';
-          if (errorText) errorText.innerHTML = `${escapeHtml(err.message || 'Login failed.')} <br><div style="display:flex; gap:12px; margin-top:4px; flex-wrap:wrap;"><a href="javascript:void(0)" onclick="document.getElementById('link-goto-forgot').click()" style="color:#38bdf8; font-weight:700; text-decoration:underline;">🔑 Forgot PIN? Reset here</a> • <a href="javascript:void(0)" onclick="document.getElementById('tab-btn-signup').click()" style="color:var(--primary); font-weight:700; text-decoration:underline;">Sign Up Free</a></div>`;
+          if (errorText) errorText.textContent = err.message || 'Login failed. Please check your 10-digit mobile number and PIN.';
         }
       } finally {
         if (submitBtn) {
@@ -5035,26 +4658,19 @@ function initUserLogin() {
     stopGuestTimer();
   }
 
-  // Handle URL hash for direct navigation like #login or #signup
+  // Handle URL hash for direct navigation like #login
   function handleUrlHash() {
     const hash = (window.location.hash || '').toLowerCase();
     const user = getCurrentUser();
     if (user && (hash === '#login' || hash === '#signup' || hash === '#forgot' || hash === '#reset')) {
-      // User is already logged in! Do NOT open login/signup modal; clean hash smoothly.
+      // User is already logged in! Do NOT open login modal; clean hash smoothly.
       try {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       } catch (e) {}
       return;
     }
-    if (hash === '#login') {
+    if (hash === '#login' || hash === '#signup' || hash === '#forgot' || hash === '#reset' || hash === '#recover') {
       openLoginModal();
-      showLoginTab(true);
-    } else if (hash === '#signup') {
-      openLoginModal();
-      showSignupTab();
-    } else if (hash === '#forgot' || hash === '#reset' || hash === '#recover') {
-      openLoginModal();
-      showForgotTab();
     }
   }
 

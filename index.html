@@ -1470,7 +1470,7 @@
     </div>
   </div>
 
-  <!-- User / Customer Authentication & Signup Modal -->
+  <!-- User / Customer Login Modal -->
   <div id="user-login-modal" class="modal-overlay">
     <div class="modal-card"
       style="max-width: 440px; background: #0c121e; border: 1px solid rgba(0, 242, 254, 0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 25px rgba(0, 242, 254, 0.15); border-radius: 20px; position: relative;">
@@ -1481,7 +1481,7 @@
           <i class="fas fa-shield-halved"></i>
           <span>SECURE CUSTOMER ACCESS</span>
         </div>
-        <button type="button" id="user-login-close" class="auth-modal-close-btn" aria-label="Close Login and Signup"
+        <button type="button" id="user-login-close" class="auth-modal-close-btn" aria-label="Close Login"
           title="Close Modal">
           <i class="fas fa-times"></i>
           <span>Close</span>
@@ -1496,29 +1496,15 @@
         <div class="compulsory-alert-body">
           <div class="compulsory-alert-title">
             <span>Customer Access</span>
-            <span class="compulsory-tag">1-TIME LOGIN / SIGNUP</span>
+            <span class="compulsory-tag">CUSTOMER LOGIN</span>
           </div>
           <div class="compulsory-alert-desc">
-            Sign up or log in once to enjoy permanent access to repair bookings, live tracking, and quotes on this
-            device.
+            Log in once to access your repair bookings, live tracking, and quotes on this device.
           </div>
         </div>
       </div>
 
-      <!-- Tab Switcher: Login vs Sign Up vs Forgot PIN -->
-      <div class="user-auth-tabs">
-        <button type="button" id="tab-btn-login" class="user-auth-tab active">
-          <i class="fas fa-right-to-bracket"></i> Login
-        </button>
-        <button type="button" id="tab-btn-signup" class="user-auth-tab">
-          <i class="fas fa-user-plus"></i> Sign Up Free
-        </button>
-        <button type="button" id="tab-btn-forgot" class="user-auth-tab">
-          <i class="fas fa-key"></i> Forgot PIN
-        </button>
-      </div>
-
-      <!-- 1. LOGIN SECTION -->
+      <!-- LOGIN SECTION -->
       <div id="user-login-section">
         <div style="text-align: center; margin-bottom: 1.25rem;">
           <div
@@ -1541,7 +1527,7 @@
         <div id="user-login-success"
           style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
           <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
-          <span id="user-login-success-text">Account created successfully!</span>
+          <span id="user-login-success-text">Login successful!</span>
         </div>
 
         <form id="user-login-form">
@@ -1570,17 +1556,9 @@
           </div>
 
           <div style="margin-bottom: 1rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-              <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); margin: 0;">
-                SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4
-                  Digits)</span>
-              </label>
-              <button type="button" id="link-goto-forgot"
-                style="background: none; border: none; padding: 0; font-size: 0.76rem; color: var(--primary); font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; text-decoration: underline;"
-                title="Forgot your Secret Code / PIN? Click to recover or reset">
-                <i class="fas fa-key" style="font-size: 0.7rem;"></i> Forgot Password?
-              </button>
-            </div>
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
+              SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4 Digits)</span>
+            </label>
             <div style="position: relative;">
               <i class="fas fa-key"
                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
@@ -1612,239 +1590,6 @@
             style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(0, 242, 254, 0.35);">
             <i class="fas fa-arrow-right-to-bracket"></i> Login to Customer Account
           </button>
-
-          <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted); flex-wrap: wrap; gap: 0.5rem;">
-            <span>Don't have an account? <a href="javascript:void(0)" id="link-goto-signup"
-                style="color: var(--primary); font-weight: 700; text-decoration: underline;">Sign Up Free</a></span>
-            <a href="javascript:void(0)" id="link-goto-forgot-bottom"
-              style="color: #38bdf8; font-weight: 600; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
-              <i class="fas fa-unlock-keyhole" style="font-size: 0.72rem;"></i> Forgot PIN?
-            </a>
-          </div>
-        </form>
-      </div>
-
-      <!-- 2. SIGN UP SECTION (FOR CUSTOMERS WITHOUT A CODE) -->
-      <div id="user-signup-section" style="display: none;">
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-          <div
-            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(255, 153, 0, 0.12); border: 2px solid var(--secondary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(255, 153, 0, 0.3);">
-            <i class="fas fa-user-plus"></i>
-          </div>
-          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Customer <span
-              style="color: var(--secondary);">Sign Up</span></h3>
-          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
-            Register once in seconds to get instant access with zero repeated logins!
-          </p>
-        </div>
-
-        <div id="user-signup-error"
-          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
-          <i class="fas fa-circle-exclamation"></i>
-          <span id="user-signup-error-text">Please check your details.</span>
-        </div>
-
-        <form id="user-signup-form">
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              YOUR FULL NAME <span style="color: var(--secondary);">*</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-user"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
-              <input type="text" id="user-signup-name" class="form-control" placeholder="e.g. Pritesh Patel" required
-                style="padding-left: 2.5rem;" autocomplete="name">
-            </div>
-          </div>
-
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
-            </label>
-            <div class="phone-input-wrap">
-              <div class="phone-prefix-badge" aria-hidden="true">
-                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14"
-                  style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);"
-                  aria-hidden="true">
-                  <path fill="#FF9933" d="M0 0h640v160H0z" />
-                  <path fill="#FFFFFF" d="M0 160h640v160H0z" />
-                  <path fill="#128807" d="M0 320h640v160H0z" />
-                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8" />
-                </svg>
-                <span class="phone-prefix-code">+91</span>
-                <span class="phone-prefix-sep"></span>
-              </div>
-              <input type="tel" id="user-signup-phone" class="form-control phone-input-field"
-                placeholder="10-digit Mobile Number" required maxlength="10" minlength="10" inputmode="numeric"
-                pattern="[0-9]{10}" autocomplete="tel">
-            </div>
-          </div>
-
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              EMAIL ADDRESS <span
-                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-envelope"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-              <input type="email" id="user-signup-email" class="form-control" placeholder="e.g. name@example.com"
-                style="padding-left: 2.5rem;" autocomplete="email">
-            </div>
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              CREATE YOUR SECRET CODE / PIN (4 Digits) <span style="color: var(--secondary);">*</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-lock"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
-              <input type="password" id="user-signup-pin" class="form-control" placeholder="Create 4-digit PIN" required
-                maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
-                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
-              <button type="button" id="user-signup-toggle-pin"
-                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
-                title="Toggle PIN visibility">
-                <i class="fas fa-eye" id="user-signup-pin-eye"></i>
-              </button>
-            </div>
-            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Choose a 4-digit
-              numeric code to log in on other devices.</small>
-          </div>
-
-          <!-- Keep me logged in checkbox -->
-          <div
-            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.15rem; font-size: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 0.45rem 0.75rem; border-radius: 8px;">
-            <label
-              style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; margin: 0;">
-              <input type="checkbox" id="user-signup-remember" checked
-                style="accent-color: var(--secondary); width: 16px; height: 16px; cursor: pointer;">
-              <span style="color: #e2e8f0; font-size: 0.78rem; font-weight: 500;">Auto-login & stay logged in</span>
-            </label>
-            <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;"><i class="fas fa-bolt"></i> Instant
-              Access</span>
-          </div>
-
-          <button type="submit" id="user-signup-submit" class="btn btn-amber"
-            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(255, 153, 0, 0.35);">
-            <i class="fas fa-user-check"></i> Sign Up & Start Using Website
-          </button>
-
-          <div style="text-align: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
-            Already have an account & code? <a href="javascript:void(0)" id="link-goto-login"
-              style="color: var(--primary); font-weight: 700; text-decoration: underline;">Login Here</a>
-          </div>
-        </form>
-      </div>
-
-      <!-- 3. FORGOT PASSWORD / PIN RESET SECTION -->
-      <div id="user-forgot-section" style="display: none;">
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-          <div
-            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(56, 189, 248, 0.12); border: 2px solid #38bdf8; display: inline-flex; align-items: center; justify-content: center; font-size: 1.45rem; color: #38bdf8; margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(56, 189, 248, 0.3);">
-            <i class="fas fa-unlock-keyhole"></i>
-          </div>
-          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Reset <span style="color: #38bdf8;">Password /
-              PIN</span></h3>
-          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
-            Recover or set a new secret code for your registered mobile number
-          </p>
-        </div>
-
-        <div id="user-forgot-error"
-          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
-          <i class="fas fa-circle-exclamation"></i>
-          <span id="user-forgot-error-text">Please check your details.</span>
-        </div>
-
-        <div id="user-forgot-success"
-          style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
-          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
-          <span id="user-forgot-success-text">PIN reset successfully!</span>
-        </div>
-
-        <form id="user-forgot-form">
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              REGISTERED MOBILE PHONE (10 Digits) <span style="color: #38bdf8;">*</span>
-            </label>
-            <div class="phone-input-wrap">
-              <div class="phone-prefix-badge" aria-hidden="true">
-                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14"
-                  style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);"
-                  aria-hidden="true">
-                  <path fill="#FF9933" d="M0 0h640v160H0z" />
-                  <path fill="#FFFFFF" d="M0 160h640v160H0z" />
-                  <path fill="#128807" d="M0 320h640v160H0z" />
-                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8" />
-                </svg>
-                <span class="phone-prefix-code">+91</span>
-                <span class="phone-prefix-sep"></span>
-              </div>
-              <input type="tel" id="user-forgot-phone" class="form-control phone-input-field"
-                placeholder="10-digit Mobile Number" required maxlength="10" minlength="10" inputmode="numeric"
-                pattern="[0-9]{10}" autocomplete="tel">
-            </div>
-            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Enter your
-              10-digit registered mobile number.</small>
-          </div>
-
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              NEW SECRET CODE / PIN (4 Digits) <span style="color: #38bdf8;">*</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-lock"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
-              <input type="password" id="user-forgot-new-pin" class="form-control" placeholder="Create new 4-digit PIN"
-                required maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
-                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
-              <button type="button" id="user-forgot-toggle-pin"
-                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
-                title="Toggle PIN visibility">
-                <i class="fas fa-eye" id="user-forgot-pin-eye"></i>
-              </button>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 1rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              CONFIRM NEW PIN (4 Digits) <span style="color: #38bdf8;">*</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-shield-halved"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
-              <input type="password" id="user-forgot-confirm-pin" class="form-control"
-                placeholder="Re-enter new 4-digit PIN" required maxlength="4" minlength="4" inputmode="numeric"
-                pattern="[0-9]{4}" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
-            </div>
-          </div>
-
-          <button type="submit" id="user-forgot-submit" class="btn"
-            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%); color: #fff; border: none; border-radius: 12px; padding: 0.75rem 1rem; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.35); cursor: pointer; transition: all 0.25s ease;">
-            <i class="fas fa-check-circle"></i> Reset PIN & Sign In
-          </button>
-
-          <div
-            style="display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; font-size: 0.8rem; color: var(--text-muted);">
-            <a href="javascript:void(0)" id="link-forgot-back-to-login"
-              style="color: var(--primary); font-weight: 700; text-decoration: underline; display: inline-flex; align-items: center; gap: 4px;">
-              <i class="fas fa-arrow-left"></i> Back to Login
-            </a>
-            <a href="javascript:void(0)" id="link-forgot-goto-signup"
-              style="color: var(--secondary); font-weight: 600; text-decoration: underline;">
-              Sign Up Free
-            </a>
-          </div>
         </form>
       </div>
 
