@@ -298,19 +298,19 @@
                   }
                   // Universal Cloud Sync Pre-fetch (cross-device: mobile, PC, Netlify)
                   fetch('https://keyvalue.immanuel.co/api/KeyVal/GetValue/ar_technician_live_status_afzal3282/mood')
-                    .then(function(res) {
+                    .then(function (res) {
                       if (!res.ok) return null;
                       return res.json();
                     })
-                    .then(function(val) {
+                    .then(function (val) {
                       if (val === 'OFF') {
-                        try { localStorage.setItem('ar_admin_mood', 'OFF'); localStorage.setItem('electro_admin_mood', 'OFF'); } catch (e) {}
+                        try { localStorage.setItem('ar_admin_mood', 'OFF'); localStorage.setItem('electro_admin_mood', 'OFF'); } catch (e) { }
                         setOfflineUI();
                       } else if (val === 'ON') {
-                        try { localStorage.setItem('ar_admin_mood', 'ON'); localStorage.setItem('electro_admin_mood', 'ON'); } catch (e) {}
+                        try { localStorage.setItem('ar_admin_mood', 'ON'); localStorage.setItem('electro_admin_mood', 'ON'); } catch (e) { }
                         setOnlineUI();
                       }
-                    }).catch(function(){});
+                    }).catch(function () { });
                 } catch (e) { }
               })();
             </script>
@@ -1481,8 +1481,10 @@
           </div>
 
           <div style="margin-bottom: 1rem;">
-            <label style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
-              SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4 Digits)</span>
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
+              SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4
+                Digits)</span>
             </label>
             <div style="position: relative;">
               <i class="fas fa-key"
@@ -1557,7 +1559,8 @@
         <i class="fas fa-circle-check" style="color: #10b981; font-size: 1.1rem; flex-shrink: 0;"></i>
         <div>
           <strong style="color:#fff; display:block; margin-bottom:2px;">Logged In & Remembered on this Device</strong>
-          <span style="color: var(--text-muted);">You can open and use this website anytime without any signup or login tension.</span>
+          <span style="color: var(--text-muted);">You can open and use this website anytime without any signup or login
+            tension.</span>
         </div>
       </div>
 
