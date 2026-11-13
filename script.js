@@ -571,14 +571,10 @@ const translations = {
 
 // ==========================================
 // Global Customer Authentication Checkers & Modal Helper
+// (Login, signup & forgot password removed: open instant access for all users)
 // ==========================================
 window.isCustomerLoggedIn = function () {
-  try {
-    const u = localStorage.getItem('ar_customer_user');
-    return !!(u && JSON.parse(u));
-  } catch (e) {
-    return false;
-  }
+  return true;
 };
 
 window.getCurrentCustomerUser = function () {
@@ -591,9 +587,6 @@ window.getCurrentCustomerUser = function () {
 };
 
 window.syncCustomerCodeVisibility = function () {
-  const isLogged = typeof window.isCustomerLoggedIn === 'function' ? window.isCustomerLoggedIn() : false;
-  const user = typeof window.getCurrentCustomerUser === 'function' ? window.getCurrentCustomerUser() : null;
-
   const heroPill = document.getElementById('user-code-pill');
   const heroCodeVal = document.getElementById('user-code-val');
   const pasteBanner = document.getElementById('tracker-paste-info-banner');
@@ -608,58 +601,60 @@ window.syncCustomerCodeVisibility = function () {
   const realStatusEl = document.getElementById('tracker-real-status-badge');
   const realCountEl = document.getElementById('tracker-real-booking-count');
 
-  if (isLogged && user) {
-    let orders = user.orders || [];
-    if (orders.length > 0) {
-      const o = orders[0];
-      const code = (o.tracking_code || '').trim();
+  let code = (localStorage.getItem('last_tracking_code') || '').trim();
+  let latestBooking = null;
 
-      if (code) {
-        if (heroPill) heroPill.style.display = 'inline-flex';
-        if (heroCodeVal) heroCodeVal.textContent = code;
-
-        if (pasteBanner) pasteBanner.style.display = 'flex';
-        if (bannerHighlight) bannerHighlight.textContent = code;
-        if (bannerBtnLabel) bannerBtnLabel.textContent = `Paste ${code}`;
-
-        if (realSection) realSection.style.display = 'block';
-        if (realTrackBtn) realTrackBtn.setAttribute('data-code', code);
-        if (realCodeBadge) realCodeBadge.textContent = `#${code}`;
-        if (realDeviceEl) realDeviceEl.textContent = o.device_name || 'Pressure Cookers & Kitchen Appliances';
-        if (realMetaEl) realMetaEl.textContent = o.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop';
-        if (realStatusEl) realStatusEl.innerHTML = `<span class="status-dot"></span> ${o.status || 'Booked'}`;
-        if (realCountEl) realCountEl.textContent = `${orders.length} ${orders.length === 1 ? 'Booking' : 'Bookings'}`;
-
-        if (trackInput && (!trackInput.value || trackInput.value === 'HOME-7783' || trackInput.value === 'HOME-1234' || trackInput.value === 'HOME-441')) {
-          trackInput.value = code;
-        }
-        return;
+  try {
+    const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+    if (Array.isArray(localBookings) && localBookings.length > 0) {
+      latestBooking = localBookings[0];
+      if (!code && latestBooking.tracking_code) {
+        code = latestBooking.tracking_code.trim();
       }
-    } else if (user.id) {
-      safeApiFetch(`/api/user/orders/${user.id}`)
-        .then(res => {
-          const d = res.data;
-          if (d && d.success && d.orders && d.orders.length > 0) {
-            user.orders = d.orders;
-            try { localStorage.setItem('ar_customer_user', JSON.stringify(user)); } catch (e) {}
-            if (typeof window.syncCustomerCodeVisibility === 'function') {
-              window.syncCustomerCodeVisibility();
-            }
-          }
-        })
-        .catch(() => {});
     }
+  } catch (e) {}
+
+  if (!latestBooking) {
+    try {
+      const u = localStorage.getItem('ar_customer_user');
+      const user = u ? JSON.parse(u) : null;
+      if (user && user.orders && user.orders.length > 0) {
+        latestBooking = user.orders[0];
+        if (!code && latestBooking.tracking_code) {
+          code = latestBooking.tracking_code.trim();
+        }
+      }
+    } catch (e) {}
   }
 
-  // User is logged out OR has no active booking: Hide all code displays and clear input
+  if (code) {
+    if (heroPill) heroPill.style.display = 'inline-flex';
+    if (heroCodeVal) heroCodeVal.textContent = code;
+
+    if (pasteBanner) pasteBanner.style.display = 'flex';
+    if (bannerHighlight) bannerHighlight.textContent = code;
+    if (bannerBtnLabel) bannerBtnLabel.textContent = `Paste ${code}`;
+
+    if (realSection) realSection.style.display = 'block';
+    if (realTrackBtn) realTrackBtn.setAttribute('data-code', code);
+    if (realCodeBadge) realCodeBadge.textContent = `#${code}`;
+    if (realDeviceEl) realDeviceEl.textContent = (latestBooking && (latestBooking.device_name || latestBooking.deviceName)) || 'Home Appliance Service';
+    if (realMetaEl) realMetaEl.textContent = (latestBooking && latestBooking.service_type === 'home') ? '🏡 At-Home Visit' : '🏪 Shop Drop';
+    if (realStatusEl) realStatusEl.innerHTML = `<span class="status-dot"></span> ${(latestBooking && latestBooking.status) || 'Booked'}`;
+    if (realCountEl) realCountEl.textContent = 'Active Booking';
+
+    if (trackInput && (!trackInput.value || trackInput.value === 'HOME-7783' || trackInput.value === 'HOME-1234' || trackInput.value === 'HOME-441')) {
+      trackInput.value = code;
+    }
+    return;
+  }
+
+  // No active booking code: Hide pill and tracker helper cards
   if (heroPill) heroPill.style.display = 'none';
   if (heroCodeVal) heroCodeVal.textContent = '';
   if (pasteBanner) pasteBanner.style.display = 'none';
   if (bannerHighlight) bannerHighlight.textContent = '';
   if (realSection) realSection.style.display = 'none';
-  if (trackInput) {
-    trackInput.value = '';
-  }
 };
 
 // Universal 10-Digit Mobile Phone Sanitizer & Enforcer
@@ -705,34 +700,12 @@ function attach10DigitPhoneEnforcer(element) {
 }
 window.attach10DigitPhoneEnforcer = attach10DigitPhoneEnforcer;
 
-window.requireCustomerLogin = function (reason, actionType = null) {
-  if (window.isCustomerLoggedIn()) {
-    return; // Already logged in, no lock required!
-  }
-  window._pendingAuthAction = actionType || (reason && reason.toLowerCase().includes('book') ? 'booking' : null);
-  const loginModal = document.getElementById('user-login-modal');
-  if (loginModal) {
-    const alertBanner = document.getElementById('user-login-compulsory-alert');
-    if (alertBanner) {
-      alertBanner.style.display = 'flex';
-      const desc = alertBanner.querySelector('.compulsory-alert-desc');
-      if (desc && reason) {
-        desc.textContent = reason;
-      }
-      const title = alertBanner.querySelector('.compulsory-alert-title span');
-      if (title) title.textContent = 'Customer Access';
-      const tag = alertBanner.querySelector('.compulsory-tag');
-      if (tag) tag.textContent = 'CUSTOMER LOGIN';
-    }
-
-    loginModal.classList.add('active');
-    const identInput = document.getElementById('user-login-ident');
-    if (identInput) setTimeout(() => identInput.focus(), 150);
-  }
-  showToast(reason || '🔒 Please log in with your 10-digit mobile number.', 'warning');
+window.requireCustomerLogin = function () {
+  // Authentication removed: all visitors have immediate full access
+  return;
 };
 
-// Capturing phase listener: intercept all booking and tracking actions if not logged in or admin offline
+// Capturing phase listener: intercept booking actions if admin is offline
 document.addEventListener('click', (e) => {
   const bookingTrigger = e.target.closest('.trigger-booking');
   if (bookingTrigger) {
@@ -746,43 +719,6 @@ document.addEventListener('click', (e) => {
       } else {
         showToast('🔴 Admin is currently offline. Repair bookings are paused.', 'warning');
       }
-      return;
-    }
-    if (!window.isCustomerLoggedIn()) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      window.requireCustomerLogin('🔒 Please log in or sign up once to book a repair service.', 'booking');
-      return;
-    }
-  }
-
-  const trackTrigger = e.target.closest('#track-btn, .sample-chip');
-  if (trackTrigger) {
-    if (!window.isCustomerLoggedIn()) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      window.requireCustomerLogin('🔒 Please log in or sign up once to use live technician location tracking.', 'tracking');
-      return;
-    }
-  }
-
-  const trackInput = e.target.closest('#track-input');
-  if (trackInput) {
-    if (!window.isCustomerLoggedIn()) {
-      window.requireCustomerLogin('🔒 Please log in or sign up once to use live technician location tracking.', 'tracking');
-      return;
-    }
-  }
-
-  const zipBtn = e.target.closest('#check-zip-btn');
-  if (zipBtn) {
-    if (!window.isCustomerLoggedIn()) {
-      e.preventDefault();
-      e.stopPropagation();
-      e.stopImmediatePropagation();
-      window.requireCustomerLogin('🔒 Please log in or sign up once to check doorstep technician service in your area.', 'zip');
       return;
     }
   }
@@ -1214,10 +1150,6 @@ function initAreaChecker() {
   if (!btn || !input) return;
 
   btn.addEventListener('click', () => {
-    if (!window.isCustomerLoggedIn()) {
-      window.requireCustomerLogin('🔒 Please log in or sign up once to check doorstep technician service in your area.', 'zip');
-      return;
-    }
     const val = input.value.trim();
     if (!val) {
       const emptyMsg = currentLanguage === 'hi'
@@ -1925,10 +1857,6 @@ function initTracker() {
   if (!btn || !input || !box) return;
 
   async function doTrack(id) {
-    if (!window.isCustomerLoggedIn()) {
-      window.requireCustomerLogin('🔒 Please log in or sign up once to use live technician location tracking.', 'tracking');
-      return;
-    }
     const query = id.trim().toUpperCase();
     if (!query) {
       showToast('Please enter a valid order tracking code', 'warning');
@@ -2927,10 +2855,6 @@ function initTracker() {
   };
 
   btn.addEventListener('click', () => {
-    if (!window.isCustomerLoggedIn()) {
-      window.requireCustomerLogin('🔒 Please log in or sign up once to use live technician location tracking.', 'tracking');
-      return;
-    }
     doTrack(input.value);
   });
 
@@ -3040,10 +2964,6 @@ function initTracker() {
 
   document.querySelectorAll('.sample-chip').forEach(chip => {
     chip.addEventListener('click', () => {
-      if (!window.isCustomerLoggedIn()) {
-        window.requireCustomerLogin('🔒 Please log in or sign up once to use live technician location tracking.', 'tracking');
-        return;
-      }
       input.value = chip.textContent;
       doTrack(chip.textContent);
     });
@@ -3399,12 +3319,6 @@ function initBookingModal() {
         }
         return;
       }
-      if (!window.isCustomerLoggedIn()) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.requireCustomerLogin('🔒 Please log in or sign up once to book a repair service.', 'booking');
-        return;
-      }
       modal.classList.add('active');
       const preset = t.getAttribute('data-service-preset');
       if (preset) {
@@ -3440,11 +3354,6 @@ function initBookingModal() {
         } else {
           showToast('🔴 Admin is currently offline. Repair bookings cannot be placed at this time.', 'warning');
         }
-        return;
-      }
-      if (!window.isCustomerLoggedIn()) {
-        modal.classList.remove('active');
-        window.requireCustomerLogin('🔒 Please log in or sign up once to book a repair service.', 'booking');
         return;
       }
 
@@ -3564,6 +3473,9 @@ function initBookingModal() {
         trackInput.value = trackingCode;
       }
       try { localStorage.setItem('last_tracking_code', trackingCode); } catch (e) {}
+      if (typeof window.syncCustomerCodeVisibility === 'function') {
+        window.syncCustomerCodeVisibility();
+      }
 
       form.reset();
       if (submitBtn) submitBtn.innerHTML = originalText;
@@ -3879,54 +3791,20 @@ function showToast(msg, type = 'success', duration = 2000) {
   }, duration);
 }
 
-/* 5.5 USER / CUSTOMER AUTHENTICATION & DASHBOARD */
+/* 5.5 USER / CUSTOMER AUTHENTICATION & DASHBOARD (REMOVED - CLEAN ACCESS FOR ALL VISITORS) */
 function initUserLogin() {
+  function cleanAuthHashes() {
+    const hash = (window.location.hash || '').toLowerCase();
+    if (hash === '#login' || hash === '#signup' || hash === '#forgot' || hash === '#reset' || hash === '#recover') {
+      try {
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      } catch (e) {}
+    }
+  }
+  cleanAuthHashes();
+  window.addEventListener('hashchange', cleanAuthHashes);
+
   const userBtn = document.getElementById('user-login-btn');
-  const loginModal = document.getElementById('user-login-modal');
-  const loginClose = document.getElementById('user-login-close');
-  const loginForm = document.getElementById('user-login-form');
-  const identInput = document.getElementById('user-login-ident');
-  const pinInput = document.getElementById('user-login-pin');
-  const togglePinBtn = document.getElementById('user-toggle-pin');
-  const pinEye = document.getElementById('user-pin-eye');
-  const errorBanner = document.getElementById('user-login-error');
-  const errorText = document.getElementById('user-login-error-text');
-  const successBanner = document.getElementById('user-login-success');
-  const successText = document.getElementById('user-login-success-text');
-  const submitBtn = document.getElementById('user-login-submit');
-
-  const dashModal = document.getElementById('user-dashboard-modal');
-  const dashClose = document.getElementById('user-dash-close');
-  const dashName = document.getElementById('user-dash-name');
-  const dashPhone = document.getElementById('user-dash-phone');
-  const dashCount = document.getElementById('user-dash-order-count');
-  const dashOrdersList = document.getElementById('user-dash-orders-list');
-  const dashLogoutBtn = document.getElementById('user-dash-logout-btn');
-  const dashBookBtn = document.getElementById('user-dash-book-btn');
-
-  // Customer Profile Tab & Form Elements
-  const tabDashBookings = document.getElementById('tab-dash-bookings');
-  const tabDashProfile = document.getElementById('tab-dash-profile');
-  const dashBookingsView = document.getElementById('user-dash-bookings-view');
-  const dashProfileView = document.getElementById('user-dash-profile-view');
-  const tabDashCount = document.getElementById('user-dash-tab-count');
-  const quickEditBtn = document.getElementById('btn-quick-edit-profile');
-  const linkGotoProfile = document.getElementById('link-goto-profile');
-  const profileCancelBtn = document.getElementById('user-profile-cancel-btn');
-  const profileForm = document.getElementById('user-profile-form');
-  const profileSaveBtn = document.getElementById('user-profile-save-btn');
-  const profileError = document.getElementById('user-profile-error');
-  const profileErrorText = document.getElementById('user-profile-error-text');
-  const profileSuccess = document.getElementById('user-profile-success');
-  const profileSuccessText = document.getElementById('user-profile-success-text');
-  const profTogglePin = document.getElementById('user-profile-toggle-pin');
-  const profPinInput = document.getElementById('user-profile-pin');
-  const profPinEye = document.getElementById('user-profile-pin-eye');
-  const profileNameInput = document.getElementById('user-profile-name');
-  const profilePhoneInput = document.getElementById('user-profile-phone');
-  const profileEmailInput = document.getElementById('user-profile-email');
-  const profileAddrInput = document.getElementById('user-profile-address');
-
   if (!userBtn) return;
 
   let countdownInterval = null;

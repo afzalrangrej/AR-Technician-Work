@@ -648,13 +648,6 @@ h1, h2, h3, h4, h5, h6 {
 /* ========================================================
    USER CODE PILL ("My code: HOME-1234") - HERO SECTION
    ======================================================== */
-/* Hide user code pill, tracking paste banner & real booking card when user is logged out */
-body:not(.user-logged-in) #user-code-pill,
-body:not(.user-logged-in) #tracker-paste-info-banner,
-body:not(.user-logged-in) #tracker-real-booking-section {
-  display: none !important;
-}
-
 .user-code-pill {
   position: relative;
   display: inline-flex;
