@@ -573,22 +573,23 @@ const translations = {
 // Global Customer Authentication Checkers & Modal Helper
 // (Login, signup & forgot password removed: open instant access for all users)
 // ==========================================
+// Purge any stale demo customer sessions or old demo tracking codes
+try {
+  localStorage.removeItem('ar_customer_user');
+  if (localStorage.getItem('last_tracking_code') === 'HOME-8117') {
+    localStorage.removeItem('last_tracking_code');
+  }
+} catch (e) {}
+
 window.isCustomerLoggedIn = function () {
   return true;
 };
 
 window.getCurrentCustomerUser = function () {
-  try {
-    const u = localStorage.getItem('ar_customer_user');
-    return u ? JSON.parse(u) : null;
-  } catch (e) {
-    return null;
-  }
+  return null;
 };
 
 window.syncCustomerCodeVisibility = function () {
-  const heroPill = document.getElementById('user-code-pill');
-  const heroCodeVal = document.getElementById('user-code-val');
   const pasteBanner = document.getElementById('tracker-paste-info-banner');
   const bannerHighlight = document.getElementById('tracker-banner-code-highlight');
   const bannerBtnLabel = document.getElementById('btn-quick-paste-code-label');
@@ -602,35 +603,23 @@ window.syncCustomerCodeVisibility = function () {
   const realCountEl = document.getElementById('tracker-real-booking-count');
 
   let code = (localStorage.getItem('last_tracking_code') || '').trim();
+  if (code === 'HOME-8117') {
+    code = '';
+    try { localStorage.removeItem('last_tracking_code'); } catch (e) {}
+  }
   let latestBooking = null;
 
   try {
     const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
     if (Array.isArray(localBookings) && localBookings.length > 0) {
       latestBooking = localBookings[0];
-      if (!code && latestBooking.tracking_code) {
+      if (!code && latestBooking.tracking_code && latestBooking.tracking_code !== 'HOME-8117') {
         code = latestBooking.tracking_code.trim();
       }
     }
   } catch (e) {}
 
-  if (!latestBooking) {
-    try {
-      const u = localStorage.getItem('ar_customer_user');
-      const user = u ? JSON.parse(u) : null;
-      if (user && user.orders && user.orders.length > 0) {
-        latestBooking = user.orders[0];
-        if (!code && latestBooking.tracking_code) {
-          code = latestBooking.tracking_code.trim();
-        }
-      }
-    } catch (e) {}
-  }
-
-  if (code) {
-    if (heroPill) heroPill.style.display = 'inline-flex';
-    if (heroCodeVal) heroCodeVal.textContent = code;
-
+  if (code && latestBooking) {
     if (pasteBanner) pasteBanner.style.display = 'flex';
     if (bannerHighlight) bannerHighlight.textContent = code;
     if (bannerBtnLabel) bannerBtnLabel.textContent = `Paste ${code}`;
@@ -638,9 +627,9 @@ window.syncCustomerCodeVisibility = function () {
     if (realSection) realSection.style.display = 'block';
     if (realTrackBtn) realTrackBtn.setAttribute('data-code', code);
     if (realCodeBadge) realCodeBadge.textContent = `#${code}`;
-    if (realDeviceEl) realDeviceEl.textContent = (latestBooking && (latestBooking.device_name || latestBooking.deviceName)) || 'Home Appliance Service';
-    if (realMetaEl) realMetaEl.textContent = (latestBooking && latestBooking.service_type === 'home') ? '🏡 At-Home Visit' : '🏪 Shop Drop';
-    if (realStatusEl) realStatusEl.innerHTML = `<span class="status-dot"></span> ${(latestBooking && latestBooking.status) || 'Booked'}`;
+    if (realDeviceEl) realDeviceEl.textContent = latestBooking.device_name || latestBooking.deviceName || 'Home Appliance Service';
+    if (realMetaEl) realMetaEl.textContent = latestBooking.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop';
+    if (realStatusEl) realStatusEl.innerHTML = `<span class="status-dot"></span> ${latestBooking.status || 'Booked'}`;
     if (realCountEl) realCountEl.textContent = 'Active Booking';
 
     if (trackInput && (!trackInput.value || trackInput.value === 'HOME-7783' || trackInput.value === 'HOME-1234' || trackInput.value === 'HOME-441')) {
@@ -649,9 +638,7 @@ window.syncCustomerCodeVisibility = function () {
     return;
   }
 
-  // No active booking code: Hide pill and tracker helper cards
-  if (heroPill) heroPill.style.display = 'none';
-  if (heroCodeVal) heroCodeVal.textContent = '';
+  // No active booking code: Hide tracker helper cards
   if (pasteBanner) pasteBanner.style.display = 'none';
   if (bannerHighlight) bannerHighlight.textContent = '';
   if (realSection) realSection.style.display = 'none';
@@ -742,7 +729,6 @@ document.addEventListener('DOMContentLoaded', () => {
   initCustomerInvoiceAndReviews();
   initAdminLiveStatusWatcher();
   initUserNoticeBoard();
-  initUserCodePill();
 });
 
 /* HERO IMAGE SLIDESHOW (3s/Image Auto Rotation) */
@@ -6072,80 +6058,6 @@ function initAdminLiveStatusWatcher() {
   });
 }
 
-/* ========================================================
-   USER CODE PILL ("My code: HOME-1234") INTERACTIVITY
-   ======================================================== */
-function initUserCodePill() {
-  const pill = document.getElementById('user-code-pill');
-  const codeValEl = document.getElementById('user-code-val');
-  const copyBtn = document.getElementById('user-code-copy-btn');
-  const copyIcon = document.getElementById('user-code-copy-icon');
-  const copyToast = document.getElementById('user-code-copy-toast');
-
-  if (!pill || !codeValEl) return;
-
-  let copiedTimer = null;
-
-  async function copyCode(e) {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-
-    const codeText = (codeValEl.textContent || '').trim();
-    if (!codeText) return;
-
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(codeText);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = codeText;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-    } catch (err) {
-      console.warn('Clipboard copy failed:', err);
-    }
-
-    // Visual feedback
-    pill.classList.add('copied');
-    if (copyIcon) copyIcon.className = 'fas fa-check';
-    if (copyToast) copyToast.textContent = 'Copied!';
-
-    // Automatically paste code into the live tracker input and highlight it
-    const trackInput = document.getElementById('track-input');
-    if (trackInput) {
-      trackInput.value = codeText;
-      trackInput.classList.remove('pasted-highlight');
-      void trackInput.offsetWidth;
-      trackInput.classList.add('pasted-highlight');
-    }
-
-    if (typeof showToast === 'function') {
-      showToast(`📋 Code "${codeText}" copied! Paste into live tracker below to track your electrician.`, 'success', 2600);
-    }
-
-    clearTimeout(copiedTimer);
-    copiedTimer = setTimeout(() => {
-      pill.classList.remove('copied');
-      if (copyIcon) copyIcon.className = 'far fa-copy';
-    }, 2000);
-  }
-
-  pill.addEventListener('click', copyCode);
-  if (copyBtn) {
-    copyBtn.addEventListener('click', copyCode);
-  }
-
-  pill.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      copyCode(e);
-    }
-  });
-}
+/* User code pill interactivity removed */
+function initUserCodePill() {}
 
