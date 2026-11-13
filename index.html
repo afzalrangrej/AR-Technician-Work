@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20261113_v15">
+  <link rel="stylesheet" href="styles.css?v=20261113_v16">
 
   <script type="application/ld+json">
   {
@@ -1395,7 +1395,7 @@
     </div>
   </div>
 
-  <!-- User / Customer Login Modal -->
+  <!-- User / Customer Login & Signup Modal -->
   <div id="user-login-modal" class="modal-overlay">
     <div class="modal-card"
       style="max-width: 440px; background: #0c121e; border: 1px solid rgba(0, 242, 254, 0.35); box-shadow: 0 10px 40px rgba(0,0,0,0.7), 0 0 25px rgba(0, 242, 254, 0.15); border-radius: 20px; position: relative;">
@@ -1406,30 +1406,40 @@
           <i class="fas fa-shield-halved"></i>
           <span>SECURE CUSTOMER ACCESS</span>
         </div>
-        <button type="button" id="user-login-close" class="auth-modal-close-btn" aria-label="Close Login"
+        <button type="button" id="user-login-close" class="auth-modal-close-btn" aria-label="Close Login and Signup"
           title="Close Modal">
           <i class="fas fa-times"></i>
           <span>Close</span>
         </button>
       </div>
 
-      <!-- Compulsory Login Alert (shows when action requires customer login) -->
+      <!-- Compulsory Login Alert (shows when user tries booking repair without login) -->
       <div id="user-login-compulsory-alert" class="user-compulsory-alert" style="display: none;">
         <div class="compulsory-alert-icon">
           <i class="fas fa-lock"></i>
         </div>
         <div class="compulsory-alert-body">
           <div class="compulsory-alert-title">
-            <span>Customer Access</span>
-            <span class="compulsory-tag">CUSTOMER LOGIN</span>
+            <span>Login Required</span>
+            <span class="compulsory-tag">BOOKING REPAIR</span>
           </div>
           <div class="compulsory-alert-desc">
-            Log in once to access your repair bookings, live tracking, and quotes on this device.
+            Please log in or sign up to book a repair service. Your booking will be saved to your account.
           </div>
         </div>
       </div>
 
-      <!-- LOGIN SECTION -->
+      <!-- Tab Switcher: Login vs Sign Up -->
+      <div class="user-auth-tabs" id="user-auth-tabs">
+        <button type="button" id="tab-btn-login" class="user-auth-tab active">
+          <i class="fas fa-arrow-right-to-bracket"></i> Login
+        </button>
+        <button type="button" id="tab-btn-signup" class="user-auth-tab">
+          <i class="fas fa-user-plus"></i> Sign Up
+        </button>
+      </div>
+
+      <!-- 1. LOGIN SECTION -->
       <div id="user-login-section">
         <div style="text-align: center; margin-bottom: 1.25rem;">
           <div
@@ -1459,7 +1469,7 @@
           <div style="margin-bottom: 1rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
-              MOBILE NUMBER (10 Digits)
+              MOBILE NUMBER (10 Digits) <span style="color: var(--primary);">*</span>
             </label>
             <div class="phone-input-wrap">
               <div class="phone-prefix-badge" aria-hidden="true">
@@ -1483,18 +1493,16 @@
           <div style="margin-bottom: 1rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.4rem;">
-              SECRET CODE / PIN <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(4
-                Digits)</span>
+              PASSWORD <span style="color: var(--primary);">*</span>
             </label>
             <div style="position: relative;">
-              <i class="fas fa-key"
+              <i class="fas fa-lock"
                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
-              <input type="password" id="user-login-pin" class="form-control" placeholder="Enter 4-digit PIN"
-                maxlength="4" minlength="4" inputmode="numeric" pattern="[0-9]{4}"
-                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="current-password">
+              <input type="password" id="user-login-pin" class="form-control" placeholder="Enter your password"
+                required minlength="4" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="current-password">
               <button type="button" id="user-toggle-pin"
                 style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
-                title="Toggle PIN visibility">
+                title="Toggle Password visibility">
                 <i class="fas fa-eye" id="user-pin-eye"></i>
               </button>
             </div>
@@ -1510,13 +1518,161 @@
               <span style="color: #e2e8f0; font-size: 0.78rem; font-weight: 500;">Remember me on this device</span>
             </label>
             <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;"><i class="fas fa-check-double"></i>
-              1-Time Login</span>
+              Stay Signed In</span>
           </div>
 
           <button type="submit" id="user-login-submit" class="btn btn-primary"
             style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(0, 242, 254, 0.35);">
             <i class="fas fa-arrow-right-to-bracket"></i> Login to Customer Account
           </button>
+
+          <div style="text-align: center; margin-top: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            Don't have an account? <a href="javascript:void(0)" id="link-goto-signup"
+              style="color: var(--primary); font-weight: 700; text-decoration: underline;">Sign Up Free</a>
+          </div>
+        </form>
+      </div>
+
+      <!-- 2. SIGNUP SECTION -->
+      <div id="user-signup-section" style="display: none;">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+          <div
+            style="width: 54px; height: 54px; border-radius: 50%; background: rgba(255, 153, 0, 0.12); border: 2px solid var(--secondary); display: inline-flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary); margin-bottom: 0.6rem; box-shadow: 0 0 16px rgba(255, 153, 0, 0.3);">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <h3 style="font-size: 1.35rem; font-weight: 800; color: #fff;">Customer <span
+              style="color: var(--secondary);">Sign Up</span></h3>
+          <p style="font-size: 0.82rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Create your account to book doorstep repairs and track live technician arrival
+          </p>
+        </div>
+
+        <div id="user-signup-error"
+          style="display: none; background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 0.6rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-circle-exclamation"></i>
+          <span id="user-signup-error-text">Please check your details.</span>
+        </div>
+
+        <div id="user-signup-success"
+          style="display: none; background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #6ee7b7; padding: 0.65rem 0.85rem; border-radius: 10px; font-size: 0.82rem; margin-bottom: 1rem; align-items: center; gap: 0.5rem;">
+          <i class="fas fa-check-circle" style="color: #10b981; font-size: 1rem; flex-shrink: 0;"></i>
+          <span id="user-signup-success-text">Account created successfully!</span>
+        </div>
+
+        <form id="user-signup-form">
+          <!-- Full Name -->
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              YOUR FULL NAME <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-user"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="text" id="user-signup-name" class="form-control" placeholder="e.g. Pritesh Patel" required
+                style="padding-left: 2.5rem;" autocomplete="name">
+            </div>
+          </div>
+
+          <!-- Mobile Phone Number -->
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              MOBILE PHONE NUMBER (10 Digits) <span style="color: var(--secondary);">*</span>
+            </label>
+            <div class="phone-input-wrap">
+              <div class="phone-prefix-badge" aria-hidden="true">
+                <svg class="phone-flag-svg" viewBox="0 0 640 480" width="20" height="14"
+                  style="border-radius:2px; display:inline-block; vertical-align:middle; flex-shrink:0; box-shadow:0 0 1px rgba(0,0,0,0.6);"
+                  aria-hidden="true">
+                  <path fill="#FF9933" d="M0 0h640v160H0z" />
+                  <path fill="#FFFFFF" d="M0 160h640v160H0z" />
+                  <path fill="#128807" d="M0 320h640v160H0z" />
+                  <circle cx="320" cy="240" r="40" fill="none" stroke="#000080" stroke-width="8" />
+                </svg>
+                <span class="phone-prefix-code">+91</span>
+                <span class="phone-prefix-sep"></span>
+              </div>
+              <input type="tel" id="user-signup-phone" class="form-control phone-input-field"
+                placeholder="10-digit Mobile Number" required maxlength="10" minlength="10" inputmode="numeric"
+                pattern="[0-9]{10}" autocomplete="tel">
+            </div>
+          </div>
+
+          <!-- Email (Optional) -->
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              EMAIL ADDRESS <span style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-envelope"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+              <input type="email" id="user-signup-email" class="form-control" placeholder="e.g. name@example.com"
+                style="padding-left: 2.5rem;" autocomplete="email">
+            </div>
+          </div>
+
+          <!-- Password -->
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CREATE PASSWORD <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-lock"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="password" id="user-signup-password" class="form-control" placeholder="Create password (min 4 characters)"
+                required minlength="4" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-signup-toggle-password"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle Password visibility">
+                <i class="fas fa-eye" id="user-signup-password-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div style="margin-bottom: 1rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CONFIRM PASSWORD <span style="color: var(--secondary);">*</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-shield-halved"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
+              <input type="password" id="user-signup-confirm-password" class="form-control" placeholder="Re-enter password"
+                required minlength="4" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-signup-toggle-confirm"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle Confirm Password visibility">
+                <i class="fas fa-eye" id="user-signup-confirm-eye"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Remember Me on this Device option -->
+          <div
+            style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.15rem; font-size: 0.8rem; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); padding: 0.45rem 0.75rem; border-radius: 8px;">
+            <label
+              style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; user-select: none; margin: 0;">
+              <input type="checkbox" id="user-signup-remember" checked
+                style="accent-color: var(--secondary); width: 16px; height: 16px; cursor: pointer;">
+              <span style="color: #e2e8f0; font-size: 0.78rem; font-weight: 500;">Remember me on this device</span>
+            </label>
+            <span style="font-size: 0.72rem; color: #10b981; font-weight: 600;"><i class="fas fa-check-double"></i>
+              Instant Access</span>
+          </div>
+
+          <button type="submit" id="user-signup-submit" class="btn btn-amber"
+            style="width: 100%; justify-content: center; font-size: 0.95rem; font-weight: 700; box-shadow: 0 4px 20px rgba(255, 153, 0, 0.35);">
+            <i class="fas fa-user-plus"></i> Create Account & Sign In
+          </button>
+
+          <div style="text-align: center; margin-top: 1rem; font-size: 0.82rem; color: var(--text-muted);">
+            Already have an account? <a href="javascript:void(0)" id="link-goto-login"
+              style="color: var(--primary); font-weight: 700; text-decoration: underline;">Login Here</a>
+          </div>
         </form>
       </div>
 
@@ -1742,7 +1898,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261113_v15"></script>
+  <script src="script.js?v=20261113_v16"></script>
 </body>
 
 </html>

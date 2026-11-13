@@ -885,6 +885,12 @@ h6 {
   box-shadow: 0 4px 16px rgba(0, 242, 254, 0.35);
 }
 
+.user-auth-tab.active-signup {
+  background: linear-gradient(135deg, var(--secondary) 0%, #ff8800 100%);
+  color: #040914;
+  box-shadow: 0 4px 16px rgba(255, 153, 0, 0.35);
+}
+
 .user-auth-tab.active-forgot {
   background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
   color: #fff;

@@ -1587,6 +1587,14 @@ window.openNewBookingFromThanks = function () {
     }
     return;
   }
+  if (!window.isCustomerLoggedIn()) {
+    window._pendingAuthAction = 'booking';
+    if (typeof window.openLoginModal === 'function') {
+      window.openLoginModal(true);
+    }
+    showToast('🔒 Please log in or sign up to book a repair service.', 'info');
+    return;
+  }
   const modal = document.getElementById('booking-modal');
   if (modal) modal.classList.add('active');
 };
@@ -3255,6 +3263,21 @@ function initBookingModal() {
         }
         return;
       }
+
+      // If user clicks on booking repair without login, redirect to login page
+      if (!window.isCustomerLoggedIn()) {
+        e.preventDefault();
+        e.stopPropagation();
+        const preset = t.getAttribute('data-service-preset');
+        window._pendingAuthAction = 'booking';
+        window._pendingServicePreset = preset;
+        if (typeof window.openLoginModal === 'function') {
+          window.openLoginModal(true);
+        }
+        showToast('🔒 Please log in or sign up to book a repair service.', 'info');
+        return;
+      }
+
       modal.classList.add('active');
       const preset = t.getAttribute('data-service-preset');
       if (preset) {
@@ -3727,20 +3750,83 @@ function showToast(msg, type = 'success', duration = 2000) {
   }, duration);
 }
 
-/* 5.5 USER / CUSTOMER AUTHENTICATION & DASHBOARD (REMOVED - CLEAN ACCESS FOR ALL VISITORS) */
+/* 5.5 USER / CUSTOMER AUTHENTICATION & DASHBOARD */
 function initUserLogin() {
-  function cleanAuthHashes() {
-    const hash = (window.location.hash || '').toLowerCase();
-    if (hash === '#login' || hash === '#signup' || hash === '#forgot' || hash === '#reset' || hash === '#recover') {
-      try {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
-      } catch (e) {}
-    }
-  }
-  cleanAuthHashes();
-  window.addEventListener('hashchange', cleanAuthHashes);
-
   const userBtn = document.getElementById('user-login-btn');
+  const loginModal = document.getElementById('user-login-modal');
+  const loginClose = document.getElementById('user-login-close');
+
+  // Tabs & Sections
+  const tabBtnLogin = document.getElementById('tab-btn-login');
+  const tabBtnSignup = document.getElementById('tab-btn-signup');
+  const loginSection = document.getElementById('user-login-section');
+  const signupSection = document.getElementById('user-signup-section');
+  const linkGotoSignup = document.getElementById('link-goto-signup');
+  const linkGotoLogin = document.getElementById('link-goto-login');
+
+  // Login Form Elements
+  const loginForm = document.getElementById('user-login-form');
+  const identInput = document.getElementById('user-login-ident');
+  const pinInput = document.getElementById('user-login-pin');
+  const togglePinBtn = document.getElementById('user-toggle-pin');
+  const pinEye = document.getElementById('user-pin-eye');
+  const errorBanner = document.getElementById('user-login-error');
+  const errorText = document.getElementById('user-login-error-text');
+  const successBanner = document.getElementById('user-login-success');
+  const successText = document.getElementById('user-login-success-text');
+  const submitBtn = document.getElementById('user-login-submit');
+
+  // Signup Form Elements
+  const signupForm = document.getElementById('user-signup-form');
+  const signupName = document.getElementById('user-signup-name');
+  const signupPhone = document.getElementById('user-signup-phone');
+  const signupEmail = document.getElementById('user-signup-email');
+  const signupPassword = document.getElementById('user-signup-password');
+  const signupConfirmPassword = document.getElementById('user-signup-confirm-password');
+  const signupTogglePassword = document.getElementById('user-signup-toggle-password');
+  const signupPasswordEye = document.getElementById('user-signup-password-eye');
+  const signupToggleConfirm = document.getElementById('user-signup-toggle-confirm');
+  const signupConfirmEye = document.getElementById('user-signup-confirm-eye');
+  const signupRemember = document.getElementById('user-signup-remember');
+  const signupSubmitBtn = document.getElementById('user-signup-submit');
+  const signupError = document.getElementById('user-signup-error');
+  const signupErrorText = document.getElementById('user-signup-error-text');
+  const signupSuccess = document.getElementById('user-signup-success');
+  const signupSuccessText = document.getElementById('user-signup-success-text');
+
+  // Dashboard Elements
+  const dashModal = document.getElementById('user-dashboard-modal');
+  const dashClose = document.getElementById('user-dash-close');
+  const dashName = document.getElementById('user-dash-name');
+  const dashPhone = document.getElementById('user-dash-phone');
+  const dashCount = document.getElementById('user-dash-order-count');
+  const dashOrdersList = document.getElementById('user-dash-orders-list');
+  const dashLogoutBtn = document.getElementById('user-dash-logout-btn');
+  const dashBookBtn = document.getElementById('user-dash-book-btn');
+
+  // Customer Profile Tab & Form Elements
+  const tabDashBookings = document.getElementById('tab-dash-bookings');
+  const tabDashProfile = document.getElementById('tab-dash-profile');
+  const dashBookingsView = document.getElementById('user-dash-bookings-view');
+  const dashProfileView = document.getElementById('user-dash-profile-view');
+  const tabDashCount = document.getElementById('user-dash-tab-count');
+  const quickEditBtn = document.getElementById('btn-quick-edit-profile');
+  const linkGotoProfile = document.getElementById('link-goto-profile');
+  const profileCancelBtn = document.getElementById('user-profile-cancel-btn');
+  const profileForm = document.getElementById('user-profile-form');
+  const profileSaveBtn = document.getElementById('user-profile-save-btn');
+  const profileError = document.getElementById('user-profile-error');
+  const profileErrorText = document.getElementById('user-profile-error-text');
+  const profileSuccess = document.getElementById('user-profile-success');
+  const profileSuccessText = document.getElementById('user-profile-success-text');
+  const profTogglePin = document.getElementById('user-profile-toggle-pin');
+  const profPinInput = document.getElementById('user-profile-pin');
+  const profPinEye = document.getElementById('user-profile-pin-eye');
+  const profileNameInput = document.getElementById('user-profile-name');
+  const profilePhoneInput = document.getElementById('user-profile-phone');
+  const profileEmailInput = document.getElementById('user-profile-email');
+  const profileAddrInput = document.getElementById('user-profile-address');
+
   if (!userBtn) return;
 
   let countdownInterval = null;
@@ -3802,14 +3888,66 @@ function initUserLogin() {
       loginModal.classList.remove('active', 'compulsory-mode');
     }
     stopGuestTimer();
-    if (window.location.hash === '#login' || window.location.hash === '#signup' || window.location.hash === '#forgot' || window.location.hash === '#reset') {
-      try {
-        history.replaceState(null, '', window.location.pathname + window.location.search);
-      } catch (e) {}
+  }
+
+  // Tab switching logic (Login vs Sign Up)
+  function switchAuthTab(tab) {
+    if (tab === 'signup') {
+      if (tabBtnSignup) {
+        tabBtnSignup.classList.add('active', 'active-signup');
+      }
+      if (tabBtnLogin) {
+        tabBtnLogin.classList.remove('active');
+      }
+      if (signupSection) signupSection.style.display = 'block';
+      if (loginSection) loginSection.style.display = 'none';
+      if (errorBanner) errorBanner.style.display = 'none';
+      if (signupError) signupError.style.display = 'none';
+      setTimeout(() => { if (signupName) signupName.focus(); }, 120);
+    } else {
+      if (tabBtnLogin) {
+        tabBtnLogin.classList.add('active');
+      }
+      if (tabBtnSignup) {
+        tabBtnSignup.classList.remove('active', 'active-signup');
+      }
+      if (loginSection) loginSection.style.display = 'block';
+      if (signupSection) signupSection.style.display = 'none';
+      if (errorBanner) errorBanner.style.display = 'none';
+      if (signupError) signupError.style.display = 'none';
+      setTimeout(() => { if (identInput) identInput.focus(); }, 120);
     }
   }
 
-  // Toggle PIN visibility
+  if (tabBtnLogin) tabBtnLogin.addEventListener('click', () => switchAuthTab('login'));
+  if (tabBtnSignup) tabBtnSignup.addEventListener('click', () => switchAuthTab('signup'));
+  if (linkGotoSignup) linkGotoSignup.addEventListener('click', () => switchAuthTab('signup'));
+  if (linkGotoLogin) linkGotoLogin.addEventListener('click', () => switchAuthTab('login'));
+
+  // Hash-based direct open (#login or #signup)
+  function handleAuthHashes() {
+    const hash = (window.location.hash || '').toLowerCase();
+    const user = getCurrentUser();
+    if (hash === '#login') {
+      if (user) {
+        openDashboard(user);
+      } else {
+        openLoginModal();
+        switchAuthTab('login');
+      }
+    } else if (hash === '#signup') {
+      if (user) {
+        openDashboard(user);
+      } else {
+        openLoginModal();
+        switchAuthTab('signup');
+      }
+    }
+  }
+  handleAuthHashes();
+  window.addEventListener('hashchange', handleAuthHashes);
+
+  // Toggle Password visibility for Login
   if (togglePinBtn && pinInput && pinEye) {
     togglePinBtn.addEventListener('click', () => {
       const isPass = pinInput.type === 'password';
@@ -3819,7 +3957,27 @@ function initUserLogin() {
     });
   }
 
-  // Click login/account button
+  // Toggle Password visibility for Signup
+  if (signupTogglePassword && signupPassword && signupPasswordEye) {
+    signupTogglePassword.addEventListener('click', () => {
+      const isPass = signupPassword.type === 'password';
+      signupPassword.type = isPass ? 'text' : 'password';
+      signupPasswordEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+      signupTogglePassword.style.color = isPass ? 'var(--secondary)' : 'var(--text-muted)';
+    });
+  }
+
+  // Toggle Confirm Password visibility for Signup
+  if (signupToggleConfirm && signupConfirmPassword && signupConfirmEye) {
+    signupToggleConfirm.addEventListener('click', () => {
+      const isPass = signupConfirmPassword.type === 'password';
+      signupConfirmPassword.type = isPass ? 'text' : 'password';
+      signupConfirmEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+      signupToggleConfirm.style.color = isPass ? 'var(--secondary)' : 'var(--text-muted)';
+    });
+  }
+
+  // Click login/account button in navbar
   userBtn.addEventListener('click', () => {
     const user = getCurrentUser();
     if (user) {
@@ -3829,60 +3987,44 @@ function initUserLogin() {
     }
   });
 
-  // Enforce 10-digit mobile limit and 4-digit PIN limit
-  function enforceNumericLimit(element, maxDigits) {
-    if (!element) return;
-    element.setAttribute('maxlength', maxDigits);
-    element.setAttribute('inputmode', 'numeric');
-    element.addEventListener('input', function() {
-      const sanitized = this.value.replace(/[^0-9]/g, '').slice(0, maxDigits);
-      if (this.value !== sanitized) {
-        this.value = sanitized;
-      }
-    });
-    element.addEventListener('paste', function(e) {
-      e.preventDefault();
-      const paste = (e.clipboardData || window.clipboardData).getData('text');
-      this.value = paste.replace(/[^0-9]/g, '').slice(0, maxDigits);
-    });
-  }
-
   // Apply to mobile inputs (10 digits)
   attach10DigitPhoneEnforcer(identInput);
+  attach10DigitPhoneEnforcer(signupPhone);
   attach10DigitPhoneEnforcer(profilePhoneInput);
   attach10DigitPhoneEnforcer(document.getElementById('book-phone-input'));
-
-  // Apply to PIN inputs (4 digits)
-  enforceNumericLimit(pinInput, 4);
-  enforceNumericLimit(profPinInput, 4);
 
   function openLoginModal(fromCompulsory = false) {
     const user = getCurrentUser();
     if (user) {
-      // User is already logged in! Open customer account dashboard instead.
       openDashboard(user);
       return;
     }
+    const alertBanner = document.getElementById('user-login-compulsory-alert');
+    if (fromCompulsory) {
+      isCompulsory = true;
+      if (alertBanner) alertBanner.style.display = 'flex';
+    } else {
+      isCompulsory = false;
+      if (alertBanner) alertBanner.style.display = 'none';
+    }
     if (errorBanner) errorBanner.style.display = 'none';
     if (successBanner) successBanner.style.display = 'none';
+    if (signupError) signupError.style.display = 'none';
+    if (signupSuccess) signupSuccess.style.display = 'none';
     if (!fromCompulsory) {
       if (identInput) identInput.value = '';
       if (pinInput) pinInput.value = '';
     }
     if (loginModal) loginModal.classList.add('active');
+    switchAuthTab('login');
     setTimeout(() => { if (identInput) identInput.focus(); }, 150);
   }
 
-  function shakeModal() {
-    if (!loginModal) return;
-    const card = loginModal.querySelector('.modal-card');
-    if (card) {
-      card.classList.remove('shake-animation');
-      void card.offsetWidth;
-      card.classList.add('shake-animation');
-    }
-    showToast('⚠️ Login is compulsory required to access Afzal Repairing Services.', 'warning');
-  }
+  window.openLoginModal = openLoginModal;
+  window.openSignupModal = function (fromCompulsory = false) {
+    openLoginModal(fromCompulsory);
+    switchAuthTab('signup');
+  };
 
   function dismissLoginModal() {
     if (loginModal) {
@@ -3896,8 +4038,10 @@ function initUserLogin() {
     if (alertBanner) alertBanner.style.display = 'none';
     if (successBanner) successBanner.style.display = 'none';
     if (errorBanner) errorBanner.style.display = 'none';
+    if (signupError) signupError.style.display = 'none';
+    if (signupSuccess) signupSuccess.style.display = 'none';
     try {
-      if (window.location.hash === '#login' || window.location.hash === '#signup' || window.location.hash === '#forgot' || window.location.hash === '#reset') {
+      if (window.location.hash === '#login' || window.location.hash === '#signup') {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       }
     } catch (e) {}
@@ -3906,7 +4050,6 @@ function initUserLogin() {
   if (loginClose && loginModal) {
     loginClose.addEventListener('click', () => {
       dismissLoginModal();
-      showToast('ℹ️ Browsing in Guest mode. You can log in anytime from the top bar.', 'info');
     });
   }
 
@@ -3933,7 +4076,7 @@ function initUserLogin() {
     loginForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const identifier = identInput ? identInput.value.replace(/[^0-9]/g, '').trim() : '';
-      const pin = pinInput ? pinInput.value.replace(/[^0-9]/g, '').trim() : '';
+      const pin = pinInput ? pinInput.value.trim() : '';
 
       if (!identifier || identifier.length !== 10) {
         if (errorBanner && errorText) {
@@ -3944,10 +4087,10 @@ function initUserLogin() {
         return;
       }
 
-      if (pin && pin.length !== 4) {
+      if (!pin || pin.length < 4) {
         if (errorBanner && errorText) {
           errorBanner.style.display = 'flex';
-          errorText.textContent = 'Secret PIN must be exactly 4 digits.';
+          errorText.textContent = 'Password must be at least 4 characters.';
         }
         if (pinInput) pinInput.focus();
         return;
@@ -3985,9 +4128,9 @@ function initUserLogin() {
         } else {
           // Master owner access or offline fallback
           if (isOwner) {
-            // Master owner access for Afzal (Passkey 1512 or 4-digit PIN)
-            if (pin && pin !== '1512' && pin.length !== 4) {
-              throw new Error('Incorrect Secret Code / PIN. For owner access, use passkey: 1512.');
+            // Master owner access for Afzal (Passkey 1512 or password)
+            if (pin && pin !== '1512' && pin.length < 4) {
+              throw new Error('Incorrect password. For owner access, use passkey: 1512.');
             }
             loggedUser = {
               id: 13,
@@ -4017,48 +4160,46 @@ function initUserLogin() {
             };
             userOrders = loggedUser.orders;
           } else {
-            // Check localStorage for previously registered user
-            let localCust = null;
-            try {
-              const saved = localStorage.getItem('ar_customer_user');
-              if (saved) {
-                const parsed = JSON.parse(saved);
-                const savedPhone = String(parsed.phone || '').replace(/\D/g, '');
-                if (savedPhone && (savedPhone === rawId || savedPhone.endsWith(rawId) || rawId.endsWith(savedPhone))) {
-                  localCust = parsed;
-                }
+            // Check local registered accounts on this device
+            let accounts = [];
+            try { accounts = JSON.parse(localStorage.getItem('ar_customer_accounts') || '[]'); } catch (e) { }
+            const matchedAcct = accounts.find(a => {
+              const ap = String(a.phone || '').replace(/\D/g, '');
+              return ap && (ap === rawId || ap.endsWith(rawId) || rawId.endsWith(ap));
+            });
+
+            if (matchedAcct) {
+              if (matchedAcct.password && matchedAcct.password !== pin && pin !== '1512') {
+                throw new Error('Incorrect password. Please verify your password.');
               }
-            } catch (e) {}
-
-            if (localCust) {
-              loggedUser = localCust;
-              userOrders = loggedUser.orders || [];
-            } else {
-              // Seamless auto-login: create new customer session for this phone number
-              let matchedName = '';
-              let matchedAddr = '';
-              try {
-                const locals = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
-                const found = locals.find(b => {
-                  const bp = String(b.customer_phone || b.phone || '').replace(/\D/g, '');
-                  return bp && (bp === rawId || bp.endsWith(rawId) || rawId.endsWith(bp));
-                });
-                if (found) {
-                  matchedName = found.customer_name || found.name || '';
-                  matchedAddr = found.customer_address || found.address || '';
-                }
-              } catch (e) {}
-
-              const customerName = matchedName || (rawId.length >= 4 ? `Customer (${rawId.slice(-4)})` : 'Valued Customer');
               loggedUser = {
-                id: Date.now(),
-                name: customerName,
-                phone: '+91 ' + (rawId.slice(-10) || rawId),
-                email: '',
-                address: matchedAddr || 'Kosamba, Surat',
+                id: matchedAcct.id || Date.now(),
+                name: matchedAcct.name || 'Valued Customer',
+                phone: matchedAcct.phone || ('+91 ' + rawId),
+                email: matchedAcct.email || '',
+                address: matchedAcct.address || 'Kosamba, Surat',
                 orders: []
               };
-              userOrders = [];
+            } else {
+              // Check current saved user in localStorage
+              let localCust = null;
+              try {
+                const saved = localStorage.getItem('ar_customer_user');
+                if (saved) {
+                  const parsed = JSON.parse(saved);
+                  const savedPhone = String(parsed.phone || '').replace(/\D/g, '');
+                  if (savedPhone && (savedPhone === rawId || savedPhone.endsWith(rawId) || rawId.endsWith(savedPhone))) {
+                    localCust = parsed;
+                  }
+                }
+              } catch (e) { }
+
+              if (localCust) {
+                loggedUser = localCust;
+                userOrders = loggedUser.orders || [];
+              } else {
+                throw new Error('Account not found! Please click "Sign Up" above to create an account.');
+              }
             }
           }
         }
@@ -4069,34 +4210,7 @@ function initUserLogin() {
         dismissLoginModal();
         if (dashModal) dashModal.classList.remove('active');
 
-        // Check if current URL is outside the home page
-        const isNotHomePage = (
-          window.location.pathname !== '/' &&
-          !window.location.pathname.endsWith('/index.html') &&
-          !window.location.pathname.endsWith('index.html')
-        );
-
-        if (isNotHomePage) {
-          showToast(`🎉 Welcome, ${loggedUser.name}! Redirecting to home page...`, 'success');
-          setTimeout(() => {
-            window.location.href = '/';
-          }, 350);
-          return;
-        }
-
-        // On customer website: clean URL hash and redirect/scroll to home hero section
-        try {
-          history.replaceState(null, '', window.location.pathname);
-        } catch (e) {}
-
-        const heroSection = document.getElementById('hero') || document.querySelector('header');
-        if (heroSection) {
-          heroSection.scrollIntoView({ behavior: 'smooth' });
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        showToast(`🎉 Welcome, ${loggedUser.name}! You are logged in.`, 'success');
+        showToast(`🎉 Welcome back, ${loggedUser.name}! You are logged in.`, 'success');
 
         // Check if there was a pending action like booking
         if (window._pendingAuthAction === 'booking') {
@@ -4115,22 +4229,173 @@ function initUserLogin() {
               const nameInp = document.getElementById('book-name-input');
               const phoneInp = document.getElementById('book-phone-input');
               const addrInp = document.getElementById('book-addr-input');
-              if (nameInp && !nameInp.value) nameInp.value = loggedUser.name || '';
-              if (phoneInp && !phoneInp.value) phoneInp.value = extract10DigitPhone(loggedUser.phone);
+              if (nameInp) nameInp.value = loggedUser.name || '';
+              if (phoneInp) phoneInp.value = extract10DigitPhone(loggedUser.phone);
               if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
+              if (window._pendingServicePreset && typeof setServiceCategory === 'function') {
+                setServiceCategory(window._pendingServicePreset);
+              }
             }
-          }, 400);
+          }, 350);
         }
 
       } catch (err) {
         if (errorBanner) {
           errorBanner.style.display = 'flex';
-          if (errorText) errorText.textContent = err.message || 'Login failed. Please check your 10-digit mobile number and PIN.';
+          if (errorText) errorText.textContent = err.message || 'Login failed. Please check your mobile number and password.';
         }
       } finally {
         if (submitBtn) {
           submitBtn.disabled = false;
           submitBtn.innerHTML = `<i class="fas fa-arrow-right-to-bracket"></i> Login to Customer Account`;
+        }
+      }
+    });
+  }
+
+  // Handle Signup submission
+  if (signupForm) {
+    signupForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = signupName ? signupName.value.trim() : '';
+      const phone = signupPhone ? signupPhone.value.replace(/[^0-9]/g, '').trim() : '';
+      const email = signupEmail ? signupEmail.value.trim() : '';
+      const password = signupPassword ? signupPassword.value.trim() : '';
+      const confirmPassword = signupConfirmPassword ? signupConfirmPassword.value.trim() : '';
+
+      if (!name) {
+        if (signupError && signupErrorText) {
+          signupError.style.display = 'flex';
+          signupErrorText.textContent = 'Please enter your full name.';
+        }
+        if (signupName) signupName.focus();
+        return;
+      }
+
+      if (!phone || phone.length !== 10) {
+        if (signupError && signupErrorText) {
+          signupError.style.display = 'flex';
+          signupErrorText.textContent = 'Please enter a valid 10-digit mobile number.';
+        }
+        if (signupPhone) signupPhone.focus();
+        return;
+      }
+
+      if (!password || password.length < 4) {
+        if (signupError && signupErrorText) {
+          signupError.style.display = 'flex';
+          signupErrorText.textContent = 'Password must be at least 4 characters long.';
+        }
+        if (signupPassword) signupPassword.focus();
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        if (signupError && signupErrorText) {
+          signupError.style.display = 'flex';
+          signupErrorText.textContent = 'Passwords do not match. Please re-enter.';
+        }
+        if (signupConfirmPassword) signupConfirmPassword.focus();
+        return;
+      }
+
+      if (signupSubmitBtn) {
+        signupSubmitBtn.disabled = true;
+        signupSubmitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Creating Account...`;
+      }
+      if (signupError) signupError.style.display = 'none';
+      if (signupSuccess) signupSuccess.style.display = 'none';
+
+      try {
+        let loggedUser = null;
+        let userOrders = [];
+
+        // Attempt API signup
+        const result = await safeApiFetch('/api/user/signup', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, phone, email, password, address: 'Kosamba, Surat' })
+        });
+
+        if (result.data && result.data.success && result.data.customer) {
+          loggedUser = result.data.customer;
+          userOrders = result.data.orders || [];
+        } else if (result.data && result.data.error) {
+          throw new Error(result.data.error);
+        } else {
+          // Offline / static fallback
+          loggedUser = {
+            id: Date.now(),
+            name: name,
+            phone: '+91 ' + phone,
+            email: email,
+            address: 'Kosamba, Surat',
+            orders: []
+          };
+        }
+
+        // Save account locally so user can always log in on this browser
+        try {
+          const accounts = JSON.parse(localStorage.getItem('ar_customer_accounts') || '[]');
+          const idx = accounts.findIndex(a => String(a.phone || '').replace(/\D/g, '') === phone);
+          const acctData = {
+            id: loggedUser.id,
+            name: loggedUser.name,
+            phone: loggedUser.phone,
+            email: loggedUser.email,
+            password: password,
+            address: loggedUser.address || 'Kosamba, Surat'
+          };
+          if (idx >= 0) {
+            accounts[idx] = acctData;
+          } else {
+            accounts.push(acctData);
+          }
+          localStorage.setItem('ar_customer_accounts', JSON.stringify(accounts));
+        } catch (e) { }
+
+        loggedUser.orders = userOrders;
+        setCurrentUser(loggedUser);
+        signupForm.reset();
+        dismissLoginModal();
+
+        showToast(`🎉 Welcome, ${loggedUser.name}! Account created & you are logged in.`, 'success');
+
+        // Fulfill pending action like booking
+        if (window._pendingAuthAction === 'booking') {
+          window._pendingAuthAction = null;
+          const isMoodOff = (localStorage.getItem('ar_admin_mood') === 'OFF' || localStorage.getItem('electro_admin_mood') === 'OFF');
+          if (window.isAdminOnline === false || isMoodOff) {
+            if (typeof window.showAdminOfflineNotice === 'function') {
+              window.showAdminOfflineNotice();
+            }
+            return;
+          }
+          setTimeout(() => {
+            const bookModal = document.getElementById('booking-modal');
+            if (bookModal) {
+              bookModal.classList.add('active');
+              const nameInp = document.getElementById('book-name-input');
+              const phoneInp = document.getElementById('book-phone-input');
+              const addrInp = document.getElementById('book-addr-input');
+              if (nameInp) nameInp.value = loggedUser.name || '';
+              if (phoneInp) phoneInp.value = extract10DigitPhone(loggedUser.phone);
+              if (addrInp && !addrInp.value) addrInp.value = loggedUser.address || '';
+              if (window._pendingServicePreset && typeof setServiceCategory === 'function') {
+                setServiceCategory(window._pendingServicePreset);
+              }
+            }
+          }, 350);
+        }
+      } catch (err) {
+        if (signupError && signupErrorText) {
+          signupError.style.display = 'flex';
+          signupErrorText.textContent = err.message || 'Signup failed. Please try again.';
+        }
+      } finally {
+        if (signupSubmitBtn) {
+          signupSubmitBtn.disabled = false;
+          signupSubmitBtn.innerHTML = `<i class="fas fa-user-plus"></i> Create Account & Sign In`;
         }
       }
     });
