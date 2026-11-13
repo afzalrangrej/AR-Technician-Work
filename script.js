@@ -576,9 +576,9 @@ const translations = {
 // Purge any stale demo customer sessions or old demo tracking codes
 try {
   localStorage.removeItem('ar_customer_user');
-  if (localStorage.getItem('last_tracking_code') === 'HOME-8117') {
-    localStorage.removeItem('last_tracking_code');
-  }
+  localStorage.removeItem('last_tracking_code');
+  const oldPill = document.getElementById('user-code-pill');
+  if (oldPill) oldPill.remove();
 } catch (e) {}
 
 window.isCustomerLoggedIn = function () {
