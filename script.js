@@ -582,14 +582,23 @@ try {
 } catch (e) {}
 
 window.isCustomerLoggedIn = function () {
-  return true;
+  const u = window.getCurrentCustomerUser();
+  return !!(u && u.name);
 };
 
 window.getCurrentCustomerUser = function () {
-  return null;
+  try {
+    const u = localStorage.getItem('ar_customer_user');
+    return u ? JSON.parse(u) : null;
+  } catch (e) {
+    return null;
+  }
 };
 
 window.syncCustomerCodeVisibility = function () {
+  const heroPill = document.getElementById('user-code-pill');
+  const heroCodeVal = document.getElementById('user-code-val');
+  const heroCodePrefix = document.getElementById('user-code-prefix');
   const pasteBanner = document.getElementById('tracker-paste-info-banner');
   const bannerHighlight = document.getElementById('tracker-banner-code-highlight');
   const bannerBtnLabel = document.getElementById('btn-quick-paste-code-label');
@@ -603,21 +612,45 @@ window.syncCustomerCodeVisibility = function () {
   const realCountEl = document.getElementById('tracker-real-booking-count');
 
   let code = (localStorage.getItem('last_tracking_code') || '').trim();
-  if (code === 'HOME-8117') {
-    code = '';
-    try { localStorage.removeItem('last_tracking_code'); } catch (e) {}
-  }
   let latestBooking = null;
 
   try {
     const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
     if (Array.isArray(localBookings) && localBookings.length > 0) {
       latestBooking = localBookings[0];
-      if (!code && latestBooking.tracking_code && latestBooking.tracking_code !== 'HOME-8117') {
+      if (!code && latestBooking.tracking_code) {
         code = latestBooking.tracking_code.trim();
       }
     }
   } catch (e) {}
+
+  let currentUser = null;
+  try {
+    const raw = localStorage.getItem('ar_customer_user');
+    currentUser = raw ? JSON.parse(raw) : null;
+  } catch (e) {}
+
+  if (currentUser) {
+    if (currentUser.orders && currentUser.orders.length > 0) {
+      if (!latestBooking) latestBooking = currentUser.orders[0];
+      if (!code && latestBooking.tracking_code) {
+        code = latestBooking.tracking_code.trim();
+      }
+    }
+    if (!code) {
+      const phoneDigits = String(currentUser.phone || currentUser.identifier || '').replace(/\D/g, '').slice(-4);
+      code = phoneDigits ? ('HOME-' + phoneDigits) : 'HOME-3282';
+    }
+  }
+
+  // Sync Hero User Code Pill ("who user is login now is show always")
+  if (code && (currentUser || latestBooking)) {
+    if (heroPill) heroPill.style.display = 'inline-flex';
+    if (heroCodeVal) heroCodeVal.textContent = code;
+    if (heroCodePrefix) heroCodePrefix.textContent = 'My code:';
+  } else {
+    if (heroPill) heroPill.style.display = 'none';
+  }
 
   if (code && latestBooking) {
     if (pasteBanner) pasteBanner.style.display = 'flex';
@@ -725,6 +758,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initBookingModal();
   initAdminLogin();
   initUserLogin();
+  initUserCodePill();
   initLiveBroadcast();
   initCustomerInvoiceAndReviews();
   initAdminLiveStatusWatcher();
@@ -5991,8 +6025,13 @@ function initAdminLiveStatusWatcher() {
   }
 
   // 1. Initial immediate synchronous check from localStorage (instant 0ms response, no flicker)
+  if (localStorage.getItem('ar_admin_online_v2') !== 'done') {
+    localStorage.setItem('ar_admin_mood', 'ON');
+    localStorage.setItem('electro_admin_mood', 'ON');
+    localStorage.setItem('ar_admin_online_v2', 'done');
+  }
   const initialSavedMood = localStorage.getItem('ar_admin_mood') || localStorage.getItem('electro_admin_mood') || 'ON';
-  applyAdminStatus(initialSavedMood !== 'OFF', initialSavedMood === 'OFF' ? 'Admin is currently Offline (Away) • Repair bookings are paused' : 'Admin is Online');
+  applyAdminStatus(initialSavedMood !== 'OFF', initialSavedMood === 'OFF' ? 'Admin is currently Offline (Away) • Repair bookings are paused' : 'Admin is Online & Available');
 
   // 2. Initial async verification against backend
   checkAdminLiveStatus();
@@ -6058,6 +6097,66 @@ function initAdminLiveStatusWatcher() {
   });
 }
 
-/* User code pill interactivity removed */
-function initUserCodePill() {}
+/* ========================================================
+   USER CODE PILL ("My code: HOME-1234") INTERACTIVITY
+   ======================================================== */
+function initUserCodePill() {
+  const pill = document.getElementById('user-code-pill');
+  const codeValEl = document.getElementById('user-code-val');
+  const copyBtn = document.getElementById('user-code-copy-btn');
+  const copyIcon = document.getElementById('user-code-copy-icon');
+  const copyToast = document.getElementById('user-code-copy-toast');
+
+  if (!pill || !codeValEl) return;
+
+  let copiedTimer = null;
+
+  async function copyCode(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    const codeText = (codeValEl.textContent || '').trim();
+    if (!codeText) return;
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(codeText);
+      } else {
+        const textarea = document.createElement('textarea');
+        textarea.value = codeText;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+
+      pill.classList.add('copied');
+      if (copyIcon) copyIcon.className = 'fas fa-check';
+      if (copyToast) copyToast.textContent = 'Copied!';
+
+      // Pre-fill tracker input if exists
+      const trackInput = document.getElementById('track-input');
+      if (trackInput) {
+        trackInput.value = codeText;
+      }
+
+      clearTimeout(copiedTimer);
+      copiedTimer = setTimeout(() => {
+        pill.classList.remove('copied');
+        if (copyIcon) copyIcon.className = 'far fa-copy';
+      }, 1800);
+    } catch (err) {
+      console.error('Copy code failed:', err);
+    }
+  }
+
+  pill.addEventListener('click', copyCode);
+  if (copyBtn) {
+    copyBtn.addEventListener('click', copyCode);
+  }
+}
 
