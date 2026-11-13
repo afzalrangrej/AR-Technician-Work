@@ -724,93 +724,9 @@ document.addEventListener('click', (e) => {
   }
 }, true);
 
-/* ==========================================================
-   WELCOME SPLASH SCREEN (2-SECOND WELCOME PAGE OVERLAY)
-   ========================================================== */
-function initWelcomeSplashScreen() {
-  const splash = document.getElementById('welcome-splash-screen');
-  if (!splash) return;
-
-  // Personalize greeting if user is logged in
-  try {
-    const rawUser = localStorage.getItem('ar_customer_user');
-    if (rawUser) {
-      const userObj = JSON.parse(rawUser);
-      if (userObj && userObj.name) {
-        const userName = userObj.name.trim();
-        const pillText = document.getElementById('welcome-pill-text');
-        const titleEl = document.getElementById('welcome-user-title');
-        const subEl = document.getElementById('welcome-user-sub');
-
-        if (pillText) pillText.textContent = `WELCOME BACK, ${userName.toUpperCase()}!`;
-        if (titleEl) titleEl.innerHTML = `Welcome Back, <span class="gradient-text">${escapeHtml(userName)}</span>!`;
-        if (subEl) subEl.textContent = 'Your doorstep electrical repairs & live order tracking portal is ready.';
-      }
-    }
-  } catch (e) {}
-
-  // 4-second countdown timer & animated progress bar
-  const progressFill = document.getElementById('welcome-progress-fill');
-  const countdownEl = document.getElementById('welcome-timer-countdown');
-
-  const DURATION = 4000; // Exactly 4 seconds
-  const startTime = performance.now();
-
-  function updateProgress(now) {
-    const elapsed = now - startTime;
-    const progress = Math.min(1, elapsed / DURATION);
-
-    if (progressFill) {
-      progressFill.style.width = `${(progress * 100).toFixed(1)}%`;
-    }
-    if (countdownEl) {
-      const remainingSeconds = Math.max(0, (DURATION - elapsed) / 1000).toFixed(1);
-      countdownEl.textContent = `${remainingSeconds}s`;
-    }
-
-    if (progress < 1) {
-      requestAnimationFrame(updateProgress);
-    } else {
-      dismissWelcomeScreen();
-    }
-  }
-
-  requestAnimationFrame(updateProgress);
-
-  // Allow clicking anywhere outside card or skip button to dismiss early
-  splash.addEventListener('click', (e) => {
-    if (!e.target.closest('.welcome-splash-content') || e.target.closest('#welcome-skip-btn')) {
-      dismissWelcomeScreen();
-    }
-  });
-
-  // Escape or Enter key dismisses early
-  window.addEventListener('keydown', function onWelcomeKey(e) {
-    if (e.key === 'Escape' || e.key === 'Enter') {
-      dismissWelcomeScreen();
-      window.removeEventListener('keydown', onWelcomeKey);
-    }
-  });
-}
-
-function dismissWelcomeScreen() {
-  const splash = document.getElementById('welcome-splash-screen');
-  if (!splash || splash.classList.contains('dismissed')) return;
-
-  splash.classList.add('dismissed');
-
-  setTimeout(() => {
-    try {
-      splash.style.display = 'none';
-      if (splash.parentNode) splash.parentNode.removeChild(splash);
-    } catch (e) {}
-  }, 500);
-}
-
-window.dismissWelcomeScreen = dismissWelcomeScreen;
+window.dismissWelcomeScreen = function () {};
 
 document.addEventListener('DOMContentLoaded', () => {
-  initWelcomeSplashScreen();
   document.body.classList.remove('auth-locked');
   initLanguageSwitcher();
   initNavbar();
