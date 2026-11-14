@@ -4863,23 +4863,6 @@ function initAdminLogin() {
     });
   }
 
-  // Handle direct "Admin Login (8485991694 / 6351618067)" button from restriction dialog
-  const deniedLoginBtn = document.getElementById('btn-admin-access-denied-login');
-  if (deniedLoginBtn) {
-    deniedLoginBtn.addEventListener('click', () => {
-      const deniedDialog = document.getElementById('admin-access-denied-dialog');
-      if (deniedDialog) deniedDialog.classList.remove('active');
-      if (modal) {
-        modal.classList.add('active');
-        if (nameInput) {
-          nameInput.value = '';
-          nameInput.placeholder = 'Admin Mobile (8485991694 or 6351618067)';
-          setTimeout(() => nameInput.focus(), 150);
-        }
-      }
-    });
-  }
-
   if (closeBtn && modal) {
     closeBtn.addEventListener('click', () => {
       modal.classList.remove('active');
