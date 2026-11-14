@@ -246,7 +246,8 @@
 
             <!-- "My Bookings" Section (Replaces "My code": opens user bookings with tracking codes & copy system) -->
             <div id="user-my-bookings-pill" class="user-code-pill my-bookings-pill" title="Click to view all your repair bookings & tracking codes" role="button"
-              tabindex="0" aria-label="My Bookings. Click to view all bookings." style="display: none;">
+              tabindex="0" aria-label="My Bookings. Click to view all bookings." style="display: none;"
+              onclick="if(typeof window.openMyBookingsModal==='function'){window.openMyBookingsModal();}else if(typeof window.openDashboard==='function'){window.openDashboard();}">
               <i class="fas fa-clipboard-list code-icon"></i>
               <span class="code-label" id="user-my-bookings-label">My Bookings</span>
               <span id="user-my-bookings-count" class="code-val" style="padding: 0.1rem 0.5rem; font-size: 0.78rem; border-radius: 8px;">0</span>
@@ -1926,7 +1927,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261114_v5"></script>
+  <script src="script.js?v=20261114_v6"></script>
 </body>
 
 </html>

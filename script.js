@@ -4446,11 +4446,12 @@ function initUserLogin() {
   // Dashboard modal functions
   async function openDashboard(user) {
     if (!dashModal) return;
+    if (!user) user = getCurrentUser() || { name: 'My Bookings', phone: '', orders: [] };
 
     if (dashName) dashName.textContent = user.name || 'Valued Customer';
     const rawP = (user.phone || '').replace(/[^0-9]/g, '');
-    const dispPhone = rawP.length >= 10 ? `+91 ${rawP.slice(-10)}` : (user.phone || user.email || 'Customer Account');
-    if (dashPhone) dashPhone.textContent = user.phone ? `📱 ${dispPhone}` : (user.email ? `✉️ ${user.email}` : 'Customer Account');
+    const dispPhone = rawP.length >= 10 ? `+91 ${rawP.slice(-10)}` : (user.phone || user.email || 'Active Bookings');
+    if (dashPhone) dashPhone.textContent = user.phone ? `📱 ${dispPhone}` : (user.email ? `✉️ ${user.email}` : '📋 Active Repair Bookings');
 
     // Ensure we start on the Bookings tab by default
     showDashBookingsTab();
@@ -4680,6 +4681,45 @@ function initUserLogin() {
     setTimeout(() => {
       if (profileNameInput) profileNameInput.focus();
     }, 120);
+  }
+
+  // Expose Dashboard & My Bookings functions globally
+  window.openDashboard = openDashboard;
+  window.showDashBookingsTab = showDashBookingsTab;
+  window.showDashProfileTab = showDashProfileTab;
+
+  function openMyBookingsModal() {
+    const user = getCurrentUser();
+    let localBookings = [];
+    try {
+      localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+    } catch (e) {}
+
+    if (user) {
+      openDashboard(user);
+      showDashBookingsTab();
+    } else if (Array.isArray(localBookings) && localBookings.length > 0) {
+      openDashboard({
+        name: 'My Bookings',
+        phone: '',
+        orders: localBookings
+      });
+      showDashBookingsTab();
+    } else {
+      openLoginModal();
+      showToast('Please login to view all your repair bookings.', 'info');
+    }
+  }
+
+  window.openMyBookingsModal = openMyBookingsModal;
+
+  const heroMyBookingsPill = document.getElementById('user-my-bookings-pill');
+  if (heroMyBookingsPill) {
+    heroMyBookingsPill.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openMyBookingsModal();
+    });
   }
 
   if (tabDashBookings) tabDashBookings.addEventListener('click', showDashBookingsTab);
