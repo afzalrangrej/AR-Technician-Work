@@ -3817,7 +3817,13 @@ function initUserLogin() {
   const profileErrorText = document.getElementById('user-profile-error-text');
   const profileSuccess = document.getElementById('user-profile-success');
   const profileSuccessText = document.getElementById('user-profile-success-text');
-  const profTogglePin = document.getElementById('user-profile-toggle-pin');
+  const profPasswordInput = document.getElementById('user-profile-password');
+  const profPasswordToggle = document.getElementById('user-profile-toggle-password');
+  const profPasswordEye = document.getElementById('user-profile-password-eye');
+  const profConfirmInput = document.getElementById('user-profile-confirm-password');
+  const profConfirmToggle = document.getElementById('user-profile-toggle-confirm');
+  const profConfirmEye = document.getElementById('user-profile-confirm-eye');
+  const profTogglePin = document.getElementById('user-profile-toggle-pin') || profPasswordToggle;
   const profPinInput = document.getElementById('user-profile-pin');
   const profPinEye = document.getElementById('user-profile-pin-eye');
   const profileNameInput = document.getElementById('user-profile-name');
@@ -4416,6 +4422,18 @@ function initUserLogin() {
     if (profilePhoneInput) profilePhoneInput.value = rawP.length >= 10 ? rawP.slice(-10) : rawP;
     if (profileEmailInput) profileEmailInput.value = user.email || '';
     if (profileAddrInput) profileAddrInput.value = user.address || '';
+    if (profPasswordInput) {
+      profPasswordInput.value = '';
+      profPasswordInput.type = 'password';
+      if (profPasswordEye) profPasswordEye.className = 'fas fa-eye';
+      if (profPasswordToggle) profPasswordToggle.style.color = 'var(--text-muted)';
+    }
+    if (profConfirmInput) {
+      profConfirmInput.value = '';
+      profConfirmInput.type = 'password';
+      if (profConfirmEye) profConfirmEye.className = 'fas fa-eye';
+      if (profConfirmToggle) profConfirmToggle.style.color = 'var(--text-muted)';
+    }
     if (profPinInput) profPinInput.value = '';
     if (profileError) profileError.style.display = 'none';
     if (profileSuccess) profileSuccess.style.display = 'none';
@@ -4536,6 +4554,18 @@ function initUserLogin() {
       }
       if (profileEmailInput) profileEmailInput.value = u.email || '';
       if (profileAddrInput) profileAddrInput.value = u.address || '';
+      if (profPasswordInput) {
+        profPasswordInput.value = '';
+        profPasswordInput.type = 'password';
+        if (profPasswordEye) profPasswordEye.className = 'fas fa-eye';
+        if (profPasswordToggle) profPasswordToggle.style.color = 'var(--text-muted)';
+      }
+      if (profConfirmInput) {
+        profConfirmInput.value = '';
+        profConfirmInput.type = 'password';
+        if (profConfirmEye) profConfirmEye.className = 'fas fa-eye';
+        if (profConfirmToggle) profConfirmToggle.style.color = 'var(--text-muted)';
+      }
       if (profPinInput) profPinInput.value = '';
     }
 
@@ -4550,8 +4580,28 @@ function initUserLogin() {
   if (linkGotoProfile) linkGotoProfile.addEventListener('click', (e) => { e.preventDefault(); showDashProfileTab(); });
   if (profileCancelBtn) profileCancelBtn.addEventListener('click', showDashBookingsTab);
 
-  // Toggle Profile PIN visibility
-  if (profTogglePin && profPinInput && profPinEye) {
+  // Toggle Profile Password visibility
+  if (profPasswordToggle && profPasswordInput && profPasswordEye) {
+    profPasswordToggle.addEventListener('click', () => {
+      const isPass = profPasswordInput.type === 'password';
+      profPasswordInput.type = isPass ? 'text' : 'password';
+      profPasswordEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+      profPasswordToggle.style.color = isPass ? '#38bdf8' : 'var(--text-muted)';
+    });
+  }
+
+  // Toggle Profile Confirm Password visibility
+  if (profConfirmToggle && profConfirmInput && profConfirmEye) {
+    profConfirmToggle.addEventListener('click', () => {
+      const isPass = profConfirmInput.type === 'password';
+      profConfirmInput.type = isPass ? 'text' : 'password';
+      profConfirmEye.className = isPass ? 'fas fa-eye-slash' : 'fas fa-eye';
+      profConfirmToggle.style.color = isPass ? '#38bdf8' : 'var(--text-muted)';
+    });
+  }
+
+  // Fallback Toggle Profile PIN visibility
+  if (profTogglePin && profPinInput && profPinEye && profTogglePin !== profPasswordToggle) {
     profTogglePin.addEventListener('click', () => {
       const isPass = profPinInput.type === 'password';
       profPinInput.type = isPass ? 'text' : 'password';
@@ -4569,17 +4619,19 @@ function initUserLogin() {
       const phone = profilePhoneInput ? profilePhoneInput.value.replace(/[^0-9]/g, '').trim() : '';
       const email = profileEmailInput ? profileEmailInput.value.trim() : '';
       const address = profileAddrInput ? profileAddrInput.value.trim() : '';
-      const newPin = profPinInput ? profPinInput.value.replace(/[^0-9]/g, '').trim() : '';
+      const newPassword = profPasswordInput ? profPasswordInput.value.trim() : (profPinInput ? profPinInput.value.trim() : '');
+      const confirmPassword = profConfirmInput ? profConfirmInput.value.trim() : '';
 
-      if (!name || !phone) {
+      if (!name) {
         if (profileError && profileErrorText) {
           profileError.style.display = 'flex';
-          profileErrorText.textContent = 'Please enter both your Full Name and Mobile Number.';
+          profileErrorText.textContent = 'Please enter your full name.';
         }
+        if (profileNameInput) profileNameInput.focus();
         return;
       }
 
-      if (phone.length !== 10) {
+      if (!phone || phone.length !== 10) {
         if (profileError && profileErrorText) {
           profileError.style.display = 'flex';
           profileErrorText.textContent = 'Mobile phone number must be exactly 10 digits.';
@@ -4588,13 +4640,24 @@ function initUserLogin() {
         return;
       }
 
-      if (newPin && newPin.length !== 4) {
-        if (profileError && profileErrorText) {
-          profileError.style.display = 'flex';
-          profileErrorText.textContent = 'New Secret PIN must be exactly 4 digits (e.g. 1234).';
+      if (newPassword) {
+        if (newPassword.length < 4) {
+          if (profileError && profileErrorText) {
+            profileError.style.display = 'flex';
+            profileErrorText.textContent = 'Password must be at least 4 characters long.';
+          }
+          if (profPasswordInput) profPasswordInput.focus();
+          return;
         }
-        if (profPinInput) profPinInput.focus();
-        return;
+
+        if (newPassword !== confirmPassword) {
+          if (profileError && profileErrorText) {
+            profileError.style.display = 'flex';
+            profileErrorText.textContent = 'Passwords do not match. Please re-enter confirm password.';
+          }
+          if (profConfirmInput) profConfirmInput.focus();
+          return;
+        }
       }
 
       if (profileSaveBtn) {
@@ -4617,7 +4680,9 @@ function initUserLogin() {
             phone,
             email,
             address,
-            newPin
+            password: newPassword || undefined,
+            newPassword: newPassword || undefined,
+            newPin: newPassword || undefined
           })
         });
         const data = r.data;
@@ -4625,6 +4690,7 @@ function initUserLogin() {
           updatedUser = {
             ...currentUser,
             ...data.customer,
+            phone: '+91 ' + phone,
             orders: data.orders || currentUser.orders || []
           };
         } else if (data && data.error) {
@@ -4633,7 +4699,7 @@ function initUserLogin() {
           updatedUser = {
             ...currentUser,
             name,
-            phone,
+            phone: '+91 ' + phone,
             email,
             address,
             orders: currentUser.orders || []
@@ -4644,13 +4710,38 @@ function initUserLogin() {
           // 1. Update session in localStorage
           setCurrentUser(updatedUser);
 
-          // 2. Update dashboard title & phone
+          // 2. Update saved accounts list for future logins on this device
+          try {
+            const accounts = JSON.parse(localStorage.getItem('ar_customer_accounts') || '[]');
+            const rawPhoneClean = phone;
+            const idx = accounts.findIndex(a => {
+              const ap = String(a.phone || '').replace(/\D/g, '');
+              const cp = String(currentUser.phone || '').replace(/\D/g, '');
+              return (ap && ap === rawPhoneClean) || (cp && ap === cp);
+            });
+            const acctData = {
+              id: updatedUser.id,
+              name: updatedUser.name,
+              phone: updatedUser.phone,
+              email: updatedUser.email,
+              address: updatedUser.address || 'Kosamba, Surat',
+              ...(newPassword ? { password: newPassword } : (idx >= 0 && accounts[idx].password ? { password: accounts[idx].password } : {}))
+            };
+            if (idx >= 0) {
+              accounts[idx] = { ...accounts[idx], ...acctData };
+            } else {
+              accounts.push(acctData);
+            }
+            localStorage.setItem('ar_customer_accounts', JSON.stringify(accounts));
+          } catch (e) { }
+
+          // 3. Update dashboard title & phone
           if (dashName) dashName.textContent = updatedUser.name;
           const rawPhone = (updatedUser.phone || '').replace(/[^0-9]/g, '');
           const dispPhone = rawPhone.length >= 10 ? `+91 ${rawPhone.slice(-10)}` : updatedUser.phone;
           if (dashPhone) dashPhone.textContent = `📱 ${dispPhone}`;
 
-          // 3. Pre-fill booking inputs for seamless doorstep requests
+          // 4. Pre-fill booking inputs for seamless doorstep requests
           const bookName = document.getElementById('book-name-input');
           const bookPhone = document.getElementById('book-phone-input');
           const bookAddr = document.getElementById('book-addr-input');
@@ -4658,19 +4749,21 @@ function initUserLogin() {
           if (bookPhone) bookPhone.value = extract10DigitPhone(updatedUser.phone);
           if (bookAddr && updatedUser.address) bookAddr.value = updatedUser.address;
 
-          // 4. Show success banner
+          // 5. Show success banner
           if (profileSuccess && profileSuccessText) {
             profileSuccess.style.display = 'flex';
-            profileSuccessText.innerHTML = `<strong>Profile Updated Successfully!</strong> ${newPin ? 'Your new 4-digit PIN is active.' : ''}`;
+            profileSuccessText.innerHTML = `<strong>Profile Updated Successfully!</strong> ${newPassword ? 'Your new password is now active.' : ''}`;
           }
 
-          // 5. Toast notice
+          // 6. Toast notice
           showToast(`🎉 Profile updated successfully for ${updatedUser.name}!`, 'success');
 
-          // 6. Reset PIN field
+          // 7. Reset password fields
+          if (profPasswordInput) profPasswordInput.value = '';
+          if (profConfirmInput) profConfirmInput.value = '';
           if (profPinInput) profPinInput.value = '';
 
-          // 7. Transition back to bookings tab after brief delay
+          // 8. Transition back to bookings tab after brief delay
           setTimeout(() => {
             showDashBookingsTab();
           }, 1200);

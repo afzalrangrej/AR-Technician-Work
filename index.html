@@ -1757,7 +1757,7 @@
         </div>
 
         <div style="text-align: center; margin-top: 0.85rem; font-size: 0.78rem; color: var(--text-muted);">
-          Want to update your address or secret PIN? <a href="javascript:void(0)" id="link-goto-profile"
+          Want to update your profile or password? <a href="javascript:void(0)" id="link-goto-profile"
             style="color: var(--primary); font-weight: 700; text-decoration: underline;">Update Profile</a>
         </div>
       </div>
@@ -1793,6 +1793,7 @@
         </div>
 
         <form id="user-profile-form">
+          <!-- 1. FULL NAME -->
           <div style="margin-bottom: 0.85rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
@@ -1801,11 +1802,12 @@
             <div style="position: relative;">
               <i class="fas fa-user"
                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--secondary);"></i>
-              <input type="text" id="user-profile-name" class="form-control" placeholder="e.g. Rangrej" required
+              <input type="text" id="user-profile-name" class="form-control" placeholder="e.g. Afzal" required
                 style="padding-left: 2.5rem;" autocomplete="name">
             </div>
           </div>
 
+          <!-- 2. MOBILE PHONE NUMBER -->
           <div style="margin-bottom: 0.85rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
@@ -1832,20 +1834,7 @@
               number for doorstep technician calls and booking updates.</small>
           </div>
 
-          <div style="margin-bottom: 0.85rem;">
-            <label
-              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              EMAIL ADDRESS <span
-                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
-            </label>
-            <div style="position: relative;">
-              <i class="fas fa-envelope"
-                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
-              <input type="email" id="user-profile-email" class="form-control" placeholder="e.g. rangrej@example.com"
-                style="padding-left: 2.5rem;" autocomplete="email">
-            </div>
-          </div>
-
+          <!-- 3. DOORSTEP SERVICE ADDRESS / AREA -->
           <div style="margin-bottom: 0.85rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
@@ -1860,27 +1849,65 @@
             </div>
           </div>
 
-          <div style="margin-bottom: 1.15rem;">
+          <!-- 4. EMAIL ADDRESS (OPTIONAL) -->
+          <div style="margin-bottom: 0.85rem;">
             <label
               style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
-              CHANGE 4-DIGIT PIN / SECRET CODE <span
+              EMAIL ADDRESS <span
                 style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional)</span>
             </label>
             <div style="position: relative;">
-              <i class="fas fa-key"
+              <i class="fas fa-envelope"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+              <input type="email" id="user-profile-email" class="form-control" placeholder="e.g. service@artechnicianwork.com"
+                style="padding-left: 2.5rem;" autocomplete="email">
+            </div>
+          </div>
+
+          <!-- 5. PASSWORD (OPTIONAL CHANGE) -->
+          <div style="margin-bottom: 0.85rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              PASSWORD <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Leave blank to keep existing password)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-lock"
                 style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
-              <input type="password" id="user-profile-pin" class="form-control"
-                placeholder="Leave blank to keep existing PIN" maxlength="4" minlength="4" inputmode="numeric"
-                pattern="[0-9]{4}" style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
-              <button type="button" id="user-profile-toggle-pin"
+              <input type="password" id="user-profile-password" class="form-control"
+                placeholder="Enter new password (optional)" minlength="4"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-profile-toggle-password"
                 style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
-                title="Toggle PIN visibility">
-                <i class="fas fa-eye" id="user-profile-pin-eye"></i>
+                title="Toggle password visibility">
+                <i class="fas fa-eye" id="user-profile-password-eye"></i>
               </button>
             </div>
-            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Only enter
-              if you want to change your 4-digit PIN for other devices.</small>
           </div>
+
+          <!-- 6. CONFIRM PASSWORD -->
+          <div style="margin-bottom: 1.15rem;">
+            <label
+              style="font-size: 0.78rem; font-weight: 700; color: var(--text-muted); display: block; margin-bottom: 0.35rem;">
+              CONFIRM PASSWORD <span
+                style="font-weight: 400; font-size: 0.72rem; color: var(--text-dim);">(Optional if not changing)</span>
+            </label>
+            <div style="position: relative;">
+              <i class="fas fa-shield-halved"
+                style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #38bdf8;"></i>
+              <input type="password" id="user-profile-confirm-password" class="form-control"
+                placeholder="Re-enter new password to confirm" minlength="4"
+                style="padding-left: 2.5rem; padding-right: 2.5rem;" autocomplete="new-password">
+              <button type="button" id="user-profile-toggle-confirm"
+                style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 0.9rem;"
+                title="Toggle confirm password visibility">
+                <i class="fas fa-eye" id="user-profile-confirm-eye"></i>
+              </button>
+            </div>
+            <small style="font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; display: block;">Only enter if you wish to change your account login password.</small>
+          </div>
+
+          <input type="hidden" id="user-profile-pin" value="">
 
           <div style="display: flex; gap: 0.75rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 1rem;">
             <button type="button" id="user-profile-cancel-btn" class="btn btn-secondary btn-sm" style="flex: 1;">
@@ -1896,7 +1923,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261114_v3"></script>
+  <script src="script.js?v=20261114_v4"></script>
 </body>
 
 </html>

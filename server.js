@@ -674,7 +674,7 @@ app.all(['/api/user/profile', '/api/user/update-profile'], async (req, res) => {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
   try {
-    const { id, currentPhone, name, phone, email, address, newPin } = req.body;
+    const { id, currentPhone, name, phone, email, address, newPin, password, newPassword } = req.body;
     if (!name || !phone) {
       return res.status(400).json({ error: 'Full Name and Mobile Phone Number are required.' });
     }
@@ -684,14 +684,15 @@ app.all(['/api/user/profile', '/api/user/update-profile'], async (req, res) => {
     const cleanEmail = email && email.trim() ? email.trim() : null;
     const cleanAddr = address && address.trim() ? address.trim() : 'Kosamba, Surat';
     const cleanCurrentPhone = currentPhone ? currentPhone.toString().replace(/[^0-9]/g, '').trim() : '';
-    const cleanPin = (newPin && newPin.toString().trim()) ? newPin.toString().trim().replace(/[^0-9]/g, '') : null;
+    const rawPass = (password || newPassword || newPin || '').toString().trim();
+    const cleanPass = rawPass ? rawPass : null;
 
     if (cleanPhone.length !== 10) {
       return res.status(400).json({ error: 'Mobile phone number must be exactly 10 digits.' });
     }
 
-    if (cleanPin && cleanPin.length !== 4) {
-      return res.status(400).json({ error: 'New Secret PIN must be exactly 4 digits (e.g. 1234).' });
+    if (cleanPass && cleanPass.length < 4) {
+      return res.status(400).json({ error: 'Password must be at least 4 characters long.' });
     }
 
     // 1. Locate customer by id or phone
@@ -743,10 +744,10 @@ app.all(['/api/user/profile', '/api/user/update-profile'], async (req, res) => {
     }
 
     if (userRecord) {
-      if (cleanPin) {
+      if (cleanPass) {
         await dbDriver.run(
           `UPDATE users SET name = ?, phone = ?, email = ?, password = ? WHERE id = ?`,
-          [cleanName, cleanPhone, cleanEmail, cleanPin, userRecord.id]
+          [cleanName, cleanPhone, cleanEmail, cleanPass, userRecord.id]
         );
       } else {
         await dbDriver.run(
@@ -754,10 +755,10 @@ app.all(['/api/user/profile', '/api/user/update-profile'], async (req, res) => {
           [cleanName, cleanPhone, cleanEmail, userRecord.id]
         );
       }
-    } else if (cleanPin) {
+    } else if (cleanPass) {
       await dbDriver.run(
         `INSERT INTO users (name, phone, email, password) VALUES (?, ?, ?, ?)`,
-        [cleanName, cleanPhone, cleanEmail, cleanPin]
+        [cleanName, cleanPhone, cleanEmail, cleanPass]
       );
     }
 
