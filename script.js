@@ -120,6 +120,12 @@ const translations = {
     nav_admin: "Admin",
     nav_login: "Login",
     nav_book: "Book Repair",
+    nav_my_bookings: "My Bookings",
+    my_bookings_badge: "YOUR REPAIR TICKETS",
+    my_bookings_title: 'My <span class="gradient-text">Bookings</span> & Live Status',
+    my_bookings_subtitle: "All your active appliance repair bookings with real-time technician status, quick 1-click code copying, and live GPS map tracking.",
+    my_bookings_empty_title: "No Repair Bookings Found",
+    my_bookings_empty_desc: "You don't have any registered repair bookings on this device yet. Book a home visit or login with your registered mobile number to see all your bookings.",
     hero_badge: '<i class="fas fa-solid fa-screwdriver-wrench"></i> In-Shop Service <i class="fas fa-solid fa-house"></i> At-Home Repair Service',
     hero_title: 'Gas & Electrical Repair <span class="gradient-text">Shop and Home Service</span>',
     hero_subtitle: "We provide reliable gas, electrical, and industrial equipment repair services at our shop and your home. From gas stoves and induction cooktops to water pumps, coolers, and electrical wiring, we help keep your appliances and equipment working safely.",
@@ -235,6 +241,12 @@ const translations = {
     nav_admin: "एडमिन",
     nav_login: "लॉगिन",
     nav_book: "रिपेयर बुक करें",
+    nav_my_bookings: "मेरी बुकिंग्स",
+    my_bookings_badge: "आपकी रिपेयर बुकिंग्स",
+    my_bookings_title: 'मेरी <span class="gradient-text">बुकिंग्स</span> और लाइव स्टेटस',
+    my_bookings_subtitle: "आपकी सभी सक्रिय रिपेयर बुकिंग्स, लाइव तकनीशियन स्टेटस, 1-क्लिक कोड कॉपी और जीपीएस ट्रैकिंग के साथ।",
+    my_bookings_empty_title: "कोई रिपेयर बुकिंग नहीं मिली",
+    my_bookings_empty_desc: "इस डिवाइस पर आपकी कोई रिपेयर बुकिंग नहीं मिली। अपने मोबाइल नंबर से लॉगिन करें या होम रिपेयर बुक करें।",
     hero_badge: '<i class="fas fa-solid fa-screwdriver-wrench"></i> दुकान पर सेवा <i class="fas fa-solid fa-house"></i> घर पर रिपेयर सेवा',
     hero_title: 'गैस और इलेक्ट्रिकल रिपेयर <span class="gradient-text">दुकान और होम सर्विस</span>',
     hero_subtitle: "हम अपनी दुकान और आपके घर दोनों जगह भरोसेमंद गैस, इलेक्ट्रिकल और इंडस्ट्रियल उपकरणों की मरम्मत सेवा प्रदान करते हैं। गैस चूल्हे और इंडक्शन से लेकर पानी के पंप, कूलर और वायरिंग तक - हम आपके सभी उपकरणों को सुरक्षित रखते हैं।",
@@ -350,6 +362,12 @@ const translations = {
     nav_admin: "એડમિન",
     nav_login: "લૉગિન",
     nav_book: "રીપેરીંગ બુક કરો",
+    nav_my_bookings: "મારી બુકિંગ્સ",
+    my_bookings_badge: "તમારી રીપેર બુકિંગ્સ",
+    my_bookings_title: 'મારી <span class="gradient-text">બુકિંગ્સ</span> અને લાઈવ સ્ટેટસ',
+    my_bookings_subtitle: "તમારી તમામ એક્ટિવ રીપેર બુકિંગ્સ, લાઈવ ટેકનિશિયન સ્ટેટસ, 1-ક્લિક કોડ કોપી અને જીપીએસ ટ્રેકિંગ સાથે.",
+    my_bookings_empty_title: "કોઈ રીપેર બુકિંગ મળ્યું નથી",
+    my_bookings_empty_desc: "આ ડિવાઇસ પર તમારી કોઈ રીપેર બુકિંગ મળી નથી. તમારા મોબાઈલ નંબરથી લોગિન કરો અથવા હોમ રીપેર બુક કરો.",
     hero_badge: '<i class="fas fa-solid fa-screwdriver-wrench"></i> દુકાન પર સેવા <i class="fas fa-solid fa-house"></i> ઘરે બેઠા રીપેર સેવા',
     hero_title: 'ગેસ અને ઇલેક્ટ્રિકલ રીપેર <span class="gradient-text">દુકાન અને હોમ સર્વિસ</span>',
     hero_subtitle: "અમે અમારી દુકાન અને તમારા ઘરે વિશ્વસનીય ગેસ, ઇલેક્ટ્રિકલ અને ઔદ્યોગિક સાધનોની સમારકામ સેવા પ્રદાન કરીએ છીએ. ગેસના ચૂલા, ઇન્ડક્શનથી લઈને પાણીના પંપ, કૂલર અને વાયરિંગ સુધી - અમે તમારા સાધનોને સુરક્ષિત અને કાર્યરત રાખીએ છીએ.",
@@ -465,6 +483,12 @@ const translations = {
     nav_admin: "Admin",
     nav_login: "Login",
     nav_book: "Repair Book Karein",
+    nav_my_bookings: "Meri Bookings",
+    my_bookings_badge: "AAPKI REPAIR TICKETS",
+    my_bookings_title: 'Meri <span class="gradient-text">Bookings</span> aur Live Status',
+    my_bookings_subtitle: "Aapki saari active repair bookings, real-time technician status, 1-click code copy aur live GPS tracking ke saath.",
+    my_bookings_empty_title: "Koi Repair Booking Nahi Mili",
+    my_bookings_empty_desc: "Iss device par koi booking nahi mili. Apne mobile number se login karein ya nayi home repair book karein.",
     hero_badge: '<i class="fas fa-solid fa-screwdriver-wrench"></i> Shop Par Service <i class="fas fa-solid fa-house"></i> Ghar Par Home Service',
     hero_title: 'Gas & Electrical Repair <span class="gradient-text">Shop aur Home Service</span>',
     hero_subtitle: "Hum provide karte hain reliable gas, electrical aur industrial equipment repair services shop aur aapke ghar par. Gas chulhe aur induction se lekar water pump, cooler aur wiring tak - aapke sabhi appliances safely repair honge.",
@@ -677,7 +701,9 @@ window.syncCustomerCodeVisibility = function () {
       heroMyBookingsPill.onclick = function (e) {
         e.preventDefault();
         e.stopPropagation();
-        if (typeof window.openMyBookingsModal === 'function') {
+        if (typeof window.openMyBookingsSection === 'function') {
+          window.openMyBookingsSection();
+        } else if (typeof window.openMyBookingsModal === 'function') {
           window.openMyBookingsModal();
         }
       };
@@ -877,14 +903,342 @@ window.syncCustomerCodeVisibility = function () {
         });
       }
     }
-    return;
+  } else {
+    // No active booking code: Hide tracker helper cards
+    if (pasteBanner) pasteBanner.style.display = 'none';
+    if (chipsRow) chipsRow.style.display = 'none';
+    if (bannerCodesContainer) bannerCodesContainer.innerHTML = '';
+    if (realSection) realSection.style.display = 'none';
   }
 
-  // No active booking code: Hide tracker helper cards
-  if (pasteBanner) pasteBanner.style.display = 'none';
-  if (chipsRow) chipsRow.style.display = 'none';
-  if (bannerCodesContainer) bannerCodesContainer.innerHTML = '';
-  if (realSection) realSection.style.display = 'none';
+  // ========================================================
+  // DEDICATED SEPARATE "MY BOOKINGS" SECTION SYNC & RENDER
+  // ========================================================
+  const myBookingsSection = document.getElementById('my-bookings');
+  const myBookingsGrid = document.getElementById('my-bookings-cards-grid');
+  const myBookingsEmpty = document.getElementById('my-bookings-empty-state');
+  const myBookingsCountText = document.getElementById('my-bookings-count-text');
+  const navMyBookingsLink = document.getElementById('nav-my-bookings-link');
+
+  if (navMyBookingsLink) {
+    if (currentUser || totalBookingsCount > 0) {
+      navMyBookingsLink.style.display = 'inline-flex';
+    } else {
+      navMyBookingsLink.style.display = 'none';
+    }
+  }
+
+  if (myBookingsSection) {
+    if (totalBookingsCount > 0) {
+      myBookingsSection.style.display = 'block';
+      if (myBookingsCountText) {
+        myBookingsCountText.textContent = `${totalBookingsCount} ${totalBookingsCount === 1 ? 'Booking' : 'Bookings'}`;
+      }
+      if (myBookingsEmpty) myBookingsEmpty.style.display = 'none';
+
+      if (myBookingsGrid) {
+        myBookingsGrid.style.display = 'grid';
+
+        myBookingsGrid.innerHTML = allBookingsList.map(b => {
+          const bCode = (b.tracking_code || b.code || '').trim();
+          const status = (b.status || 'Booked').trim();
+          const sLower = status.toLowerCase();
+
+          const isCompleted = sLower.includes('complete') || sLower.includes('finish') || sLower.includes('deliver');
+          const isAtHome = !isCompleted && (sLower.includes('at home') || sLower.includes('at your home') || sLower.includes('arrived'));
+          const isDeparture = !isCompleted && !isAtHome && (sLower.includes('departure') || sLower.includes('depart') || sLower.includes('dispatch') || sLower.includes('route') || sLower.includes('way'));
+          const isAccepted = !isCompleted && !isAtHome && !isDeparture && (sLower.includes('accept') || sLower.includes('confirm'));
+          const isRejected = sLower.includes('reject') || sLower.includes('decline') || sLower.includes('cancel');
+
+          let stepNum = 1;
+          let stepFillWidth = '20%';
+          let statusColor = '#38bdf8';
+          let statusBadgeText = '📝 Booked (Pending Dispatch)';
+
+          if (isRejected) {
+            stepNum = 0;
+            stepFillWidth = '0%';
+            statusColor = '#f87171';
+            statusBadgeText = '❌ Booking Rejected';
+          } else if (isCompleted) {
+            stepNum = 4;
+            stepFillWidth = '100%';
+            statusColor = '#10b981';
+            statusBadgeText = '✔ Completed & Tested';
+          } else if (isAtHome) {
+            stepNum = 3;
+            stepFillWidth = '75%';
+            statusColor = '#a855f7';
+            statusBadgeText = '📍 At Your Home (Arrived)';
+          } else if (isDeparture) {
+            stepNum = 2;
+            stepFillWidth = '45%';
+            statusColor = '#00f2fe';
+            statusBadgeText = '🛵 Dispatched (On the Way)';
+          } else if (isAccepted) {
+            stepNum = 1;
+            stepFillWidth = '20%';
+            statusColor = '#34d399';
+            statusBadgeText = '✅ Accepted by Workshop';
+          }
+
+          const deviceName = b.device_name || b.deviceName || b.device_category || 'Home Appliance Service';
+          const issueDesc = b.issue_description || b.issueDescription || b.notes || 'Doorstep repair and equipment checkup';
+          const isHome = (b.service_type || 'home') === 'home';
+          const serviceModeText = isHome ? '🏡 Doorstep Home Visit' : '🏪 Shop Drop-off';
+          const custName = b.customer_name || (currentUser && currentUser.name) || 'Valued Customer';
+          const custPhone = b.customer_phone || (currentUser && currentUser.phone) || '';
+          const address = b.address || (currentUser && currentUser.address) || 'Kosamba & Surrounding Area';
+          const priceStr = b.price_estimate ? `₹${b.price_estimate}` : '₹85 (Inspection)';
+
+          let dateStr = 'Recent Booking';
+          if (b.created_at) {
+            try {
+              dateStr = new Date(b.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+            } catch (e) {}
+          }
+
+          const stepsDef = [
+            { id: 1, label: 'Accepted' },
+            { id: 2, label: 'Dispatched' },
+            { id: 3, label: 'At Doorstep' },
+            { id: 4, label: 'Completed' }
+          ];
+
+          const stepperHtml = `
+            <div class="booking-stepper">
+              <div class="booking-stepper-track"></div>
+              <div class="booking-stepper-fill" style="width: ${stepFillWidth};"></div>
+              ${stepsDef.map(s => {
+                let circleClass = 'step-node-bubble';
+                let labelClass = 'step-node-text';
+                let circleContent = s.id;
+                if (!isRejected) {
+                  if (stepNum > s.id) {
+                    circleClass += ' completed';
+                    labelClass += ' completed';
+                    circleContent = '<i class="fas fa-check" style="font-size:0.6rem;"></i>';
+                  } else if (stepNum === s.id) {
+                    circleClass += ' active';
+                    labelClass += ' active';
+                  }
+                }
+                return `
+                  <div class="booking-step-node">
+                    <div class="${circleClass}">${circleContent}</div>
+                    <span class="${labelClass}">${s.label}</span>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          `;
+
+          return `
+            <div class="my-booking-card" data-booking-code="${escapeHtml(bCode)}">
+              <!-- Top Row: Code + Copy Button & Live Status Badge -->
+              <div class="my-booking-card-top">
+                <div class="booking-code-chip-group">
+                  <span class="code-tag">#${escapeHtml(bCode)}</span>
+                  <button type="button" class="btn-booking-copy-action btn-copy-my-code" data-code="${escapeHtml(bCode)}" title="Copy tracking code #${escapeHtml(bCode)}">
+                    <i class="far fa-copy"></i> <span>Copy Code</span>
+                  </button>
+                </div>
+                <div class="booking-live-status-badge" style="border-color:${statusColor}; color:${statusColor};">
+                  <span class="status-dot" style="background:${statusColor};"></span>
+                  <span>${statusBadgeText}</span>
+                </div>
+              </div>
+
+              <!-- 4-Step Visual Timeline -->
+              ${stepperHtml}
+
+              <!-- Device & Issue -->
+              <div class="my-booking-device-title">
+                <i class="fas fa-screwdriver-wrench"></i> ${escapeHtml(deviceName)}
+              </div>
+              <div class="my-booking-issue-box">
+                <i class="fas fa-info-circle" style="color:#00f2fe; margin-right:4px;"></i> ${escapeHtml(issueDesc)}
+              </div>
+
+              <!-- Metadata Grid -->
+              <div class="my-booking-meta-grid">
+                <div class="my-booking-meta-item" title="Service Type">
+                  <i class="fas fa-toolbox"></i> <span>${serviceModeText}</span>
+                </div>
+                <div class="my-booking-meta-item" title="Booking Date">
+                  <i class="fas fa-calendar-day"></i> <span>${dateStr}</span>
+                </div>
+                <div class="my-booking-meta-item" title="Customer Details">
+                  <i class="fas fa-user-check"></i> <span>${escapeHtml(custName)}${custPhone ? ' (' + escapeHtml(custPhone) + ')' : ''}</span>
+                </div>
+                <div class="my-booking-meta-item" title="Estimate">
+                  <i class="fas fa-receipt"></i> <span>Est: ${priceStr}</span>
+                </div>
+                <div class="my-booking-meta-item" style="grid-column: 1 / -1;" title="Doorstep Address">
+                  <i class="fas fa-location-dot"></i> <span style="white-space:normal; line-height:1.2;">${escapeHtml(address)}</span>
+                </div>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="my-booking-actions-row">
+                <button type="button" class="btn-card-track-live btn-track-my-booking" data-code="${escapeHtml(bCode)}" title="Track live bike route on map">
+                  <i class="fas fa-location-arrow"></i> <span>Track Live on Map</span>
+                </button>
+                <a href="https://wa.me/916351618067?text=Hello%20Afzal,%20regarding%20my%20repair%20booking%20${encodeURIComponent(bCode)}" target="_blank" class="btn-card-whatsapp" title="Chat with technician on WhatsApp">
+                  <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                </a>
+                <button type="button" class="btn-card-copy-bottom btn-copy-my-code" data-code="${escapeHtml(bCode)}" title="Copy code">
+                  <i class="far fa-copy"></i> <span>Copy #${escapeHtml(bCode)}</span>
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Wire Copy Buttons in My Bookings Section
+        myBookingsGrid.querySelectorAll('.btn-copy-my-code').forEach(btn => {
+          btn.onclick = async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const c = btn.getAttribute('data-code');
+            if (!c) return;
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(c);
+              } else {
+                const ta = document.createElement('textarea');
+                ta.value = c;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+              }
+            } catch (err) {
+              const ta = document.createElement('textarea');
+              ta.value = c;
+              ta.style.position = 'fixed';
+              ta.style.opacity = '0';
+              document.body.appendChild(ta);
+              ta.select();
+              document.execCommand('copy');
+              document.body.removeChild(ta);
+            }
+
+            // Sync with Live Tracker input
+            if (trackInput) {
+              trackInput.value = c;
+            }
+
+            // Visual copied feedback
+            const originalHTML = btn.innerHTML;
+            btn.classList.add('copied');
+            btn.innerHTML = `<i class="fas fa-check"></i> <span>Copied!</span>`;
+
+            if (typeof showToast === 'function') {
+              showToast(`📋 Code "${c}" copied to clipboard! Ready to track live.`, 'success');
+            }
+
+            setTimeout(() => {
+              btn.classList.remove('copied');
+              btn.innerHTML = originalHTML;
+            }, 2000);
+          };
+        });
+
+        // Wire Track Live Buttons in My Bookings Section
+        myBookingsGrid.querySelectorAll('.btn-track-my-booking').forEach(btn => {
+          btn.onclick = (e) => {
+            e.preventDefault();
+            const c = btn.getAttribute('data-code');
+            if (!c) return;
+
+            if (trackInput) {
+              trackInput.value = c;
+              trackInput.classList.remove('flash-input');
+              void trackInput.offsetWidth;
+              trackInput.classList.add('flash-input');
+            }
+
+            // Highlight chip if available
+            document.querySelectorAll('.btn-set-tracker-code').forEach(b => {
+              if (b.getAttribute('data-code') === c) {
+                b.classList.add('active');
+              } else {
+                b.classList.remove('active');
+              }
+            });
+
+            // Scroll down to tracker
+            const trackerSection = document.getElementById('tracker');
+            if (trackerSection) {
+              trackerSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // Trigger submit / tracking simulation
+            const trackBtn = document.getElementById('track-btn');
+            if (trackBtn) {
+              setTimeout(() => {
+                trackBtn.click();
+              }, 400);
+            }
+
+            if (typeof showToast === 'function') {
+              showToast(`📍 Tracking code #${c} live! Watching technician journey on road.`, 'info');
+            }
+          };
+        });
+      }
+    } else if (currentUser) {
+      myBookingsSection.style.display = 'block';
+      if (myBookingsGrid) myBookingsGrid.style.display = 'none';
+      if (myBookingsEmpty) myBookingsEmpty.style.display = 'block';
+      if (myBookingsCountText) myBookingsCountText.textContent = '0 Bookings';
+    } else {
+      myBookingsSection.style.display = 'none';
+    }
+  }
+
+  // Wire Refresh Status Button
+  const refreshBtn = document.getElementById('btn-refresh-my-bookings');
+  if (refreshBtn && !refreshBtn._wired) {
+    refreshBtn._wired = true;
+    refreshBtn.onclick = async (e) => {
+      e.preventDefault();
+      const icon = document.getElementById('refresh-bookings-icon');
+      if (icon) icon.classList.add('fa-spin');
+
+      let user = null;
+      try {
+        user = JSON.parse(localStorage.getItem('ar_customer_user') || 'null');
+      } catch (err) {}
+
+      if (user && user.id) {
+        try {
+          const res = await fetch(`/api/user/orders/${user.id}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data && Array.isArray(data.orders)) {
+              user.orders = data.orders;
+              localStorage.setItem('ar_customer_user', JSON.stringify(user));
+            }
+          }
+        } catch (err) {}
+      }
+
+      if (typeof window.syncCustomerCodeVisibility === 'function') {
+        window.syncCustomerCodeVisibility();
+      }
+
+      setTimeout(() => {
+        if (icon) icon.classList.remove('fa-spin');
+        if (typeof showToast === 'function') {
+          showToast('🔄 Bookings & live technician status refreshed!', 'success');
+        }
+      }, 500);
+    };
+  }
 };
 
 // Universal 10-Digit Mobile Phone Sanitizer & Enforcer
@@ -4863,6 +5217,13 @@ function initUserLogin() {
   window.showDashProfileTab = showDashProfileTab;
 
   function openMyBookingsModal() {
+    const section = document.getElementById('my-bookings');
+    if (section) {
+      if (typeof window.openMyBookingsSection === 'function') {
+        window.openMyBookingsSection();
+        return;
+      }
+    }
     const user = getCurrentUser();
     let localBookings = [];
     try {
@@ -6818,7 +7179,35 @@ function initUserCodePill() {
   const myBookingsPill = document.getElementById('user-my-bookings-pill');
   const legacyPill = document.getElementById('user-code-pill');
 
+  window.openMyBookingsSection = function () {
+    const section = document.getElementById('my-bookings');
+    if (section) {
+      section.style.display = 'block';
+      if (typeof window.syncCustomerCodeVisibility === 'function') {
+        window.syncCustomerCodeVisibility();
+      }
+      setTimeout(() => {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        const wrapper = section.querySelector('.my-bookings-wrapper');
+        if (wrapper) {
+          wrapper.classList.remove('section-glow-pulse');
+          void wrapper.offsetWidth;
+          wrapper.classList.add('section-glow-pulse');
+          setTimeout(() => wrapper.classList.remove('section-glow-pulse'), 2500);
+        }
+      }, 40);
+    } else if (typeof window.openDashboard === 'function') {
+      window.openMyBookingsModal();
+    }
+  };
+
   window.openMyBookingsModal = function () {
+    const section = document.getElementById('my-bookings');
+    if (section) {
+      window.openMyBookingsSection();
+      return;
+    }
+
     let currentUser = null;
     try {
       const raw = localStorage.getItem('ar_customer_user');
@@ -6856,7 +7245,7 @@ function initUserCodePill() {
     myBookingsPill.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      window.openMyBookingsModal();
+      window.openMyBookingsSection();
     });
   }
 
@@ -6864,7 +7253,7 @@ function initUserCodePill() {
     legacyPill.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      window.openMyBookingsModal();
+      window.openMyBookingsSection();
     });
   }
 }

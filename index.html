@@ -96,6 +96,10 @@
         <a href="#hero" class="nav-link" data-i18n="nav_home">Home</a>
         <a href="#notice-board" class="nav-link"><i class="fas fa-bullhorn"
             style="font-size:0.8rem; color:#f59e0b; margin-right:4px;"></i>Notice Board</a>
+        <a href="#my-bookings" class="nav-link" id="nav-my-bookings-link" style="display:none;"
+          onclick="if(typeof window.openMyBookingsSection==='function'){window.openMyBookingsSection();}"><i
+            class="fas fa-clipboard-list" style="font-size:0.8rem; color:#00f2fe; margin-right:4px;"></i><span
+            data-i18n="nav_my_bookings">My Bookings</span></a>
         <a href="#services" class="nav-link" data-i18n="nav_services">Services</a>
         <a href="#location" class="nav-link" data-i18n="nav_location">Location & Shop</a>
         <a href="#tracker" class="nav-link" data-i18n="nav_tracker">Track Order</a>
@@ -247,7 +251,7 @@
             <!-- "My Bookings" Section (Replaces "My code": opens user bookings with tracking codes & copy system) -->
             <div id="user-my-bookings-pill" class="user-code-pill my-bookings-pill" title="Click to view all your repair bookings & tracking codes" role="button"
               tabindex="0" aria-label="My Bookings. Click to view all bookings." style="display: none;"
-              onclick="if(typeof window.openMyBookingsModal==='function'){window.openMyBookingsModal();}else if(typeof window.openDashboard==='function'){window.openDashboard();}">
+              onclick="if(typeof window.openMyBookingsSection==='function'){window.openMyBookingsSection();}else if(typeof window.openMyBookingsModal==='function'){window.openMyBookingsModal();}else if(typeof window.openDashboard==='function'){window.openDashboard();}">
               <i class="fas fa-clipboard-list code-icon"></i>
               <span class="code-label" id="user-my-bookings-label">My Bookings</span>
               <span id="user-my-bookings-count" class="code-val" style="padding: 0.1rem 0.5rem; font-size: 0.78rem; border-radius: 8px;">0</span>
@@ -447,6 +451,63 @@
             <i class="fas fa-spinner fa-spin"
               style="font-size: 1.5rem; color: #b060ff; margin-bottom: 0.5rem; display: block;"></i>
             Loading live admin notice board...
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SEPARATE "MY BOOKINGS" SECTION (CUSTOMER ALL REPAIRS & LIVE STATUS)
+       ======================================================== -->
+  <section id="my-bookings" class="section-padding my-bookings-section" style="display: none;">
+    <div class="container">
+      <div class="my-bookings-wrapper">
+        <!-- Header -->
+        <div class="my-bookings-header">
+          <div class="my-bookings-title-area">
+            <div class="badge-pill cyan" style="margin-bottom: 0.5rem; display: inline-flex; align-items: center; gap: 6px;">
+              <i class="fas fa-clipboard-check"></i> <strong data-i18n="my_bookings_badge">YOUR REPAIR TICKETS</strong>
+            </div>
+            <h2 class="section-title" style="margin-bottom: 0.35rem;" data-i18n="my_bookings_title">
+              My <span class="gradient-text">Bookings</span> & Live Status
+            </h2>
+            <p class="section-subtitle" style="margin-bottom: 0;" data-i18n="my_bookings_subtitle">
+              All your active appliance repair bookings with real-time technician status, quick 1-click code copying, and live GPS map tracking.
+            </p>
+          </div>
+          <div class="my-bookings-header-actions">
+            <div class="my-bookings-count-pill" id="my-bookings-total-pill">
+              <i class="fas fa-layer-group"></i> <span id="my-bookings-count-text">0 Bookings</span>
+            </div>
+            <button type="button" class="btn-refresh-bookings" id="btn-refresh-my-bookings" title="Refresh Live Status">
+              <i class="fas fa-sync-alt" id="refresh-bookings-icon"></i> <span>Refresh Status</span>
+            </button>
+            <button type="button" class="btn btn-sm btn-amber trigger-booking" title="Book another repair">
+              <i class="fas fa-plus"></i> <span>Book Repair</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Bookings Cards Grid -->
+        <div class="my-bookings-grid" id="my-bookings-cards-grid">
+          <!-- Populated dynamically with every user booking -->
+        </div>
+
+        <!-- Empty State Container -->
+        <div class="my-bookings-empty" id="my-bookings-empty-state" style="display: none;">
+          <div class="my-bookings-empty-icon">
+            <i class="fas fa-ticket-simple"></i>
+          </div>
+          <h3 data-i18n="my_bookings_empty_title">No Repair Bookings Found</h3>
+          <p data-i18n="my_bookings_empty_desc">You don't have any registered repair bookings on this device yet. Book a home visit or login with your registered mobile number to see all your bookings.</p>
+          <div class="my-bookings-empty-actions">
+            <button type="button" class="btn btn-amber trigger-booking">
+              <i class="fas fa-calendar-plus"></i> Request Home Technician
+            </button>
+            <button type="button" class="btn btn-secondary" onclick="if(typeof openLoginModal==='function')openLoginModal();">
+              <i class="fas fa-user-circle"></i> Customer Login
+            </button>
           </div>
         </div>
       </div>
