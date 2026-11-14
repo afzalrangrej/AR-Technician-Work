@@ -24,6 +24,11 @@ app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, 'admin-portal', 'index.html'));
 });
 
+// Serve UPI QR payment page
+app.get(['/upi-qr', '/upi-qr.html', '/pay'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'upi-qr.html'));
+});
+
 // Serve static frontend files
 app.use(express.static(path.join(__dirname)));
 

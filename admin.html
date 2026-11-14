@@ -3260,8 +3260,13 @@
                   style="font-weight:700; color:#34d399;">
               </div>
               <div class="form-group" style="margin-bottom:0.5rem;">
-                <label style="font-size:0.78rem;">Payment Mode</label>
-                <select id="add-cust-pay-method">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.25rem;">
+                  <label style="font-size:0.78rem; margin-bottom:0;">Payment Mode</label>
+                  <button type="button" id="add-cust-view-qr-btn" onclick="openUpiQrModal('add-cust')" style="display:none; padding:0.15rem 0.5rem; font-size:0.7rem; background:rgba(34,211,238,0.15); border:1px solid rgba(34,211,238,0.4); color:var(--cyan); border-radius:5px; cursor:pointer; font-weight:700; align-items:center; gap:4px;" title="View UPI QR Code">
+                    <i class="fas fa-qrcode"></i> View QR
+                  </button>
+                </div>
+                <select id="add-cust-pay-method" onchange="onAddCustPayMethodChanged(this.value)">
                   <option value="Cash">💵 Cash</option>
                   <option value="UPI">📱 UPI</option>
                   <option value="Card">💳 Card / Other</option>
@@ -3330,8 +3335,13 @@
             <input type="text" id="col-customer-name" placeholder="Enter customer name" required>
           </div>
           <div class="form-group">
-            <label><i class="fas fa-wallet" style="color:var(--pink);"></i> Payment Method</label>
-            <select id="col-payment-method">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+              <label style="margin-bottom:0;"><i class="fas fa-wallet" style="color:var(--pink);"></i> Payment Method</label>
+              <button type="button" id="col-view-qr-btn" onclick="openUpiQrModal('collection')" style="display:none; padding:0.18rem 0.55rem; font-size:0.72rem; background:rgba(34,211,238,0.15); border:1px solid rgba(34,211,238,0.4); color:var(--cyan); border-radius:6px; cursor:pointer; font-weight:700; align-items:center; gap:4px;" title="View UPI QR Code">
+                <i class="fas fa-qrcode"></i> View QR
+              </button>
+            </div>
+            <select id="col-payment-method" onchange="onPaymentMethodChanged(this.value)">
               <option value="Cash">💵 Cash</option>
               <option value="UPI">📱 UPI</option>
             </select>
@@ -3354,6 +3364,61 @@
           </button>
         </div>
       </form>
+    </div>
+  </div>
+
+  <!-- ======== MODAL: UPI PAYMENT QR CODE PAGE (WITH BACK BUTTON) ======== -->
+  <div class="modal-overlay" id="upi-qr-modal" style="z-index:99999;">
+    <div class="modal-card" style="max-width:420px; text-align:center; padding:1.25rem; background:rgba(18, 9, 36, 0.96); border:1px solid rgba(176,96,255,0.28); box-shadow:0 16px 50px rgba(0,0,0,0.8); border-radius:18px;">
+      <!-- Top Navigation Bar with Prominent Back Button -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(176,96,255,0.15);">
+        <button type="button" class="btn-sm" onclick="closeUpiQrModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.22); color:#fff; font-weight:700; padding:0.42rem 0.95rem; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem;">
+          <i class="fas fa-arrow-left"></i> Back
+        </button>
+        <span style="font-weight:700; font-size:0.95rem; color:var(--cyan); display:inline-flex; align-items:center; gap:6px;">
+          <i class="fas fa-qrcode"></i> UPI Scan & Pay
+        </span>
+        <button type="button" class="modal-close" onclick="closeUpiQrModal()" style="position:static; margin:0;"><i class="fas fa-times"></i></button>
+      </div>
+
+      <!-- Live Amount Banner if Amount is Present -->
+      <div id="upi-qr-amount-wrap" style="display:none; margin-bottom:0.85rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); border-radius:10px; padding:0.55rem 0.85rem;">
+        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Payable Collection Amount</div>
+        <div style="font-size:1.45rem; font-weight:800; color:#34d399;" id="upi-qr-amount-text">₹0</div>
+      </div>
+
+      <!-- QR Card Container -->
+      <div style="background:#ffffff; border-radius:14px; padding:10px; box-shadow:0 8px 32px rgba(0,0,0,0.45); display:inline-block; max-width:100%; border:1px solid rgba(255,255,255,0.2);">
+        <img src="images/upi-qr.jpg" alt="A R Technician Work Google Pay UPI QR" style="max-width:100%; width:300px; height:auto; display:block; border-radius:8px; margin:0 auto;">
+      </div>
+
+      <!-- UPI ID Bar with 1-Click Copy -->
+      <div style="margin-top:0.9rem; background:rgba(25,12,50,0.85); border:1px solid rgba(176,96,255,0.2); border-radius:10px; padding:0.6rem 0.85rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+        <div style="text-align:left; overflow:hidden;">
+          <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Official UPI ID</div>
+          <div style="font-size:0.85rem; font-weight:700; color:var(--cyan); font-family:'JetBrains Mono',monospace; text-overflow:ellipsis; overflow:hidden;">6351618067@okbizaxis</div>
+        </div>
+        <button type="button" class="btn-sm" onclick="copyUpiId()" style="background:rgba(34,211,238,0.15); border:1px solid rgba(34,211,238,0.4); color:var(--cyan); padding:0.38rem 0.75rem; font-size:0.75rem; font-weight:700; cursor:pointer; border-radius:6px; white-space:nowrap; display:inline-flex; align-items:center; gap:5px;">
+          <i class="fas fa-copy"></i> <span id="copy-upi-btn-text">Copy</span>
+        </button>
+      </div>
+
+      <!-- Action Buttons with Back and Done -->
+      <div style="display:flex; gap:0.65rem; margin-top:1rem;">
+        <button type="button" class="btn-sm btn-delete" onclick="closeUpiQrModal()" style="flex:1; padding:0.62rem; border-radius:8px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+          <i class="fas fa-arrow-left"></i> Back to Form
+        </button>
+        <button type="button" onclick="closeUpiQrModal()" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; padding:0.62rem; border-radius:8px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+          <i class="fas fa-check"></i> Done
+        </button>
+      </div>
+
+      <!-- Open Full Page Link -->
+      <div style="margin-top:0.65rem;">
+        <a href="upi-qr.html" target="_blank" style="font-size:0.75rem; color:var(--text-muted); text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:color 0.2s ease;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">
+          <i class="fas fa-arrow-up-right-from-square"></i> Open in Full Page View
+        </a>
+      </div>
     </div>
   </div>
 
@@ -5277,6 +5342,83 @@
       return '<i class="fas fa-money-bill-wave" style="color:#34d399;"></i>';
     }
 
+    // ============ UPI QR PAYMENT MODAL HANDLERS ============
+    let upiQrReturnSource = 'collection';
+
+    function onPaymentMethodChanged(val) {
+      const qrBtn = document.getElementById('col-view-qr-btn');
+      if (val === 'UPI') {
+        if (qrBtn) qrBtn.style.display = 'inline-flex';
+        openUpiQrModal('collection');
+      } else {
+        if (qrBtn) qrBtn.style.display = 'none';
+      }
+    }
+
+    function onAddCustPayMethodChanged(val) {
+      const qrBtn = document.getElementById('add-cust-view-qr-btn');
+      if (val === 'UPI') {
+        if (qrBtn) qrBtn.style.display = 'inline-flex';
+        openUpiQrModal('add-cust');
+      } else {
+        if (qrBtn) qrBtn.style.display = 'none';
+      }
+    }
+
+    function openUpiQrModal(source = 'collection') {
+      upiQrReturnSource = source;
+      let amt = 0;
+      if (source === 'collection') {
+        amt = parseFloat(document.getElementById('col-amount')?.value) || 0;
+      } else if (source === 'add-cust') {
+        amt = parseFloat(document.getElementById('add-cust-amount')?.value) || 0;
+      }
+
+      const amtWrap = document.getElementById('upi-qr-amount-wrap');
+      const amtText = document.getElementById('upi-qr-amount-text');
+      if (amt > 0) {
+        if (amtText) amtText.textContent = `₹${amt.toLocaleString('en-IN')}`;
+        if (amtWrap) amtWrap.style.display = 'block';
+      } else {
+        if (amtWrap) amtWrap.style.display = 'none';
+      }
+
+      openModal('upi-qr-modal');
+    }
+
+    function closeUpiQrModal() {
+      closeModal('upi-qr-modal');
+      if (upiQrReturnSource === 'collection') {
+        const methodSelect = document.getElementById('col-payment-method');
+        if (methodSelect) {
+          methodSelect.value = 'UPI';
+          const qrBtn = document.getElementById('col-view-qr-btn');
+          if (qrBtn) qrBtn.style.display = 'inline-flex';
+        }
+      } else if (upiQrReturnSource === 'add-cust') {
+        const methodSelect = document.getElementById('add-cust-pay-method');
+        if (methodSelect) {
+          methodSelect.value = 'UPI';
+          const qrBtn = document.getElementById('add-cust-view-qr-btn');
+          if (qrBtn) qrBtn.style.display = 'inline-flex';
+        }
+      }
+    }
+
+    function copyUpiId() {
+      const upiId = '6351618067@okbizaxis';
+      navigator.clipboard.writeText(upiId).then(() => {
+        const btnText = document.getElementById('copy-upi-btn-text');
+        if (btnText) {
+          btnText.textContent = 'Copied!';
+          setTimeout(() => { btnText.textContent = 'Copy'; }, 2000);
+        }
+        showToast('✅ UPI ID copied: ' + upiId, 'success');
+      }).catch(() => {
+        showToast('UPI ID: ' + upiId, 'info');
+      });
+    }
+
     function openAddCollectionModal(defaultTracking = '', defaultCustomer = '') {
       const today = new Date();
       const localDate = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
@@ -5284,6 +5426,8 @@
       document.getElementById('col-amount').value = '';
       document.getElementById('col-notes').value = '';
       document.getElementById('col-payment-method').value = 'Cash';
+      const qrBtn = document.getElementById('col-view-qr-btn');
+      if (qrBtn) qrBtn.style.display = 'none';
 
       const select = document.getElementById('col-order-select');
       const orderOptions = allOrders.map(o => `
@@ -5365,6 +5509,8 @@
       if (colFields) colFields.style.display = 'none';
       const chk = document.getElementById('add-cust-record-col');
       if (chk) chk.checked = false;
+      const qrBtn = document.getElementById('add-cust-view-qr-btn');
+      if (qrBtn) qrBtn.style.display = 'none';
       openModal('add-customer-modal');
     }
 

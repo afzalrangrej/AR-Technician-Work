@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UPI QR Payment • AR Technician Work</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    :root {
+      --bg-deep: #07040f;
+      --bg-dark: #0d0818;
+      --bg-card: rgba(20, 10, 42, 0.85);
+      --border: rgba(176, 96, 255, 0.18);
+      --primary: #b060ff;
+      --cyan: #22d3ee;
+      --green: #34d399;
+      --text: #ede9fe;
+      --text-muted: #8e82b2;
+      --grad-main: linear-gradient(135deg, #b060ff 0%, #f472b6 100%);
+    }
+    body {
+      background: radial-gradient(circle at 50% 20%, #1a0b36 0%, var(--bg-deep) 75%);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.25rem 1rem 2.5rem;
+    }
+    .top-bar {
+      width: 100%;
+      max-width: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+    }
+    .btn-back {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 0.5rem 1rem;
+      border-radius: 9px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+    .btn-back:hover {
+      background: rgba(176, 96, 255, 0.25);
+      border-color: var(--primary);
+      box-shadow: 0 0 14px rgba(176, 96, 255, 0.35);
+      transform: translateX(-2px);
+    }
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      background: linear-gradient(135deg, #22d3ee, #b060ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .qr-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      box-shadow: 0 16px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(176, 96, 255, 0.12);
+      width: 100%;
+      max-width: 440px;
+      padding: 1.5rem 1.25rem;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+    .amount-badge {
+      display: inline-block;
+      margin-bottom: 1rem;
+      background: rgba(16, 185, 129, 0.14);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      border-radius: 12px;
+      padding: 0.5rem 1.25rem;
+    }
+    .amount-badge .amt-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+    .amount-badge .amt-val {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: var(--green);
+      font-family: 'Outfit', sans-serif;
+    }
+    .qr-image-wrap {
+      background: #ffffff;
+      border-radius: 14px;
+      padding: 10px;
+      display: inline-block;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 1.1rem;
+      max-width: 100%;
+    }
+    .qr-image {
+      width: 320px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 8px;
+    }
+    .upi-info-box {
+      background: rgba(25, 12, 50, 0.9);
+      border: 1px solid rgba(176, 96, 255, 0.25);
+      border-radius: 10px;
+      padding: 0.65rem 0.9rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 1.15rem;
+    }
+    .upi-id-text {
+      text-align: left;
+      overflow: hidden;
+    }
+    .upi-id-text .label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+    }
+    .upi-id-text .id {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--cyan);
+      font-family: 'JetBrains Mono', monospace;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-copy {
+      background: rgba(34, 211, 238, 0.15);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      color: var(--cyan);
+      font-family: inherit;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.45rem 0.85rem;
+      border-radius: 7px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .btn-copy:hover {
+      background: rgba(34, 211, 238, 0.28);
+      box-shadow: 0 0 10px rgba(34, 211, 238, 0.3);
+    }
+    .actions-grid {
+      display: flex;
+      gap: 0.65rem;
+    }
+    .btn-action {
+      flex: 1;
+      padding: 0.65rem 0.75rem;
+      border-radius: 9px;
+      font-family: inherit;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .btn-action.back {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #fff;
+    }
+    .btn-action.back:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+    .btn-action.print {
+      background: linear-gradient(135deg, #10b981, #059669);
+      border: none;
+      color: #fff;
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+    }
+    @media print {
+      body {
+        background: #fff !important;
+        color: #000 !important;
+        padding: 0 !important;
+      }
+      .top-bar, .actions-grid, .btn-copy, .toast {
+        display: none !important;
+      }
+      .qr-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      .qr-image-wrap {
+        border: none !important;
+        box-shadow: none !important;
+      }
+      .qr-image {
+        width: 400px !important;
+      }
+      .upi-info-box {
+        background: #f0f0f0 !important;
+        border: 1px solid #ccc !important;
+        color: #000 !important;
+      }
+      .upi-id-text .id {
+        color: #000 !important;
+      }
+    }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      background: rgba(16, 185, 129, 0.95);
+      color: #fff;
+      padding: 0.65rem 1.25rem;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      display: none;
+      align-items: center;
+      gap: 7px;
+      z-index: 1000;
+      animation: fadeIn 0.3s ease;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <button type="button" class="btn-back" onclick="goBack()">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="brand-title">
+      <i class="fas fa-screwdriver-wrench"></i> AR Technician Work
+    </div>
+  </div>
+
+  <div class="qr-card">
+    <div id="amount-container" class="amount-badge" style="display:none;">
+      <div class="amt-label">Payable Amount</div>
+      <div class="amt-val" id="amount-display">₹0</div>
+      <div id="customer-name-display" style="font-size:0.75rem; color:var(--text-muted); margin-top:2px;"></div>
+    </div>
+
+    <div class="qr-image-wrap">
+      <img src="images/upi-qr.jpg" alt="A R Technician Work Google Pay QR" class="qr-image">
+    </div>
+
+    <div class="upi-info-box">
+      <div class="upi-id-text">
+        <div class="label">Official UPI ID</div>
+        <div class="id">6351618067@okbizaxis</div>
+      </div>
+      <button type="button" class="btn-copy" onclick="copyUpi()">
+        <i class="fas fa-copy"></i> <span id="copy-text">Copy</span>
+      </button>
+    </div>
+
+    <div class="actions-grid">
+      <button type="button" class="btn-action back" onclick="goBack()">
+        <i class="fas fa-arrow-left"></i> Back
+      </button>
+      <button type="button" class="btn-action print" onclick="window.print()">
+        <i class="fas fa-print"></i> Print QR
+      </button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i> <span id="toast-msg">UPI ID copied!</span>
+  </div>
+
+  <script>
+    function goBack() {
+      if (document.referrer && document.referrer !== window.location.href) {
+        window.history.back();
+      } else {
+        window.location.href = '/admin';
+      }
+    }
+
+    function copyUpi() {
+      const upi = '6351618067@okbizaxis';
+      navigator.clipboard.writeText(upi).then(() => {
+        const text = document.getElementById('copy-text');
+        text.textContent = 'Copied!';
+        showToast('✅ UPI ID copied: ' + upi);
+        setTimeout(() => { text.textContent = 'Copy'; }, 2000);
+      }).catch(() => {
+        showToast('UPI ID: ' + upi);
+      });
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toast');
+      const m = document.getElementById('toast-msg');
+      m.textContent = msg;
+      t.style.display = 'inline-flex';
+      setTimeout(() => { t.style.display = 'none'; }, 3000);
+    }
+
+    // Parse URL params for amount & customer name
+    const params = new URLSearchParams(window.location.search);
+    const amt = params.get('amount') || params.get('amt');
+    const name = params.get('name') || params.get('customer');
+    if (amt && parseFloat(amt) > 0) {
+      document.getElementById('amount-container').style.display = 'inline-block';
+      document.getElementById('amount-display').textContent = '₹' + parseFloat(amt).toLocaleString('en-IN');
+      if (name) {
+        document.getElementById('customer-name-display').textContent = 'Customer: ' + name;
+      }
+    }
+  </script>
+</body>
+</html>
