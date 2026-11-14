@@ -757,19 +757,85 @@
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
     }
 
-    /* When admin is OFF: highlight the "I am OFF" button gently so admin easily sees current status */
-    body.admin-mood-is-off #btn-admin-mood {
-      background: rgba(239, 68, 68, 0.25) !important;
-      border-color: #ef4444 !important;
-      color: #ffffff !important;
-      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4) !important;
+    /* Custom High-Visibility RED Cursor across the whole admin dashboard when OFF */
+    body.admin-mood-is-off,
+    body.admin-mood-is-off *,
+    body.admin-mood-is-off button,
+    body.admin-mood-is-off a,
+    body.admin-mood-is-off input,
+    body.admin-mood-is-off select,
+    body.admin-mood-is-off textarea,
+    body.admin-mood-is-off .nav-link,
+    body.admin-mood-is-off .stat-card,
+    body.admin-mood-is-off .panel,
+    body.admin-mood-is-off .table-wrap {
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='11' fill='rgba(239,68,68,0.25)' stroke='%23ef4444' stroke-width='2.5'/%3E%3Cline x1='6.2' y1='6.2' x2='21.8' y2='21.8' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M3 3 L10 18 L13 13 L18 10 Z' fill='%23ef4444' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E") 3 3, not-allowed !important;
     }
 
-    /* Easy layout: always fully accessible for admin */
+    /* EXCEPT: Logout buttons and the "I am OFF" button which toggles to "I am ON" */
+    body.admin-mood-is-off #btn-top-logout,
+    body.admin-mood-is-off #btn-top-logout *,
+    body.admin-mood-is-off .btn-logout,
+    body.admin-mood-is-off .btn-logout *,
+    body.admin-mood-is-off .banner-logout-btn,
+    body.admin-mood-is-off .banner-logout-btn *,
+    body.admin-mood-is-off #btn-admin-mood,
+    body.admin-mood-is-off #btn-admin-mood *,
+    body.admin-mood-is-off .banner-mood-btn,
+    body.admin-mood-is-off .banner-mood-btn * {
+      cursor: pointer !important;
+      pointer-events: auto !important;
+    }
+
+    /* In "I am OFF" mode: highlight the Top Logout button and Mood button so admin can safely click them */
+    body.admin-mood-is-off #btn-top-logout {
+      position: relative;
+      z-index: 100005 !important;
+      background: rgba(239, 68, 68, 0.3) !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 14px rgba(239, 68, 68, 0.5) !important;
+    }
+
+    /* When admin is OFF: highlight the "I am OFF" button so admin easily sees where to click to turn ON */
+    body.admin-mood-is-off #btn-admin-mood {
+      position: relative;
+      z-index: 100005 !important;
+      background: rgba(239, 68, 68, 0.28) !important;
+      border-color: #ef4444 !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4), 0 0 25px rgba(239, 68, 68, 0.85) !important;
+      animation: moodOffAttentionPulse 1.4s infinite !important;
+    }
+
+    @keyframes moodOffAttentionPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.6);
+      }
+      50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0), 0 0 32px rgba(239, 68, 68, 0.95);
+      }
+    }
+
+    /* Dimmed/locked look for dashboard panels when admin is OFF */
     body.admin-mood-is-off .layout {
-      user-select: auto;
-      opacity: 1;
-      filter: none;
+      user-select: none;
+      opacity: 0.82;
+      filter: grayscale(0.25);
+      transition: filter 0.3s ease, opacity 0.3s ease;
+    }
+
+    @keyframes bannerShake {
+      0%, 100% { transform: translateX(0); }
+      15%, 45%, 75% { transform: translateX(-8px); }
+      30%, 60%, 90% { transform: translateX(8px); }
+    }
+    @keyframes bounceIn {
+      0% { opacity: 0; transform: translateX(-50%) translateY(20px) scale(0.9); }
+      60% { opacity: 1; transform: translateX(-50%) translateY(-4px) scale(1.02); }
+      100% { transform: translateX(-50%) translateY(0) scale(1); }
     }
 
     body.admin-mood-is-off .topbar {
@@ -2295,8 +2361,8 @@
             <div class="banner-left">
               <div class="banner-lock-icon" style="background:rgba(239,68,68,0.2); border-color:#ef4444; color:#ef4444;"><i class="fas fa-moon"></i></div>
               <div class="banner-text">
-                <h4 style="color:#f87171;"><i class="fas fa-power-off"></i> Shop is currently set to OFFLINE for customers</h4>
-                <p style="color:#e2e8f0;">Customer website shows "Admin: Offline" and repair booking is paused. You have full access to view, update, accept/reject, call, and manage orders below.</p>
+                <h4 style="color:#f87171;"><i class="fas fa-lock"></i> Shop & Admin are currently OFFLINE ("I AM OFF")</h4>
+                <p style="color:#fecaca; font-weight:600;"><i class="fas fa-hand" style="margin-right:4px;"></i> Screen and buttons are LOCKED. Clicking anywhere shows a red alert. Only Logout or Turn "I am ON" can be used.</p>
               </div>
             </div>
             <div class="banner-actions">
@@ -3616,15 +3682,178 @@
     }
 
     function showRedClickEffect(x, y) {
-      // Non-blocking for easy admin usage
+      if (!x && !y) {
+        x = window.innerWidth / 2;
+        y = window.innerHeight / 2;
+      }
+
+      const fx = document.createElement('div');
+      fx.className = 'admin-red-click-fx';
+      fx.style.left = `${x}px`;
+      fx.style.top = `${y}px`;
+
+      fx.innerHTML = `
+        <div class="red-ripple red-ripple-1"></div>
+        <div class="red-ripple red-ripple-2"></div>
+        <div class="red-core"></div>
+        <div class="red-cross">✕</div>
+        <div class="red-locked-tag">
+          <i class="fas fa-lock"></i> LOCKED (I AM OFF)
+        </div>
+      `;
+
+      document.body.appendChild(fx);
+
+      // Attention pulse on the "I am OFF" button to guide admin
+      const moodBtn = document.getElementById('btn-admin-mood');
+      if (moodBtn) {
+        moodBtn.classList.remove('attention-wiggle');
+        void moodBtn.offsetWidth; // force reflow
+        moodBtn.classList.add('attention-wiggle');
+      }
+
+      playLockedRejectSound();
+
+      setTimeout(() => {
+        if (fx && fx.parentNode) fx.parentNode.removeChild(fx);
+      }, 900);
     }
 
-    // Helper: Is element permitted
+    let lastLockedAlertTime = 0;
+    function triggerRedLockedAlert(e) {
+      const x = (e && typeof e.clientX === 'number') ? e.clientX : window.innerWidth / 2;
+      const y = (e && typeof e.clientY === 'number') ? e.clientY : window.innerHeight / 2;
+      showRedClickEffect(x, y);
+
+      const now = Date.now();
+      if (now - lastLockedAlertTime > 1200) {
+        lastLockedAlertTime = now;
+        showLockedRedAlert();
+      }
+    }
+
+    function showLockedRedAlert() {
+      const existing = document.getElementById('admin-off-locked-alert-toast');
+      if (existing) existing.remove();
+
+      const alertToast = document.createElement('div');
+      alertToast.id = 'admin-off-locked-alert-toast';
+      alertToast.className = 'toast locked-alert';
+      alertToast.style.cssText = 'position:fixed; bottom:28px; left:50%; transform:translateX(-50%); z-index:999999999; animation:bounceIn 0.35s ease; max-width:92vw; width:auto; text-align:center; box-shadow:0 12px 35px rgba(220,38,38,0.7), 0 0 25px rgba(239,68,68,0.9); border:2px solid #ffffff; background:linear-gradient(135deg, #dc2626, #991b1b); color:#ffffff; padding:0.85rem 1.4rem; border-radius:12px; font-weight:800; font-size:0.92rem; display:flex; align-items:center; gap:10px; cursor:default;';
+      alertToast.innerHTML = `
+        <i class="fas fa-ban" style="font-size:1.3rem; color:#fee2e2;"></i>
+        <div style="text-align:left;">
+          <div style="font-size:0.96rem; font-weight:800; letter-spacing:0.3px;">⛔ ADMIN IS IN "I AM OFF" MOOD!</div>
+          <div style="font-size:0.8rem; font-weight:600; color:#fecaca; margin-top:2px;">Screen & buttons are locked. Only Logout (or Turn "I am ON") can be used.</div>
+        </div>
+      `;
+      document.body.appendChild(alertToast);
+
+      // Pulse the offline banner to grab attention
+      const banner = document.getElementById('admin-off-locked-banner');
+      if (banner) {
+        banner.style.animation = 'none';
+        void banner.offsetWidth;
+        banner.style.animation = 'bannerShake 0.45s ease';
+      }
+
+      setTimeout(() => {
+        if (alertToast && alertToast.parentNode) {
+          alertToast.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+          alertToast.style.opacity = '0';
+          alertToast.style.transform = 'translateX(-50%) translateY(15px)';
+          setTimeout(() => alertToast.remove(), 400);
+        }
+      }, 3500);
+    }
+
+    // Helper: Is the clicked element permitted when in OFF mood?
     function isAllowedWhenOff(target) {
-      return true;
+      if (!target) return false;
+      const loginScreen = document.getElementById('login-screen');
+      if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(target)) {
+        return true;
+      }
+      if (target.closest && (
+        target.closest('#btn-top-logout') ||
+        target.closest('.banner-logout-btn') ||
+        target.closest('.btn-logout') ||
+        target.closest('#btn-admin-mood') ||
+        target.closest('.banner-mood-btn') ||
+        target.closest('#admin-off-locked-alert-toast')
+      )) {
+        return true;
+      }
+      return false;
     }
 
-    // Admin dashboard remains fully interactive and easy to use at all times
+    // Capture and block clicks when admin mood is OFF
+    window.addEventListener('click', function(e) {
+      if (currentAdminMood === 'OFF') {
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
+          return;
+        }
+
+        if (isAllowedWhenOff(e.target)) {
+          return; // Allow Logout and Turn ON buttons
+        }
+
+        // Block everything else and trigger RED ALERT
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        triggerRedLockedAlert(e);
+        return false;
+      }
+    }, true);
+
+    // Block mousedown on buttons, inputs, panels when in OFF mood
+    window.addEventListener('mousedown', function(e) {
+      if (currentAdminMood === 'OFF') {
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
+          return;
+        }
+        if (isAllowedWhenOff(e.target)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        return false;
+      }
+    }, true);
+
+    // Block pointerdown for touch/pen devices
+    window.addEventListener('pointerdown', function(e) {
+      if (currentAdminMood === 'OFF') {
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
+          return;
+        }
+        if (isAllowedWhenOff(e.target)) return;
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+      }
+    }, true);
+
+    // Block keyboard activation (Enter/Space) on locked elements
+    window.addEventListener('keydown', function(e) {
+      if (currentAdminMood === 'OFF') {
+        const loginScreen = document.getElementById('login-screen');
+        if (loginScreen && !loginScreen.classList.contains('hidden')) return;
+        if (isAllowedWhenOff(e.target)) return;
+        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          const rect = e.target && e.target.getBoundingClientRect ? e.target.getBoundingClientRect() : null;
+          const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+          const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
+          triggerRedLockedAlert({ clientX: x, clientY: y });
+        }
+      }
+    }, true);
 
     // ============ MAN VOICE SPEECH SYNTHESIS ("I am ON" / "I am OFF") ============
     function speakManVoice(phrase) {
