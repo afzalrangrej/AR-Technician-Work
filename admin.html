@@ -3029,28 +3029,7 @@
       <h2 class="modal-title"><i class="fas fa-pen-to-square"></i> Dispatch & Edit Ticket</h2>
       <form id="edit-form">
         <input type="hidden" id="edit-id">
-        <!-- Booking Decision (Accept / Reject) -->
-        <div class="form-group"
-          style="background: rgba(255,255,255,0.03); border: 1.5px solid rgba(255,255,255,0.12); padding: 0.85rem; border-radius: 12px; margin-bottom: 1rem;">
-          <label
-            style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.5rem; color:#fff; font-weight:700;">
-            <span><i class="fas fa-handshake-angle" style="color:var(--cyan); margin-right:6px;"></i> Booking Decision
-              (Accept / Reject)</span>
-            <span id="decision-hint" style="font-size:0.75rem; color:var(--text-muted);">Choose to enable live bike
-              movement</span>
-          </label>
-          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button type="button" class="btn-decision btn-decision-accept" id="btn-decision-accept"
-              onclick="selectOrderDecision('Accept')">
-              <i class="fas fa-circle-check"></i> Accept (Bike Tracks & Moves)
-            </button>
-            <button type="button" class="btn-decision btn-decision-reject" id="btn-decision-reject"
-              onclick="selectOrderDecision('Reject')">
-              <i class="fas fa-circle-xmark"></i> Reject (Decline • Bike Stops)
-            </button>
-          </div>
-          <input type="hidden" id="edit-decision" value="Pending">
-        </div>
+        <input type="hidden" id="edit-decision" value="Pending">
 
         <div class="form-grid-2">
           <div class="form-group">
@@ -5463,10 +5442,10 @@
           }
         }
         if (updateFields) {
-          if (!techInput.value || techInput.value.toLowerCase().includes('unassigned')) {
+          if (techInput && (!techInput.value || techInput.value.toLowerCase().includes('unassigned'))) {
             techInput.value = 'Afzal (Lead Electrical Specialist)';
           }
-          if (!notesInput.value || notesInput.value.toLowerCase().includes('new customer') || notesInput.value.toLowerCase().includes('decline')) {
+          if (notesInput && (!notesInput.value || notesInput.value.toLowerCase().includes('new customer') || notesInput.value.toLowerCase().includes('decline'))) {
             notesInput.value = 'Booking accepted! Electrician Afzal is preparing tools at Kosamba Workshop.';
           }
         }
@@ -5477,8 +5456,8 @@
         if (btnReject) btnReject.classList.add('active');
         if (statusSelect) statusSelect.value = 'Reject';
         if (updateFields) {
-          techInput.value = 'Unassigned';
-          notesInput.value = 'Booking request declined by admin. Electrician not dispatched.';
+          if (techInput) techInput.value = 'Unassigned';
+          if (notesInput) notesInput.value = 'Booking request declined by admin. Electrician not dispatched.';
         }
         if (hintEl) {
           hintEl.innerHTML = '<strong style="color:#f87171;"><i class="fas fa-times-circle"></i> REJECTED</strong> — Bike will NOT move and percentage will stay at 0%.';
