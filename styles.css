@@ -8220,35 +8220,35 @@ div[id*="netlify-badge"] {
   100% { transform: scale(0.9); opacity: 0.8; }
 }
 
-/* 4-Step Visual Stepper */
+/* Stepper Progress Track & Dots (Minimalist Dots without Numbers) */
 .booking-stepper {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 0.35rem 0 0.55rem 0;
-  padding: 0 0.2rem;
+  margin: 0.5rem 0 0.75rem 0;
+  padding: 0 0.4rem;
 }
 
 .booking-stepper-track {
   position: absolute;
-  top: 13px;
-  left: 20px;
-  right: 20px;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.09);
+  top: 7px;
+  left: 24px;
+  right: 24px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
   z-index: 1;
-  border-radius: 3px;
+  border-radius: 2px;
 }
 
 .booking-stepper-fill {
   position: absolute;
-  top: 13px;
-  left: 20px;
-  height: 3px;
+  top: 7px;
+  left: 24px;
+  height: 2px;
   background: linear-gradient(90deg, #00f2fe, #10b981);
   z-index: 2;
-  border-radius: 3px;
+  border-radius: 2px;
   transition: width 0.4s ease;
 }
 
@@ -8258,50 +8258,51 @@ div[id*="netlify-badge"] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 6px;
   width: 72px;
 }
 
-.step-node-bubble {
-  width: 26px;
-  height: 26px;
+.step-node-bubble,
+.step-node-dot {
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  background: #0f172a;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.68rem;
-  font-weight: 800;
-  color: #94a3b8;
-  transition: all 0.3s ease;
+  background: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  display: block;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-sizing: border-box;
 }
 
-.step-node-bubble.active {
+.step-node-bubble.active,
+.step-node-dot.active {
+  background: #00f2fe;
   border-color: #00f2fe;
-  color: #00f2fe;
-  background: rgba(0, 242, 254, 0.2);
-  box-shadow: 0 0 12px rgba(0, 242, 254, 0.6);
+  box-shadow: 0 0 12px rgba(0, 242, 254, 0.8), 0 0 0 4px rgba(0, 242, 254, 0.22);
+  transform: scale(1.15);
 }
 
-.step-node-bubble.completed {
-  border-color: #10b981;
-  color: #ffffff;
+.step-node-bubble.completed,
+.step-node-dot.completed {
   background: #10b981;
-  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+  border-color: #10b981;
+  box-shadow: 0 0 8px rgba(16, 185, 129, 0.65), 0 0 0 3px rgba(16, 185, 129, 0.18);
+  transform: scale(1.05);
 }
 
 .step-node-text {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
   color: #64748b;
   text-align: center;
   line-height: 1.1;
   white-space: nowrap;
+  letter-spacing: 0.2px;
 }
 
 .step-node-text.active {
   color: #00f2fe;
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
 }
 
 .step-node-text.completed {

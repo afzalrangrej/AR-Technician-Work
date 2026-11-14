@@ -1061,22 +1061,20 @@ window.syncCustomerCodeVisibility = function () {
               <div class="booking-stepper-track"></div>
               <div class="booking-stepper-fill" style="width: ${stepFillWidth};"></div>
               ${stepsDef.map(s => {
-                let circleClass = 'step-node-bubble';
+                let dotClass = 'step-node-dot';
                 let labelClass = 'step-node-text';
-                let circleContent = s.id;
                 if (!isRejected) {
                   if (stepNum > s.id) {
-                    circleClass += ' completed';
+                    dotClass += ' completed';
                     labelClass += ' completed';
-                    circleContent = '<i class="fas fa-check" style="font-size:0.6rem;"></i>';
                   } else if (stepNum === s.id) {
-                    circleClass += ' active';
+                    dotClass += ' active';
                     labelClass += ' active';
                   }
                 }
                 return `
                   <div class="booking-step-node">
-                    <div class="${circleClass}">${circleContent}</div>
+                    <div class="${dotClass}" title="${s.label}"></div>
                     <span class="${labelClass}">${s.label}</span>
                   </div>
                 `;
