@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20261114_v17">
+  <link rel="stylesheet" href="styles.css?v=20261114_v18">
 
   <script type="application/ld+json">
   {
@@ -560,7 +560,7 @@
           </div>
         </div>
 
-        <!-- Informational Banner: Informs user to paste 4-digit code here to track electrician (Visible only when user is logged in with active booking) -->
+        <!-- Informational Banner: Informs user to paste 4-digit code here to track electrician (Shows all user codes) -->
         <div class="tracker-paste-info-banner" id="tracker-paste-info-banner" style="display: none;">
           <div class="info-pulse-icon">
             <i class="fas fa-motorcycle"></i>
@@ -568,21 +568,21 @@
           <div class="info-content">
             <div class="info-title">
               <span class="info-pill-tag"><i class="fas fa-hand-point-right"></i> PASTE 4-DIGIT CODE HERE</span>
-              <span>Paste code <strong class="highlight-code" id="tracker-banner-code-highlight"></strong>
-                below to track your assigned electrician!</span>
+              <span id="tracker-banner-codes-phrase">Paste code <span id="tracker-banner-codes-container"><strong class="highlight-code" id="tracker-banner-code-highlight"></strong></span> below to track your assigned electrician!</span>
             </div>
-            <p class="info-subtext">
-              Watch your electrician travel live on the road from our Kosamba shop directly to your doorstep in
-              real-time.
+            <p class="info-subtext" id="tracker-banner-subtext">
+              Watch your electrician travel live on the road from our Kosamba shop directly to your doorstep in real-time.
             </p>
           </div>
-          <button type="button" class="btn-paste-code-pill" id="btn-quick-paste-code"
-            title="Click to paste tracking code into field">
-            <i class="fas fa-clipboard-check"></i> <span id="btn-quick-paste-code-label">Paste Code</span>
-          </button>
+          <div id="tracker-banner-action-area" style="display:flex; flex-wrap:wrap; gap:6px;">
+            <button type="button" class="btn-paste-code-pill" id="btn-quick-paste-code"
+              title="Click to paste tracking code into field">
+              <i class="fas fa-clipboard-check"></i> <span id="btn-quick-paste-code-label">Paste Code</span>
+            </button>
+          </div>
         </div>
 
-        <div class="track-search-bar" style="margin-top:1rem; margin-bottom:1rem;">
+        <div class="track-search-bar" style="margin-top:1rem; margin-bottom:0.75rem;">
           <div class="input-with-icon">
             <i class="fas fa-motorcycle"></i>
             <input type="text" id="track-input" class="zip-input"
@@ -597,6 +597,14 @@
           </button>
         </div>
 
+        <!-- Quick Select Chips for ALL User Booking Codes -->
+        <div id="tracker-codes-chips-row" style="display:none; align-items:center; gap:8px; flex-wrap:wrap; margin-bottom:1.15rem; padding: 0.55rem 0.95rem; background:rgba(255,255,255,0.03); border:1.5px solid rgba(0,242,254,0.22); border-radius:12px;">
+          <span style="font-size:0.78rem; font-weight:700; color:var(--text-muted); display:inline-flex; align-items:center; gap:5px;">
+            <i class="fas fa-ticket-simple" style="color:var(--primary);"></i> Your Booking Codes:
+          </span>
+          <div id="tracker-chips-list" style="display:inline-flex; align-items:center; gap:6px; flex-wrap:wrap;"></div>
+        </div>
+
         <!-- Real Booking with Code Section (Active Repair Booking) (Visible only when user is logged in with active booking) -->
         <div class="tracker-real-booking-section" id="tracker-real-booking-section" style="display: none;">
           <div class="tracker-real-booking-header">
@@ -604,26 +612,29 @@
             <span class="tracker-real-booking-count" id="tracker-real-booking-count">1 Booking</span>
           </div>
 
-          <div class="tracker-real-booking-card" id="tracker-real-booking-card">
-            <div class="tracker-real-booking-top">
-              <div class="real-code-group">
-                <span class="real-code-tag" id="tracker-real-code-badge" title="Click to copy tracking code">#---</span>
-                <button type="button" class="btn-copy-real-code" id="btn-copy-real-code" title="Copy tracking code">
-                  <i class="far fa-copy" id="real-copy-code-icon"></i>
+          <div id="tracker-real-bookings-list" style="display:flex; flex-direction:column; gap:0.75rem;">
+            <!-- Populated dynamically with every user booking card -->
+            <div class="tracker-real-booking-card" id="tracker-real-booking-card">
+              <div class="tracker-real-booking-top">
+                <div class="real-code-group">
+                  <span class="real-code-tag" id="tracker-real-code-badge" title="Click to copy tracking code">#---</span>
+                  <button type="button" class="btn-copy-real-code" id="btn-copy-real-code" title="Copy tracking code">
+                    <i class="far fa-copy" id="real-copy-code-icon"></i>
+                  </button>
+                </div>
+                <span class="real-status-pill booked" id="tracker-real-status-badge">
+                  <span class="status-dot"></span> Booked
+                </span>
+              </div>
+              <div class="real-device-title" id="tracker-real-device-name">
+                Pressure Cookers & Kitchen Appliances
+              </div>
+              <div class="tracker-real-booking-footer">
+                <span id="tracker-real-meta">🏡 At-Home Visit</span>
+                <button type="button" class="btn-track-real-live" id="btn-track-real-booking" data-code="">
+                  <i class="fas fa-location-arrow"></i> Track Live
                 </button>
               </div>
-              <span class="real-status-pill booked" id="tracker-real-status-badge">
-                <span class="status-dot"></span> Booked
-              </span>
-            </div>
-            <div class="real-device-title" id="tracker-real-device-name">
-              Pressure Cookers & Kitchen Appliances
-            </div>
-            <div class="tracker-real-booking-footer">
-              <span id="tracker-real-meta">🏡 At-Home Visit</span>
-              <button type="button" class="btn-track-real-live" id="btn-track-real-booking" data-code="">
-                <i class="fas fa-location-arrow"></i> Track Live
-              </button>
             </div>
           </div>
         </div>
@@ -1927,7 +1938,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261114_v6"></script>
+  <script src="script.js?v=20261114_v7"></script>
 </body>
 
 </html>

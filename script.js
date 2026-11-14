@@ -688,28 +688,202 @@ window.syncCustomerCodeVisibility = function () {
     if (heroMyBookingsPill) heroMyBookingsPill.style.display = 'none';
   }
 
-  if (code && latestBooking) {
+  if (code && !allBookingsMap.has(code.toUpperCase())) {
+    allBookingsMap.set(code.toUpperCase(), {
+      tracking_code: code,
+      device_name: (latestBooking && latestBooking.device_name) || 'Home Appliance Service',
+      status: (latestBooking && latestBooking.status) || 'Booked',
+      service_type: (latestBooking && latestBooking.service_type) || 'home'
+    });
+  }
+
+  const allCodes = Array.from(allBookingsMap.keys());
+  const allBookingsList = Array.from(allBookingsMap.values());
+
+  const bannerCodesContainer = document.getElementById('tracker-banner-codes-container');
+  const bannerActionArea = document.getElementById('tracker-banner-action-area');
+  const chipsRow = document.getElementById('tracker-codes-chips-row');
+  const chipsList = document.getElementById('tracker-chips-list');
+
+  if (allCodes.length > 0) {
     if (pasteBanner) pasteBanner.style.display = 'flex';
-    if (bannerHighlight) bannerHighlight.textContent = code;
-    if (bannerBtnLabel) bannerBtnLabel.textContent = `Paste ${code}`;
 
-    if (realSection) realSection.style.display = 'block';
-    if (realTrackBtn) realTrackBtn.setAttribute('data-code', code);
-    if (realCodeBadge) realCodeBadge.textContent = `#${code}`;
-    if (realDeviceEl) realDeviceEl.textContent = latestBooking.device_name || latestBooking.deviceName || 'Home Appliance Service';
-    if (realMetaEl) realMetaEl.textContent = latestBooking.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop';
-    if (realStatusEl) realStatusEl.innerHTML = `<span class="status-dot"></span> ${latestBooking.status || 'Booked'}`;
-    if (realCountEl) realCountEl.textContent = 'Active Booking';
+    // 1. Populate all codes inside the banner title
+    if (bannerCodesContainer) {
+      if (allCodes.length === 1) {
+        bannerCodesContainer.innerHTML = `<strong class="highlight-code" id="tracker-banner-code-highlight">${allCodes[0]}</strong>`;
+      } else {
+        bannerCodesContainer.innerHTML = allCodes.map((c, i) => `
+          <button type="button" class="highlight-code-chip btn-set-tracker-code ${i === 0 ? 'active' : ''}" data-code="${c}" title="Click to track ${c}">
+            <i class="fas fa-ticket-simple" style="font-size:0.7rem;"></i> ${c}
+          </button>
+        `).join(' ');
+      }
+    }
 
+    // 2. Populate banner action buttons for every code
+    if (bannerActionArea) {
+      if (allCodes.length <= 1) {
+        const singleCode = allCodes[0] || code;
+        bannerActionArea.innerHTML = `
+          <button type="button" class="btn-paste-code-pill btn-set-tracker-code" data-code="${singleCode}" title="Paste ${singleCode}">
+            <i class="fas fa-clipboard-check"></i> <span>Paste ${singleCode}</span>
+          </button>
+        `;
+      } else {
+        bannerActionArea.innerHTML = allCodes.map(c => `
+          <button type="button" class="btn-paste-code-pill btn-set-tracker-code" data-code="${c}" style="padding:0.45rem 0.85rem; font-size:0.8rem;" title="Paste ${c}">
+            <i class="fas fa-clipboard-check"></i> <span>Paste ${c}</span>
+          </button>
+        `).join('');
+      }
+    }
+
+    // 3. Populate quick selector chips row directly under search bar
+    if (chipsRow && chipsList) {
+      chipsRow.style.display = 'flex';
+      chipsList.innerHTML = allCodes.map((c, i) => `
+        <button type="button" class="tracker-code-select-chip btn-set-tracker-code ${i === 0 ? 'active' : ''}" data-code="${c}" title="Select #${c} to track">
+          <i class="fas fa-ticket-simple"></i> #${c} <i class="fas fa-arrow-down" style="font-size:0.65rem; opacity:0.7;"></i>
+        </button>
+      `).join('');
+    }
+
+    // 4. Populate search input with latest code if empty
     if (trackInput && (!trackInput.value || trackInput.value === 'HOME-7783' || trackInput.value === 'HOME-1234' || trackInput.value === 'HOME-441')) {
-      trackInput.value = code;
+      trackInput.value = allCodes[0] || code;
+    }
+
+    // 5. Wire click actions on all code chip buttons
+    document.querySelectorAll('.btn-set-tracker-code').forEach(btn => {
+      btn.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        const targetCode = btn.getAttribute('data-code');
+        if (!targetCode) return;
+        if (trackInput) {
+          trackInput.value = targetCode;
+          trackInput.focus();
+          trackInput.classList.remove('flash-input');
+          void trackInput.offsetWidth; // trigger reflow
+          trackInput.classList.add('flash-input');
+        }
+        document.querySelectorAll('.btn-set-tracker-code').forEach(b => {
+          if (b.getAttribute('data-code') === targetCode) {
+            b.classList.add('active');
+          } else {
+            b.classList.remove('active');
+          }
+        });
+        if (typeof showToast === 'function') {
+          showToast(`📍 Selected code "${targetCode}"! Click Track Live Location to view route.`, 'info');
+        }
+      };
+    });
+
+    // 6. Populate real bookings list below the tracker
+    if (realSection) {
+      realSection.style.display = 'block';
+      if (realCountEl) realCountEl.textContent = `${allBookingsList.length} ${allBookingsList.length === 1 ? 'Booking' : 'Bookings'}`;
+
+      const realList = document.getElementById('tracker-real-bookings-list');
+      if (realList) {
+        realList.innerHTML = allBookingsList.map(b => {
+          const bCode = (b.tracking_code || b.code || '').trim();
+          const statusColors = {
+            'Accept': '#34d399',
+            'Accepted': '#34d399',
+            'Reject': '#f87171',
+            'Rejected': '#f87171',
+            'Departure from shop': '#38bdf8',
+            'At your home': '#a855f7',
+            'Booked': '#38bdf8',
+            'Dispatch': '#fbbf24',
+            'Diagnosing': '#a855f7',
+            'Repairing': '#00f2fe',
+            'Completed': '#10b981'
+          };
+          const color = statusColors[b.status] || '#00f2fe';
+
+          return `
+            <div class="tracker-real-booking-card" style="margin-bottom:0.75rem;">
+              <div class="tracker-real-booking-top">
+                <div class="real-code-group">
+                  <span class="real-code-tag">#${escapeHtml(bCode)}</span>
+                  <button type="button" class="btn-copy-booking-code" data-code="${escapeHtml(bCode)}" title="Copy tracking code">
+                    <i class="far fa-copy"></i> <span>Copy</span>
+                  </button>
+                </div>
+                <span class="real-status-pill" style="border-color:${color}; color:${color};">
+                  <span class="status-dot" style="background:${color};"></span> ${escapeHtml(b.status || 'Booked')}
+                </span>
+              </div>
+              <div class="real-device-title">
+                ${escapeHtml(b.device_name || b.deviceName || 'Home Appliance Service')}
+              </div>
+              <div class="tracker-real-booking-footer">
+                <span>${b.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop'}</span>
+                <button type="button" class="btn-track-real-live" data-code="${escapeHtml(bCode)}" title="Track #${escapeHtml(bCode)} live">
+                  <i class="fas fa-location-arrow"></i> Track Live
+                </button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // Wire copy buttons on real booking cards
+        realList.querySelectorAll('.btn-copy-booking-code').forEach(btn => {
+          btn.onclick = async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const c = btn.getAttribute('data-code');
+            if (!c) return;
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(c);
+              } else {
+                const ta = document.createElement('textarea');
+                ta.value = c;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+              }
+              btn.classList.add('copied');
+              btn.innerHTML = `<i class="fas fa-check" style="color:#10b981;"></i> <span style="color:#10b981;">Copied!</span>`;
+              if (typeof showToast === 'function') showToast(`📋 Code "${c}" copied to clipboard!`, 'success');
+              if (trackInput) trackInput.value = c;
+              setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = `<i class="far fa-copy"></i> <span>Copy</span>`;
+              }, 1800);
+            } catch(err) {}
+          };
+        });
+
+        // Wire track live buttons on real booking cards
+        realList.querySelectorAll('.btn-track-real-live').forEach(btn => {
+          btn.onclick = (e) => {
+            e.preventDefault();
+            const c = btn.getAttribute('data-code');
+            if (trackInput) trackInput.value = c;
+            const trackBtn = document.getElementById('track-btn');
+            if (trackBtn) trackBtn.click();
+            const trackerSection = document.getElementById('tracker');
+            if (trackerSection) trackerSection.scrollIntoView({ behavior: 'smooth' });
+          };
+        });
+      }
     }
     return;
   }
 
   // No active booking code: Hide tracker helper cards
   if (pasteBanner) pasteBanner.style.display = 'none';
-  if (bannerHighlight) bannerHighlight.textContent = '';
+  if (chipsRow) chipsRow.style.display = 'none';
+  if (bannerCodesContainer) bannerCodesContainer.innerHTML = '';
   if (realSection) realSection.style.display = 'none';
 };
 
