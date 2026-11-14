@@ -19,7 +19,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <link rel="stylesheet" href="styles.css?v=20261113_v16">
+  <link rel="stylesheet" href="styles.css?v=20261114_v17">
 
   <script type="application/ld+json">
   {
@@ -244,18 +244,17 @@
               <span id="admin-status-label" class="status-label">Admin: Online</span>
             </div>
 
-            <!-- "My code" Section (Visible whenever user is logged in or has active booking) -->
-            <div id="user-code-pill" class="user-code-pill" title="Click to copy your tracking code" role="button"
-              tabindex="0" aria-label="My tracking code. Click to copy." style="display: none;">
-              <i class="fas fa-ticket-simple code-icon"></i>
-              <span class="code-label" id="user-code-prefix">My code:</span>
-              <span id="user-code-val" class="code-val"></span>
-              <button type="button" class="code-copy-btn" id="user-code-copy-btn" title="Copy code"
-                aria-label="Copy Code">
-                <i class="far fa-copy" id="user-code-copy-icon"></i>
-              </button>
-              <span class="code-copy-toast" id="user-code-copy-toast">Copied!</span>
+            <!-- "My Bookings" Section (Replaces "My code": opens user bookings with tracking codes & copy system) -->
+            <div id="user-my-bookings-pill" class="user-code-pill my-bookings-pill" title="Click to view all your repair bookings & tracking codes" role="button"
+              tabindex="0" aria-label="My Bookings. Click to view all bookings." style="display: none;">
+              <i class="fas fa-clipboard-list code-icon"></i>
+              <span class="code-label" id="user-my-bookings-label">My Bookings</span>
+              <span id="user-my-bookings-count" class="code-val" style="padding: 0.1rem 0.5rem; font-size: 0.78rem; border-radius: 8px;">0</span>
+              <i class="fas fa-chevron-right" style="font-size: 0.68rem; color: var(--text-muted); margin-left: 2px;"></i>
             </div>
+            <!-- Hidden backward-compatibility anchor -->
+            <span id="user-code-pill" style="display:none;" aria-hidden="true"></span>
+            <span id="user-code-val" style="display:none;" aria-hidden="true"></span>
 
             <script>
               (function () {
@@ -1733,14 +1732,18 @@
       <!-- VIEW 1: MY BOOKINGS -->
       <div id="user-dash-bookings-view">
         <div style="margin-bottom: 1.25rem;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.65rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
             <h4 style="font-size: 0.95rem; font-weight: 700; color: var(--text-main); margin: 0;"><i
                 class="fas fa-clipboard-list" style="color:var(--primary); margin-right: 6px;"></i> My Repair Bookings
             </h4>
             <span id="user-dash-order-count" style="font-size: 0.75rem; color: var(--text-muted);"></span>
           </div>
+          <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:0.65rem; display:flex; align-items:center; gap:5px;">
+            <i class="fas fa-circle-info" style="color:var(--primary); font-size:0.8rem;"></i>
+            <span>Click <strong>Copy</strong> on any booking to copy its tracking code instantly.</span>
+          </div>
           <div id="user-dash-orders-list"
-            style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.65rem; padding-right: 4px;">
+            style="max-height: 320px; overflow-y: auto; display: flex; flex-direction: column; gap: 0.75rem; padding-right: 4px;">
             <!-- Populated dynamically -->
           </div>
         </div>
@@ -1923,7 +1926,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261114_v4"></script>
+  <script src="script.js?v=20261114_v5"></script>
 </body>
 
 </html>

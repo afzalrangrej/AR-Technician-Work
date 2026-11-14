@@ -846,6 +846,48 @@ h6 {
   color: #34d399;
 }
 
+/* My Bookings Pill & Copy System in Bookings List */
+.my-bookings-pill {
+  cursor: pointer;
+}
+
+.my-bookings-pill:hover {
+  border-color: #00f2fe;
+  box-shadow: 0 0 18px rgba(0, 242, 254, 0.45);
+}
+
+.btn-copy-booking-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: #e0f2fe;
+  border-radius: 6px;
+  padding: 2px 7px;
+  cursor: pointer;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  transition: all 0.2s ease;
+  line-height: 1.2;
+}
+
+.btn-copy-booking-code:hover {
+  background: rgba(0, 242, 254, 0.22);
+  border-color: #00f2fe;
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(0, 242, 254, 0.35);
+}
+
+.btn-copy-booking-code.copied {
+  background: rgba(16, 185, 129, 0.25) !important;
+  border-color: #10b981 !important;
+  color: #34d399 !important;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.4) !important;
+}
+
 .user-auth-tabs {
   display: flex;
   background: rgba(255, 255, 255, 0.04);

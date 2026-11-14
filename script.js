@@ -594,7 +594,9 @@ window.getCurrentCustomerUser = function () {
 };
 
 window.syncCustomerCodeVisibility = function () {
-  const heroPill = document.getElementById('user-code-pill');
+  const heroMyBookingsPill = document.getElementById('user-my-bookings-pill') || document.getElementById('user-code-pill');
+  const heroMyBookingsCount = document.getElementById('user-my-bookings-count');
+  const heroMyBookingsLabel = document.getElementById('user-my-bookings-label');
   const heroCodeVal = document.getElementById('user-code-val');
   const heroCodePrefix = document.getElementById('user-code-prefix');
   const pasteBanner = document.getElementById('tracker-paste-info-banner');
@@ -641,13 +643,49 @@ window.syncCustomerCodeVisibility = function () {
     }
   }
 
-  // Sync Hero User Code Pill ("who user is login now is show always")
-  if (code && (currentUser || latestBooking)) {
-    if (heroPill) heroPill.style.display = 'inline-flex';
+  // Calculate total bookings across current user & local device
+  const allBookingsMap = new Map();
+  if (currentUser && Array.isArray(currentUser.orders)) {
+    currentUser.orders.forEach(o => {
+      const c = (o.tracking_code || o.code || '').trim().toUpperCase();
+      if (c) allBookingsMap.set(c, o);
+    });
+  }
+  try {
+    const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+    if (Array.isArray(localBookings)) {
+      localBookings.forEach(o => {
+        const c = (o.tracking_code || o.code || '').trim().toUpperCase();
+        if (c && !allBookingsMap.has(c)) {
+          allBookingsMap.set(c, o);
+        }
+      });
+    }
+  } catch (e) {}
+
+  const totalBookingsCount = allBookingsMap.size;
+
+  // Sync Hero "My Bookings" Pill
+  if (currentUser || totalBookingsCount > 0 || code) {
+    if (heroMyBookingsPill) {
+      heroMyBookingsPill.style.display = 'inline-flex';
+      if (heroMyBookingsCount) heroMyBookingsCount.textContent = totalBookingsCount;
+      if (heroMyBookingsLabel) heroMyBookingsLabel.textContent = 'My Bookings';
+      heroMyBookingsPill.title = `Click to view all your (${totalBookingsCount}) repair bookings & tracking codes`;
+      
+      // Wire click to open My Bookings section
+      heroMyBookingsPill.onclick = function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof window.openMyBookingsModal === 'function') {
+          window.openMyBookingsModal();
+        }
+      };
+    }
     if (heroCodeVal) heroCodeVal.textContent = code;
     if (heroCodePrefix) heroCodePrefix.textContent = 'My code:';
   } else {
-    if (heroPill) heroPill.style.display = 'none';
+    if (heroMyBookingsPill) heroMyBookingsPill.style.display = 'none';
   }
 
   if (code && latestBooking) {
@@ -4456,19 +4494,40 @@ function initUserLogin() {
       }
     } catch (e) { }
 
-    if (dashCount) dashCount.textContent = `${orders.length} ${orders.length === 1 ? 'Booking' : 'Bookings'}`;
-    if (tabDashCount) tabDashCount.textContent = orders.length;
+    // Merge server orders and local bookings to guarantee all bookings are listed without duplicates
+    const allBookingsMap = new Map();
+    (orders || []).forEach(o => {
+      const c = (o.tracking_code || o.code || '').trim().toUpperCase();
+      if (c) allBookingsMap.set(c, o);
+    });
+
+    try {
+      const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+      if (Array.isArray(localBookings)) {
+        localBookings.forEach(o => {
+          const c = (o.tracking_code || o.code || '').trim().toUpperCase();
+          if (c && !allBookingsMap.has(c)) {
+            allBookingsMap.set(c, o);
+          }
+        });
+      }
+    } catch (e) {}
+
+    const allDisplayBookings = Array.from(allBookingsMap.values());
+
+    if (dashCount) dashCount.textContent = `${allDisplayBookings.length} ${allDisplayBookings.length === 1 ? 'Booking' : 'Bookings'}`;
+    if (tabDashCount) tabDashCount.textContent = allDisplayBookings.length;
 
     if (dashOrdersList) {
-      if (orders.length === 0) {
+      if (allDisplayBookings.length === 0) {
         dashOrdersList.innerHTML = `
-          <div style="text-align:center; padding:1.5rem; background:rgba(255,255,255,0.02); border-radius:12px; border:1px dashed rgba(255,255,255,0.1); color:var(--text-muted); font-size:0.85rem;">
-            <i class="fas fa-box-open" style="font-size:1.8rem; color:var(--text-dim); margin-bottom:0.5rem; display:block;"></i>
-            No active repair orders found.<br>Click "New Repair" to book a home visit!
+          <div style="text-align:center; padding:1.8rem 1rem; background:rgba(255,255,255,0.02); border-radius:14px; border:1px dashed rgba(255,255,255,0.1); color:var(--text-muted); font-size:0.85rem;">
+            <i class="fas fa-box-open" style="font-size:2rem; color:var(--text-dim); margin-bottom:0.6rem; display:block;"></i>
+            No active repair bookings found.<br>Click "New Repair" below to request an at-home repair!
           </div>
         `;
       } else {
-        dashOrdersList.innerHTML = orders.map(o => {
+        dashOrdersList.innerHTML = allDisplayBookings.map(o => {
           const statusColors = {
             'Accept': '#34d399',
             'Accepted': '#34d399',
@@ -4483,26 +4542,75 @@ function initUserLogin() {
             'Completed': '#10b981'
           };
           const color = statusColors[o.status] || '#00f2fe';
-          const trackingCode = o.tracking_code || 'HOME-441';
+          const trackingCode = (o.tracking_code || o.code || 'HOME-441').trim();
 
           return `
-            <div style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.45rem;">
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--primary); font-size:0.9rem;">#${escapeHtml(trackingCode)}</span>
-                <span style="background:rgba(255,255,255,0.06); border:1px solid ${color}; color:${color}; font-size:0.7rem; font-weight:700; padding:2px 8px; border-radius:12px;">
-                  ● ${escapeHtml(o.status || 'Active')}
+            <div class="user-booking-card" style="background: rgba(15, 23, 42, 0.75); border: 1.5px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 0.85rem 1rem; display: flex; flex-direction: column; gap: 0.55rem; transition: all 0.2s ease;">
+              <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                <div style="display:inline-flex; align-items:center; gap:6px; background:rgba(0, 242, 254, 0.08); border:1px solid rgba(0, 242, 254, 0.3); border-radius:8px; padding:3px 8px;">
+                  <i class="fas fa-ticket-simple" style="color:var(--primary); font-size:0.8rem;"></i>
+                  <span style="font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--primary); font-size:0.92rem; letter-spacing:0.5px;">#${escapeHtml(trackingCode)}</span>
+                  <button type="button" class="btn-copy-booking-code" data-code="${escapeHtml(trackingCode)}" title="Copy code #${escapeHtml(trackingCode)}">
+                    <i class="far fa-copy"></i> <span>Copy</span>
+                  </button>
+                </div>
+                <span style="background:rgba(255,255,255,0.06); border:1px solid ${color}; color:${color}; font-size:0.72rem; font-weight:700; padding:3px 9px; border-radius:12px; display:inline-flex; align-items:center; gap:5px;">
+                  <span style="width:6px; height:6px; border-radius:50%; background:${color}; box-shadow:0 0 6px ${color};"></span>
+                  ${escapeHtml(o.status || 'Active')}
                 </span>
               </div>
-              <div style="font-size:0.88rem; font-weight:600; color:#fff;">${escapeHtml(o.device_name || 'Electronics Repair')}</div>
-              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted);">
-                <span>${o.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop'}</span>
-                <button type="button" class="btn-track-from-dash" data-code="${escapeHtml(trackingCode)}" style="background:rgba(0,242,254,0.1); border:1px solid var(--primary); color:var(--primary); border-radius:10px; padding:3px 10px; cursor:pointer; font-weight:600; font-size:0.75rem;">
+              <div style="font-size:0.88rem; font-weight:700; color:#fff;">${escapeHtml(o.device_name || o.deviceName || 'Home Appliance Service')}</div>
+              <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.75rem; color:var(--text-muted); border-top:1px dashed rgba(255,255,255,0.08); padding-top:0.45rem;">
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span>${o.service_type === 'home' ? '🏡 At-Home Visit' : '🏪 Shop Drop'}</span>
+                  ${o.price_estimate ? `<span style="color:#fbbf24; font-weight:700; margin-left:6px;">₹${escapeHtml(String(o.price_estimate))}</span>` : ''}
+                </div>
+                <button type="button" class="btn-track-from-dash" data-code="${escapeHtml(trackingCode)}" style="background:linear-gradient(135deg, rgba(0,242,254,0.18), rgba(168,85,247,0.18)); border:1px solid var(--primary); color:var(--primary); border-radius:8px; padding:3px 10px; cursor:pointer; font-weight:700; font-size:0.75rem; display:inline-flex; align-items:center; gap:4px; transition:all 0.2s;">
                   <i class="fas fa-location-arrow"></i> Track Live
                 </button>
               </div>
             </div>
           `;
         }).join('');
+
+        // Bind copy buttons for each booking code
+        dashOrdersList.querySelectorAll('.btn-copy-booking-code').forEach(btn => {
+          btn.addEventListener('click', async (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            const codeToCopy = btn.getAttribute('data-code');
+            if (!codeToCopy) return;
+
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(codeToCopy);
+              } else {
+                const ta = document.createElement('textarea');
+                ta.value = codeToCopy;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand('copy');
+                document.body.removeChild(ta);
+              }
+
+              btn.classList.add('copied');
+              btn.innerHTML = `<i class="fas fa-check" style="color:#10b981;"></i> <span style="color:#10b981;">Copied!</span>`;
+              showToast(`📋 Code "${codeToCopy}" copied to clipboard!`, 'success');
+
+              const trackInput = document.getElementById('track-input');
+              if (trackInput) trackInput.value = codeToCopy;
+
+              setTimeout(() => {
+                btn.classList.remove('copied');
+                btn.innerHTML = `<i class="far fa-copy"></i> <span>Copy</span>`;
+              }, 1800);
+            } catch (err) {
+              console.error('Copy code failed:', err);
+            }
+          });
+        });
 
         // Bind track buttons in dashboard
         dashOrdersList.querySelectorAll('.btn-track-from-dash').forEach(btn => {
@@ -6490,65 +6598,60 @@ function initAdminLiveStatusWatcher() {
 }
 
 /* ========================================================
-   USER CODE PILL ("My code: HOME-1234") INTERACTIVITY
+   USER "MY BOOKINGS" PILL & TRACKING INTERACTIVITY
    ======================================================== */
 function initUserCodePill() {
-  const pill = document.getElementById('user-code-pill');
-  const codeValEl = document.getElementById('user-code-val');
-  const copyBtn = document.getElementById('user-code-copy-btn');
-  const copyIcon = document.getElementById('user-code-copy-icon');
-  const copyToast = document.getElementById('user-code-copy-toast');
+  const myBookingsPill = document.getElementById('user-my-bookings-pill');
+  const legacyPill = document.getElementById('user-code-pill');
 
-  if (!pill || !codeValEl) return;
+  window.openMyBookingsModal = function () {
+    let currentUser = null;
+    try {
+      const raw = localStorage.getItem('ar_customer_user');
+      currentUser = raw ? JSON.parse(raw) : null;
+    } catch (e) {}
 
-  let copiedTimer = null;
+    let localBookings = [];
+    try {
+      localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
+    } catch (e) {}
 
-  async function copyCode(e) {
-    if (e) {
+    if (currentUser) {
+      if (typeof openDashboard === 'function') {
+        openDashboard(currentUser);
+        if (typeof showDashBookingsTab === 'function') showDashBookingsTab();
+      }
+    } else if (localBookings.length > 0 && typeof openDashboard === 'function') {
+      openDashboard({
+        name: 'Valued Customer',
+        phone: '',
+        orders: localBookings
+      });
+      if (typeof showDashBookingsTab === 'function') showDashBookingsTab();
+    } else {
+      if (typeof openLoginModal === 'function') {
+        openLoginModal();
+      }
+      if (typeof showToast === 'function') {
+        showToast('Please login to view all your repair bookings.', 'info');
+      }
+    }
+  };
+
+  if (myBookingsPill) {
+    myBookingsPill.addEventListener('click', (e) => {
       e.preventDefault();
       e.stopPropagation();
-    }
-
-    const codeText = (codeValEl.textContent || '').trim();
-    if (!codeText) return;
-
-    try {
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(codeText);
-      } else {
-        const textarea = document.createElement('textarea');
-        textarea.value = codeText;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textarea);
-      }
-
-      pill.classList.add('copied');
-      if (copyIcon) copyIcon.className = 'fas fa-check';
-      if (copyToast) copyToast.textContent = 'Copied!';
-
-      // Pre-fill tracker input if exists
-      const trackInput = document.getElementById('track-input');
-      if (trackInput) {
-        trackInput.value = codeText;
-      }
-
-      clearTimeout(copiedTimer);
-      copiedTimer = setTimeout(() => {
-        pill.classList.remove('copied');
-        if (copyIcon) copyIcon.className = 'far fa-copy';
-      }, 1800);
-    } catch (err) {
-      console.error('Copy code failed:', err);
-    }
+      window.openMyBookingsModal();
+    });
   }
 
-  pill.addEventListener('click', copyCode);
-  if (copyBtn) {
-    copyBtn.addEventListener('click', copyCode);
+  if (legacyPill && legacyPill !== myBookingsPill) {
+    legacyPill.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      window.openMyBookingsModal();
+    });
   }
 }
 
