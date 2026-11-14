@@ -963,8 +963,20 @@ function requireAuth(req, res, next) {
 
 // Login (Owner: afzal, Passkey: 1512, Mobiles: 8485991694 & 6351618067)
 app.post('/admin-api/login', (req, res) => {
-  const { phone } = req.body || {};
-  const rawPhone = String(phone || '').replace(/\D/g, '');
+  const { phone, username, password, passkey } = req.body || {};
+  const rawPhone = String(phone || username || '').replace(/\D/g, '');
+  const key = String(passkey || password || '').trim();
+
+  const isOwner = (rawPhone.endsWith('8485991694') || rawPhone.endsWith('6351618067') || String(username || '').toLowerCase().trim() === 'afzal');
+
+  // ONLY 8485991694 & 6351618067 CAN ACCESS ADMIN SITE
+  if (rawPhone && !isOwner) {
+    return res.status(403).json({
+      success: false,
+      error: 'Restriction: Only mobile no 8485991694 & 6351618067 can access the admin site.'
+    });
+  }
+
   const activePhone = (rawPhone.endsWith('6351618067')) ? '6351618067' : '8485991694';
   if (req.session) {
     req.session.adminLoggedIn = true;

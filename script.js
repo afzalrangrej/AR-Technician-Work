@@ -4817,39 +4817,64 @@ function initAdminLogin() {
         rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
       );
 
-      // 1. If already logged in on user page with owner mobile, open admin portal directly
+      // 1. ONLY "8485991694" & "6351618067" mobile numbers can access admin site
       if (custUser && isOwnerAdmin) {
+        const verifiedPhone = rawPhone.endsWith('6351618067') ? '6351618067' : '8485991694';
         sessionStorage.setItem('admin_authenticated', 'afzal');
         localStorage.setItem('admin_authenticated', 'afzal');
+        sessionStorage.setItem('admin_authenticated_phone', verifiedPhone);
+        localStorage.setItem('admin_authenticated_phone', verifiedPhone);
         try {
           fetch('/admin-api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: 'afzal', passkey: '1512', phone: rawPhone })
+            body: JSON.stringify({ username: 'afzal', passkey: '1512', phone: verifiedPhone })
           }).catch(() => {});
         } catch (err) {}
 
-        const verifiedPhone = rawPhone.endsWith('6351618067') ? '6351618067' : '8485991694';
-        showToast(`🔓 Admin verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
+        showToast(`🔓 Admin access verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
         window.open('/admin', '_blank');
         return;
       }
 
-      // 2. If already authenticated as admin previously in this browser, open directly
-      if (localStorage.getItem('admin_authenticated') === 'afzal' || sessionStorage.getItem('admin_authenticated') === 'afzal') {
-        showToast('🔓 Admin session active. Opening Admin Dashboard...', 'success');
-        window.open('/admin', '_blank');
-        return;
-      }
+      // 2. IF ANOTHER MOBILE IS USED OR NOT LOGGED IN AS ADMIN: GOT RESTRICTION!
+      adminBtn.classList.remove('admin-btn-shake');
+      void adminBtn.offsetWidth; // re-trigger animation
+      adminBtn.classList.add('admin-btn-shake');
+      setTimeout(() => adminBtn.classList.remove('admin-btn-shake'), 600);
 
-      // 3. Otherwise, open the easy Admin Login Modal for instant PIN entry
+      // Restriction alert toast
+      showToast('🚫 Restriction: this side is admin access only', 'error');
+
+      // Show dedicated access restriction dialog
+      const deniedDialog = document.getElementById('admin-access-denied-dialog');
+      if (deniedDialog) {
+        const subMsg = document.getElementById('admin-access-denied-submsg');
+        if (subMsg) {
+          if (custUser) {
+            const displayPhone = rawPhone.length >= 10 ? rawPhone.slice(-10) : (rawPhone || 'another user');
+            subMsg.innerHTML = `You are currently logged in with mobile (<strong>${displayPhone}</strong>). Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin site. If another mobile is used, access is restricted.`;
+          } else {
+            subMsg.innerHTML = `Only mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin site. If another mobile is used, access is restricted.`;
+          }
+        }
+        deniedDialog.classList.add('active');
+      }
+    });
+  }
+
+  // Handle direct "Admin Login (8485991694 / 6351618067)" button from restriction dialog
+  const deniedLoginBtn = document.getElementById('btn-admin-access-denied-login');
+  if (deniedLoginBtn) {
+    deniedLoginBtn.addEventListener('click', () => {
+      const deniedDialog = document.getElementById('admin-access-denied-dialog');
+      if (deniedDialog) deniedDialog.classList.remove('active');
       if (modal) {
         modal.classList.add('active');
         if (nameInput) {
-          nameInput.value = 'afzal';
-          if (codeInput) {
-            setTimeout(() => codeInput.focus(), 150);
-          }
+          nameInput.value = '';
+          nameInput.placeholder = 'Admin Mobile (8485991694 or 6351618067)';
+          setTimeout(() => nameInput.focus(), 150);
         }
       }
     });
@@ -4872,13 +4897,39 @@ function initAdminLogin() {
       const enteredName = nameInput ? nameInput.value.trim() : '';
       const enteredCode = codeInput ? codeInput.value.trim() : '';
 
-      const nClean = enteredName.toLowerCase().replace(/[^a-z0-9]/g, '');
-      const cClean = enteredCode.trim();
-      const isNameOk = (!nClean || nClean === 'afzal' || nClean === 'admin' || nClean.includes('8485991694') || nClean.includes('6351618067'));
-      const isCodeOk = (cClean === '1512' || cClean === 'afzal1512');
+      const enteredDigits = enteredName.replace(/\D/g, '');
+      const isOwnerPhone = (
+        enteredDigits === '8485991694' || enteredDigits.endsWith('8485991694') ||
+        enteredDigits === '6351618067' || enteredDigits.endsWith('6351618067')
+      );
+      const isOwnerUsername = (enteredName.toLowerCase().trim() === 'afzal');
 
-      // REQUIRED FIXED CREDENTIALS: Admin Name = "afzal" & Secret Code = "1512"
+      // 1. IF ANOTHER MOBILE IS ENTERED: STRICT RESTRICTION
+      if (enteredDigits && !isOwnerPhone) {
+        if (cardContainer) {
+          cardContainer.classList.remove('admin-shake-animation');
+          void cardContainer.offsetWidth; // trigger reflow
+          cardContainer.classList.add('admin-shake-animation');
+        }
+        if (errorMsg) {
+          errorMsg.style.display = 'flex';
+          const errorTextEl = document.getElementById('admin-error-text-content');
+          if (errorTextEl) {
+            errorTextEl.innerHTML = `<strong>RESTRICTION ACTIVE:</strong> Mobile <strong>${escapeHtml(enteredName)}</strong> is NOT authorized! Only mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin site.`;
+          }
+        }
+        showToast(`🚫 Restriction: Only mobile no 8485991694 & 6351618067 can access admin site!`, 'error');
+        return;
+      }
+
+      const isNameOk = isOwnerPhone || isOwnerUsername;
+      const isCodeOk = (enteredCode === '1512' || enteredCode === 'afzal1512');
+
+      // REQUIRED FIXED CREDENTIALS: Admin Mobile = "8485991694" / "6351618067" & Secret Code = "1512"
       if (isNameOk && isCodeOk) {
+        const verifiedNum = enteredDigits.endsWith('6351618067') ? '6351618067' : '8485991694';
+        sessionStorage.setItem('admin_authenticated_phone', verifiedNum);
+        localStorage.setItem('admin_authenticated_phone', verifiedNum);
         sessionStorage.setItem('admin_authenticated', 'afzal');
         localStorage.setItem('admin_authenticated', 'afzal');
         // ========================================================
@@ -4894,16 +4945,16 @@ function initAdminLogin() {
           submitBtn.disabled = true;
           submitBtn.classList.remove('btn-rejected');
           submitBtn.classList.add('btn-approved');
-          submitBtn.innerHTML = `<span class="btn-text"><i class="fas fa-check-circle"></i> Access Approved! Redirecting...</span>`;
+          submitBtn.innerHTML = `<span class="btn-text"><i class="fas fa-check-circle"></i> Access Approved (${verifiedNum})! Redirecting...</span>`;
         }
 
-        showToast('🔓 Administrator Approved! Opening Control Panel...', 'success');
+        showToast(`🔓 Administrator Approved (${verifiedNum})! Opening Control Panel...`, 'success');
 
         try {
           await fetch('/admin-api/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: enteredName, password: enteredCode })
+            body: JSON.stringify({ username: enteredName, password: enteredCode, phone: verifiedNum })
           });
         } catch (err) { }
 
@@ -4937,7 +4988,7 @@ function initAdminLogin() {
           errorMsg.style.display = 'flex';
           const errorTextEl = document.getElementById('admin-error-text-content');
           if (errorTextEl) {
-            errorTextEl.innerHTML = `<strong>ACCESS REJECTED:</strong> Incorrect Admin Name or Secret Code!`;
+            errorTextEl.innerHTML = `<strong>ACCESS REJECTED:</strong> Incorrect Admin Mobile or Secret Code! Only 8485991694 & 6351618067 can access.`;
           }
         }
 

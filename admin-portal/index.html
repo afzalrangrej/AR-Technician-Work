@@ -5908,26 +5908,31 @@
     });
 
     // ============ ACCESS VERIFICATION (8485991694 & 6351618067) ============
+    // ============ ACCESS VERIFICATION (ONLY 8485991694 & 6351618067 CAN ACCESS) ============
     function verifyAdminAccessOnLoad() {
-      let custUser = null;
+      let phone = '';
       try {
         const raw = localStorage.getItem('ar_customer_user');
-        custUser = raw ? JSON.parse(raw) : null;
+        const custUser = raw ? JSON.parse(raw) : null;
+        if (custUser && (custUser.phone || custUser.identifier)) {
+          phone = String(custUser.phone || custUser.identifier).replace(/\D/g, '');
+        }
       } catch (e) {
-        custUser = null;
+        phone = '';
       }
 
-      if (custUser) {
-        const rawPhone = String(custUser.phone || custUser.identifier || '').replace(/\D/g, '');
-        const isAllowed = (
-          rawPhone === '8485991694' || rawPhone.endsWith('8485991694') ||
-          rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
-        );
+      if (!phone) {
+        phone = String(sessionStorage.getItem('admin_authenticated_phone') || localStorage.getItem('admin_authenticated_phone') || '').replace(/\D/g, '');
+      }
 
-        if (!isAllowed) {
-          renderAdminAccessBlockedScreen(rawPhone);
-          return false;
-        }
+      const isAllowed = (
+        phone === '8485991694' || phone.endsWith('8485991694') ||
+        phone === '6351618067' || phone.endsWith('6351618067')
+      );
+
+      if (!isAllowed) {
+        renderAdminAccessBlockedScreen(phone);
+        return false;
       }
       return true;
     }
@@ -5935,28 +5940,81 @@
     function renderAdminAccessBlockedScreen(phone) {
       document.body.innerHTML = `
         <div style="min-height: 100vh; background: radial-gradient(ellipse at 50% 12%, #1b0e33 0%, #070412 55%, #020106 100%); display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-family: 'Outfit', sans-serif;">
-          <div style="max-width: 440px; width: 100%; text-align: center; padding: 2.5rem 2rem; border-radius: 22px; background: rgba(18, 12, 33, 0.96); border: 1.5px solid rgba(239, 68, 68, 0.45); box-shadow: 0 0 60px rgba(239, 68, 68, 0.25), 0 25px 50px rgba(0,0,0,0.8); backdrop-filter: blur(24px);">
-            <div style="width: 72px; height: 72px; margin: 0 auto 1.25rem; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.5); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.3);">
+          <div style="max-width: 440px; width: 100%; text-align: center; padding: 2.25rem 2rem; border-radius: 22px; background: rgba(18, 12, 33, 0.96); border: 1.5px solid rgba(239, 68, 68, 0.5); box-shadow: 0 0 60px rgba(239, 68, 68, 0.25), 0 25px 50px rgba(0,0,0,0.8); backdrop-filter: blur(24px);">
+            <div style="width: 72px; height: 72px; margin: 0 auto 1.15rem; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 2px solid rgba(239, 68, 68, 0.5); display: flex; align-items: center; justify-content: center; font-size: 2rem; color: #ef4444; box-shadow: 0 0 25px rgba(239, 68, 68, 0.35);">
               <i class="fas fa-ban"></i>
             </div>
             <div style="display:inline-block; padding: 0.35rem 0.85rem; background: rgba(239, 68, 68, 0.14); border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 999px; font-size: 0.72rem; font-weight: 700; color: #fca5a5; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.85rem;">
               <i class="fas fa-lock" style="margin-right: 4px;"></i> RESTRICTED ACCESS
             </div>
-            <h2 style="font-size: 1.6rem; font-weight: 800; color: #ffffff; margin-bottom: 0.6rem;">
-              Access Denied
+            <h2 style="font-size: 1.55rem; font-weight: 800; color: #ffffff; margin-bottom: 0.5rem;">
+              Access Restricted
             </h2>
-            <div style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid rgba(239, 68, 68, 0.6); border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1.25rem; color: #fca5a5; font-size: 1rem; font-weight: 700;">
+            <div style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid rgba(239, 68, 68, 0.6); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.15rem; color: #fca5a5; font-size: 0.95rem; font-weight: 700;">
               <i class="fas fa-triangle-exclamation" style="margin-right: 6px; color: #ef4444;"></i> this side is admin access only
             </div>
-            <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.55; margin-bottom: 1.75rem;">
-              You are logged in with mobile <strong>${escHtml(phone)}</strong>.<br>Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin dashboard.
+            <p style="color: #cbd5e1; font-size: 0.85rem; line-height: 1.55; margin-bottom: 1.25rem;">
+              ${phone ? `You are currently logged in with mobile <strong style="color:#f87171;">${escHtml(phone)}</strong> (Restricted).<br>` : ''}
+              Only authorized mobile numbers <strong style="color:#38bdf8;">8485991694</strong> & <strong style="color:#38bdf8;">6351618067</strong> can access the Admin site. If another mobile is used, access is restricted.
             </p>
-            <a href="/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.9rem; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #060813; font-weight: 700; border-radius: 14px; text-decoration: none; font-size: 0.95rem; box-shadow: 0 4px 15px rgba(0, 242, 254, 0.35);">
+
+            <!-- Quick Owner Verification Form -->
+            <form id="admin-gate-form" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 14px; padding: 1rem; margin-bottom: 1.25rem; text-align: left;">
+              <div style="margin-bottom: 0.75rem;">
+                <label style="display:block; font-size:0.75rem; color:#94a3b8; font-weight:700; margin-bottom:4px;">Admin Mobile Number</label>
+                <input type="text" id="gate-admin-phone" placeholder="8485991694 or 6351618067" required style="width:100%; box-sizing:border-box; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 0.8rem; border-radius:8px; font-size:0.85rem; outline:none;">
+              </div>
+              <div style="margin-bottom: 0.85rem;">
+                <label style="display:block; font-size:0.75rem; color:#94a3b8; font-weight:700; margin-bottom:4px;">Secret PIN (1512)</label>
+                <input type="password" id="gate-admin-pin" placeholder="Enter PIN" required style="width:100%; box-sizing:border-box; background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.2); color:#fff; padding:0.6rem 0.8rem; border-radius:8px; font-size:0.85rem; outline:none;">
+              </div>
+              <div id="gate-error" style="display:none; color:#f87171; font-size:0.78rem; font-weight:700; margin-bottom:0.75rem; padding:6px; border-radius:6px; background:rgba(239,68,68,0.15); border:1px solid rgba(239,68,68,0.3);"></div>
+              <button type="submit" style="width:100%; padding:0.75rem; background:linear-gradient(135deg, #00f2fe, #38bdf8); color:#060813; font-weight:800; border:none; border-radius:10px; cursor:pointer; font-size:0.88rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                <i class="fas fa-key"></i> Verify Mobile & Unlock Admin Site
+              </button>
+            </form>
+
+            <a href="/" style="display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; width: 100%; padding: 0.75rem; background: rgba(255, 255, 255, 0.08); color: #ede9fe; font-weight: 700; border-radius: 12px; text-decoration: none; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.15);">
               <i class="fas fa-arrow-left"></i> Return to Customer Website
             </a>
           </div>
         </div>
       `;
+
+      const gateForm = document.getElementById('admin-gate-form');
+      if (gateForm) {
+        gateForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const p = (document.getElementById('gate-admin-phone').value || '').trim();
+          const c = (document.getElementById('gate-admin-pin').value || '').trim();
+          const pDigits = p.replace(/\D/g, '');
+          const isOk = (pDigits === '8485991694' || pDigits.endsWith('8485991694') || pDigits === '6351618067' || pDigits.endsWith('6351618067'));
+          const errEl = document.getElementById('gate-error');
+
+          if (!isOk) {
+            if (errEl) {
+              errEl.style.display = 'block';
+              errEl.innerHTML = `<i class="fas fa-ban"></i> <strong>RESTRICTION ACTIVE:</strong> Mobile <strong>${escHtml(p)}</strong> is not authorized! Only mobile numbers 8485991694 & 6351618067 can access the Admin site.`;
+            }
+            return;
+          }
+
+          if (c !== '1512') {
+            if (errEl) {
+              errEl.style.display = 'block';
+              errEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect Secret PIN!`;
+            }
+            return;
+          }
+
+          const activeP = pDigits.endsWith('6351618067') ? '6351618067' : '8485991694';
+          sessionStorage.setItem('admin_authenticated_phone', activeP);
+          localStorage.setItem('admin_authenticated_phone', activeP);
+          sessionStorage.setItem('admin_authenticated', 'afzal');
+          localStorage.setItem('admin_authenticated', 'afzal');
+          window.location.reload();
+        });
+      }
     }
 
     // ============ BOOT ============

@@ -1202,12 +1202,12 @@
       <form id="admin-login-form" class="admin-classic-form" autocomplete="off">
         <div class="admin-input-group">
           <label for="admin-name-input" class="admin-input-label">
-            <span>Admin Username</span>
-            <span class="label-badge">Required</span>
+            <span>Admin Mobile / Username</span>
+            <span class="label-badge">8485991694 / 6351618067</span>
           </label>
           <div class="admin-field-box">
-            <span class="admin-field-icon"><i class="fas fa-user-tie"></i></span>
-            <input type="text" id="admin-name-input" class="admin-input-control" placeholder="Enter Admin Name" required
+            <span class="admin-field-icon"><i class="fas fa-mobile-screen"></i></span>
+            <input type="text" id="admin-name-input" class="admin-input-control" placeholder="Admin Mobile (8485991694 or 6351618067)" required
               autocomplete="username">
           </div>
         </div>
@@ -1283,15 +1283,18 @@
 
       <div
         style="background: rgba(239, 68, 68, 0.16); border: 1.5px solid rgba(239, 68, 68, 0.6); border-radius: 12px; padding: 0.85rem 1rem; margin-bottom: 1.15rem; color: #fca5a5; font-size: 0.95rem; font-weight: 700;">
-        <i class="fas fa-triangle-exclamation" style="margin-right: 6px; color: #ef4444;"></i> this side is admin access
-        only
+        <i class="fas fa-triangle-exclamation" style="margin-right: 6px; color: #ef4444;"></i> this side is admin access only
       </div>
 
       <p id="admin-access-denied-submsg"
-        style="color: #94a3b8; font-size: 0.83rem; line-height: 1.5; margin-bottom: 1.5rem;">
-        Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin
-        dashboard while logged in on the user page.
+        style="color: #94a3b8; font-size: 0.83rem; line-height: 1.5; margin-bottom: 1.25rem;">
+        Only mobile no <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin site. If another mobile is used, access is restricted.
       </p>
+
+      <button type="button" id="btn-admin-access-denied-login" class="btn btn-primary btn-sm"
+        style="width: 100%; border-radius: 12px; padding: 0.75rem; margin-bottom: 0.6rem; background: linear-gradient(135deg, #00f2fe, #38bdf8); color:#050814; font-weight:800; border:none; cursor:pointer;">
+        <i class="fas fa-key"></i> Admin Login (8485991694 / 6351618067)
+      </button>
 
       <button type="button" class="btn btn-outline btn-sm"
         onclick="document.getElementById('admin-access-denied-dialog').classList.remove('active')"
@@ -1898,7 +1901,7 @@
     </div>
   </div>
 
-  <script src="script.js?v=20261114_v1"></script>
+  <script src="script.js?v=20261114_v2"></script>
 </body>
 
 </html>
