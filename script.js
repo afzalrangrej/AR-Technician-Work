@@ -1041,7 +1041,6 @@ window.syncCustomerCodeVisibility = function () {
           const custName = b.customer_name || (currentUser && currentUser.name) || 'Valued Customer';
           const custPhone = b.customer_phone || (currentUser && currentUser.phone) || '';
           const address = b.address || (currentUser && currentUser.address) || 'Kosamba & Surrounding Area';
-          const priceStr = b.price_estimate ? `₹${b.price_estimate}` : '₹85 (Inspection)';
 
           let dateStr = 'Recent Booking';
           if (b.created_at) {
@@ -1123,10 +1122,7 @@ window.syncCustomerCodeVisibility = function () {
                 <div class="my-booking-meta-item" title="Customer Details">
                   <i class="fas fa-user-check"></i> <span>${escapeHtml(custName)}${custPhone ? ' (' + escapeHtml(custPhone) + ')' : ''}</span>
                 </div>
-                <div class="my-booking-meta-item" title="Estimate">
-                  <i class="fas fa-receipt"></i> <span>Est: ${priceStr}</span>
-                </div>
-                <div class="my-booking-meta-item" style="grid-column: 1 / -1;" title="Doorstep Address">
+                <div class="my-booking-meta-item" title="Doorstep Address">
                   <i class="fas fa-location-dot"></i> <span style="white-space:normal; line-height:1.2;">${escapeHtml(address)}</span>
                 </div>
               </div>
