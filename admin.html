@@ -749,22 +749,11 @@
        ADMIN "I AM OFF" MODE — DASHBOARD LOCK & RED MOUSE CLICK
        ========================================================= */
 
-    /* Custom High-Visibility RED Cursor across the whole admin dashboard */
-    body.admin-mood-is-off,
-    body.admin-mood-is-off *,
-    body.admin-mood-is-off button,
-    body.admin-mood-is-off a,
-    body.admin-mood-is-off input,
-    body.admin-mood-is-off select,
-    body.admin-mood-is-off textarea,
-    body.admin-mood-is-off .nav-link,
-    body.admin-mood-is-off .stat-card,
-    body.admin-mood-is-off .panel,
-    body.admin-mood-is-off .btn-refresh,
-    body.admin-mood-is-off .btn-user-website,
-    body.admin-mood-is-off .action-btn,
-    body.admin-mood-is-off .table-wrap {
-      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Ccircle cx='14' cy='14' r='11' fill='rgba(239,68,68,0.25)' stroke='%23ef4444' stroke-width='2.5'/%3E%3Cline x1='6.2' y1='6.2' x2='21.8' y2='21.8' stroke='%23ef4444' stroke-width='2.5' stroke-linecap='round'/%3E%3Cpath d='M3 3 L10 18 L13 13 L18 10 Z' fill='%23ef4444' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E") 3 3, not-allowed !important;
+    /* Clean visual style for Admin Mood Toggle */
+    body.admin-mood-is-off .btn-mood-toggle {
+      background: rgba(239, 68, 68, 0.22);
+      border-color: #ef4444;
+      color: #fca5a5;
     }
 
     /* Top Safe Logout Button */
@@ -794,62 +783,19 @@
       box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
     }
 
-    /* EXCEPT: The Logout button and the "I am OFF" button which toggles to "I am ON" */
-    body.admin-mood-is-off #btn-top-logout,
-    body.admin-mood-is-off #btn-top-logout *,
-    body.admin-mood-is-off .btn-logout,
-    body.admin-mood-is-off .btn-logout *,
-    body.admin-mood-is-off .banner-logout-btn,
-    body.admin-mood-is-off .banner-logout-btn *,
-    body.admin-mood-is-off #btn-admin-mood,
-    body.admin-mood-is-off #btn-admin-mood *,
-    body.admin-mood-is-off .banner-mood-btn,
-    body.admin-mood-is-off .banner-mood-btn * {
-      cursor: pointer !important;
-      pointer-events: auto !important;
-    }
-
-    /* In "I am OFF" mode: highlight the Top Logout button and Mood button so admin can safely click them */
-    body.admin-mood-is-off #btn-top-logout {
-      position: relative;
-      z-index: 100005 !important;
-      background: rgba(239, 68, 68, 0.3) !important;
-      border-color: #ef4444 !important;
-      color: #ffffff !important;
-      box-shadow: 0 0 14px rgba(239, 68, 68, 0.5) !important;
-    }
-
-    /* When admin is OFF: highlight the "I am OFF" button so admin easily sees where to click to turn ON */
+    /* When admin is OFF: highlight the "I am OFF" button gently so admin easily sees current status */
     body.admin-mood-is-off #btn-admin-mood {
-      position: relative;
-      z-index: 100005 !important;
-      background: rgba(239, 68, 68, 0.28) !important;
+      background: rgba(239, 68, 68, 0.25) !important;
       border-color: #ef4444 !important;
       color: #ffffff !important;
-      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.4), 0 0 25px rgba(239, 68, 68, 0.85) !important;
-      animation: moodOffAttentionPulse 1.4s infinite !important;
+      box-shadow: 0 0 16px rgba(239, 68, 68, 0.4) !important;
     }
 
-    @keyframes moodOffAttentionPulse {
-
-      0%,
-      100% {
-        transform: scale(1);
-        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7), 0 0 20px rgba(239, 68, 68, 0.6);
-      }
-
-      50% {
-        transform: scale(1.05);
-        box-shadow: 0 0 0 8px rgba(239, 68, 68, 0), 0 0 32px rgba(239, 68, 68, 0.95);
-      }
-    }
-
-    /* Dimmed/locked look for dashboard panels when admin is OFF */
+    /* Easy layout: always fully accessible for admin */
     body.admin-mood-is-off .layout {
-      user-select: none;
-      opacity: 0.82;
-      filter: grayscale(0.25);
-      transition: filter 0.3s ease, opacity 0.3s ease;
+      user-select: auto;
+      opacity: 1;
+      filter: none;
     }
 
     body.admin-mood-is-off .topbar {
@@ -2396,25 +2342,23 @@
           </div>
         </div>
 
-        <!-- ===== ADMIN IS OFF: LOCKED DASHBOARD BANNER ===== -->
+        <!-- ===== ADMIN IS OFF: EASY NOTICE BANNER ===== -->
         <div class="admin-off-locked-banner" id="admin-off-locked-banner">
           <div class="banner-inner">
             <div class="banner-left">
-              <div class="banner-lock-icon"><i class="fas fa-lock"></i></div>
+              <div class="banner-lock-icon" style="background:rgba(239,68,68,0.2); border-color:#ef4444; color:#ef4444;"><i class="fas fa-moon"></i></div>
               <div class="banner-text">
-                <h4><i class="fas fa-shield-halved" style="color:#ef4444;"></i> ADMIN IS IN "I AM OFF" MOOD — DASHBOARD
-                  LOCKED</h4>
-                <p>Whole dashboard is not clickable. You can only click <strong>Logout</strong> or turn <strong>"I am
-                    ON"</strong>.</p>
+                <h4 style="color:#f87171;"><i class="fas fa-power-off"></i> Shop is currently set to OFFLINE for customers</h4>
+                <p style="color:#e2e8f0;">Customer website shows "Admin: Offline" and repair booking is paused. You have full access to view, update, accept/reject, call, and manage orders below.</p>
               </div>
             </div>
             <div class="banner-actions">
-              <button class="banner-mood-btn" onclick="toggleAdminMood()"
-                title="Click to turn Admin mood back ON and unlock dashboard">
-                <i class="fas fa-power-off"></i> Turn "I am ON" Now
+              <button class="banner-mood-btn" onclick="toggleAdminMood()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border-color:#10b981; color:#fff;"
+                title="Click to turn Admin mood back ON">
+                <i class="fas fa-bolt"></i> Turn "I am ON" Now
               </button>
               <button class="banner-logout-btn" onclick="doLogout()" title="Click to safely logout of admin portal">
-                <i class="fas fa-right-from-bracket"></i> Logout Now
+                <i class="fas fa-right-from-bracket"></i> Logout
               </button>
             </div>
           </div>
@@ -3747,126 +3691,15 @@
     }
 
     function showRedClickEffect(x, y) {
-      if (!x && !y) {
-        x = window.innerWidth / 2;
-        y = window.innerHeight / 2;
-      }
-
-      const fx = document.createElement('div');
-      fx.className = 'admin-red-click-fx';
-      fx.style.left = `${x}px`;
-      fx.style.top = `${y}px`;
-
-      fx.innerHTML = `
-        <div class="red-ripple red-ripple-1"></div>
-        <div class="red-ripple red-ripple-2"></div>
-        <div class="red-core"></div>
-        <div class="red-cross">✕</div>
-        <div class="red-locked-tag">
-          <i class="fas fa-lock"></i> LOCKED (I AM OFF)
-        </div>
-      `;
-
-      document.body.appendChild(fx);
-
-      // Attention pulse on the "I am OFF" button to guide admin
-      const moodBtn = document.getElementById('btn-admin-mood');
-      if (moodBtn) {
-        moodBtn.classList.remove('attention-wiggle');
-        void moodBtn.offsetWidth; // force reflow
-        moodBtn.classList.add('attention-wiggle');
-      }
-
-      playLockedRejectSound();
-
-      setTimeout(() => {
-        if (fx && fx.parentNode) fx.parentNode.removeChild(fx);
-      }, 900);
+      // Non-blocking for easy admin usage
     }
 
-    // Helper: Is the clicked element permitted when in OFF mood?
+    // Helper: Is element permitted
     function isAllowedWhenOff(target) {
-      if (!target) return false;
-      if (target.closest && (
-        target.closest('#btn-top-logout') ||
-        target.closest('.banner-logout-btn') ||
-        target.closest('.btn-logout') ||
-        target.closest('#btn-admin-mood') ||
-        target.closest('.banner-mood-btn')
-      )) {
-        return true;
-      }
-      return false;
+      return true;
     }
 
-    // Capture and block clicks when admin mood is OFF
-    window.addEventListener('click', function (e) {
-      if (currentAdminMood === 'OFF') {
-        const loginScreen = document.getElementById('login-screen');
-        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
-          return; // Allow login screen interaction if not logged in
-        }
-
-        // Show RED mouse click effect on the whole admin page
-        showRedClickEffect(e.clientX, e.clientY);
-
-        // If clicking anything other than the "I am OFF" button / turn ON button, block it!
-        if (!isAllowedWhenOff(e.target)) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          return false;
-        }
-      }
-    }, true);
-
-    // Block mousedown on buttons and panels when in OFF mood
-    window.addEventListener('mousedown', function (e) {
-      if (currentAdminMood === 'OFF') {
-        const loginScreen = document.getElementById('login-screen');
-        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
-          return;
-        }
-        if (!isAllowedWhenOff(e.target)) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          return false;
-        }
-      }
-    }, true);
-
-    // Block pointerdown for touch/pen devices
-    window.addEventListener('pointerdown', function (e) {
-      if (currentAdminMood === 'OFF') {
-        const loginScreen = document.getElementById('login-screen');
-        if (loginScreen && !loginScreen.classList.contains('hidden') && loginScreen.contains(e.target)) {
-          return;
-        }
-        if (!isAllowedWhenOff(e.target)) {
-          e.preventDefault();
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-        }
-      }
-    }, true);
-
-    // Block keyboard activation (Enter/Space) on locked elements
-    window.addEventListener('keydown', function (e) {
-      if (currentAdminMood === 'OFF') {
-        const loginScreen = document.getElementById('login-screen');
-        if (loginScreen && !loginScreen.classList.contains('hidden')) return;
-        if (isAllowedWhenOff(e.target)) return;
-        if (e.key === 'Enter' || e.key === ' ' || e.key === 'Spacebar') {
-          e.preventDefault();
-          e.stopPropagation();
-          const rect = e.target && e.target.getBoundingClientRect ? e.target.getBoundingClientRect() : null;
-          const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
-          const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
-          showRedClickEffect(x, y);
-        }
-      }
-    }, true);
+    // Admin dashboard remains fully interactive and easy to use at all times
 
     // ============ MAN VOICE SPEECH SYNTHESIS ("I am ON" / "I am OFF") ============
     function speakManVoice(phrase) {
@@ -4952,8 +4785,12 @@
             <div style="font-size:0.75rem; color:var(--text-muted);"><i class="fas fa-location-dot"></i> ${escHtml(o.customer_address || 'Kosamba / Surat')}</div>
           </td>
           <td style="font-size:0.82rem;">
-            <div><i class="fas fa-phone" style="color:var(--text-muted);width:14px;"></i> ${escHtml(o.customer_phone)}</div>
-            ${o.customer_email ? `<div style="color:var(--text-muted);"><i class="fas fa-envelope" style="width:14px;"></i> ${escHtml(o.customer_email)}</div>` : ''}
+            <div style="font-weight:700;"><i class="fas fa-phone" style="color:var(--cyan);width:14px;"></i> ${escHtml(o.customer_phone)}</div>
+            <div style="display:flex; gap:4px; margin-top:4px;">
+              <a href="tel:${String(o.customer_phone || '').replace(/\D/g, '')}" class="btn-sm" style="background:#10b981; color:#000; font-weight:800; text-decoration:none; padding:2px 7px; font-size:0.7rem; border-radius:6px; display:inline-flex; align-items:center; gap:3px;" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
+              <a href="https://wa.me/91${String(o.customer_phone || '').replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Hello ' + (o.customer_name || 'Customer') + ', this is AR Technician Work regarding your booking (' + o.tracking_code + ').')}" target="_blank" class="btn-sm btn-wa" style="text-decoration:none; padding:2px 7px; font-size:0.7rem; border-radius:6px; display:inline-flex; align-items:center; gap:3px;" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
+            </div>
+            ${o.customer_email ? `<div style="color:var(--text-muted); font-size:0.72rem; margin-top:3px;"><i class="fas fa-envelope" style="width:14px;"></i> ${escHtml(o.customer_email)}</div>` : ''}
           </td>
           <td>
             <div style="font-weight:600;">${escHtml(o.device_name)}</div>
@@ -5013,6 +4850,10 @@
           <td>
             <div style="font-weight:700; color:#fff; font-size:0.84rem;">${escHtml(o.customer_name)}</div>
             <div style="font-size:0.73rem; color:var(--text-muted);"><i class="fas fa-phone" style="font-size:0.65rem;"></i> ${escHtml(o.customer_phone || 'N/A')}</div>
+            <div style="display:flex; gap:4px; margin-top:3px;">
+              <a href="tel:${String(o.customer_phone || '').replace(/\D/g, '')}" class="btn-sm" style="background:#10b981; color:#000; font-weight:800; text-decoration:none; padding:1px 6px; font-size:0.68rem; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
+              <a href="https://wa.me/91${String(o.customer_phone || '').replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Hello ' + (o.customer_name || 'Customer') + ', this is AR Technician Work regarding your booking (' + o.tracking_code + ').')}" target="_blank" class="btn-sm btn-wa" style="text-decoration:none; padding:1px 6px; font-size:0.68rem; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
+            </div>
           </td>
           <td>
             <div style="font-weight:600; color:var(--text); font-size:0.82rem;">${escHtml(o.device_name || o.device_category || 'General Repair')}</div>

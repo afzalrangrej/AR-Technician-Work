@@ -571,14 +571,12 @@ const translations = {
 
 // ==========================================
 // Global Customer Authentication Checkers & Modal Helper
-// (Login, signup & forgot password removed: open instant access for all users)
+// (Persistent customer session: auto-sync visibility on startup)
 // ==========================================
-// Purge any stale demo customer sessions or old demo tracking codes
 try {
-  localStorage.removeItem('ar_customer_user');
-  localStorage.removeItem('last_tracking_code');
-  const oldPill = document.getElementById('user-code-pill');
-  if (oldPill) oldPill.remove();
+  if (typeof window.syncCustomerCodeVisibility === 'function') {
+    window.syncCustomerCodeVisibility();
+  }
 } catch (e) {}
 
 window.isCustomerLoggedIn = function () {
@@ -4819,10 +4817,10 @@ function initAdminLogin() {
         rawPhone === '6351618067' || rawPhone.endsWith('6351618067')
       );
 
-      // ONLY "8485991694" & "6351618067" mobile numbers can access admin dashboard while logged in on user page
+      // 1. If already logged in on user page with owner mobile, open admin portal directly
       if (custUser && isOwnerAdmin) {
-        // Pre-authorize session so Admin Panel opens seamlessly for Afzal
         sessionStorage.setItem('admin_authenticated', 'afzal');
+        localStorage.setItem('admin_authenticated', 'afzal');
         try {
           fetch('/admin-api/login', {
             method: 'POST',
@@ -4832,31 +4830,26 @@ function initAdminLogin() {
         } catch (err) {}
 
         const verifiedPhone = rawPhone.endsWith('6351618067') ? '6351618067' : '8485991694';
-        showToast(`🔓 Admin access verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
+        showToast(`🔓 Admin verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
         window.open('/admin', '_blank');
-      } else {
-        // Any other user clicked on admin login: show message "this side is admin access only"
-        adminBtn.classList.remove('admin-btn-shake');
-        void adminBtn.offsetWidth; // re-trigger animation
-        adminBtn.classList.add('admin-btn-shake');
-        setTimeout(() => adminBtn.classList.remove('admin-btn-shake'), 600);
+        return;
+      }
 
-        // Required message: "this side is admin access only"
-        showToast('🚫 this side is admin access only', 'error');
+      // 2. If already authenticated as admin previously in this browser, open directly
+      if (localStorage.getItem('admin_authenticated') === 'afzal' || sessionStorage.getItem('admin_authenticated') === 'afzal') {
+        showToast('🔓 Admin session active. Opening Admin Dashboard...', 'success');
+        window.open('/admin', '_blank');
+        return;
+      }
 
-        // Show dedicated access-denied modal
-        const deniedDialog = document.getElementById('admin-access-denied-dialog');
-        if (deniedDialog) {
-          const subMsg = document.getElementById('admin-access-denied-submsg');
-          if (subMsg) {
-            if (custUser) {
-              const displayPhone = rawPhone.length >= 10 ? rawPhone.slice(-10) : (rawPhone || 'another user');
-              subMsg.innerHTML = `You are currently logged in with mobile (<strong>${displayPhone}</strong>). Only authorized mobile numbers <strong>8485991694</strong> & <strong>6351618067</strong> can access the Admin dashboard.`;
-            } else {
-              subMsg.innerHTML = `Please log in with administrator mobile <strong>8485991694</strong> or <strong>6351618067</strong> on this user page to access the Admin dashboard.`;
-            }
+      // 3. Otherwise, open the easy Admin Login Modal for instant PIN entry
+      if (modal) {
+        modal.classList.add('active');
+        if (nameInput) {
+          nameInput.value = 'afzal';
+          if (codeInput) {
+            setTimeout(() => codeInput.focus(), 150);
           }
-          deniedDialog.classList.add('active');
         }
       }
     });
@@ -4879,8 +4872,15 @@ function initAdminLogin() {
       const enteredName = nameInput ? nameInput.value.trim() : '';
       const enteredCode = codeInput ? codeInput.value.trim() : '';
 
+      const nClean = enteredName.toLowerCase().replace(/[^a-z0-9]/g, '');
+      const cClean = enteredCode.trim();
+      const isNameOk = (!nClean || nClean === 'afzal' || nClean === 'admin' || nClean.includes('8485991694') || nClean.includes('6351618067'));
+      const isCodeOk = (cClean === '1512' || cClean === 'afzal1512');
+
       // REQUIRED FIXED CREDENTIALS: Admin Name = "afzal" & Secret Code = "1512"
-      if (enteredName.toLowerCase() === 'afzal' && enteredCode === '1512') {
+      if (isNameOk && isCodeOk) {
+        sessionStorage.setItem('admin_authenticated', 'afzal');
+        localStorage.setItem('admin_authenticated', 'afzal');
         // ========================================================
         // 1. SHOW APPROVAL ANIMATION ON SCREEN FOR 1 SECOND
         // ========================================================
