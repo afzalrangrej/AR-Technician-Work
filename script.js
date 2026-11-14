@@ -617,7 +617,59 @@ window.getCurrentCustomerUser = function () {
   }
 };
 
+window.syncAdminButtonVisibility = function () {
+  const adminBtn = document.getElementById('admin-btn');
+
+  let custUser = null;
+  try {
+    if (typeof window.getCurrentCustomerUser === 'function') {
+      custUser = window.getCurrentCustomerUser();
+    } else {
+      const raw = localStorage.getItem('ar_customer_user');
+      custUser = raw ? JSON.parse(raw) : null;
+    }
+  } catch (err) {
+    custUser = null;
+  }
+
+  const rawPhone = custUser ? String(custUser.phone || custUser.identifier || '').replace(/\D/g, '') : '';
+  const adminAuthPhone = String(sessionStorage.getItem('admin_authenticated_phone') || localStorage.getItem('admin_authenticated_phone') || '').replace(/\D/g, '');
+
+  // Only mobile numbers "8485991694" & "6351618067" can see admin button in website
+  const isAuthorized = (
+    rawPhone === '8485991694' || rawPhone.endsWith('8485991694') ||
+    rawPhone === '6351618067' || rawPhone.endsWith('6351618067') ||
+    adminAuthPhone === '8485991694' || adminAuthPhone.endsWith('8485991694') ||
+    adminAuthPhone === '6351618067' || adminAuthPhone.endsWith('6351618067')
+  );
+
+  if (document.body) {
+    if (isAuthorized) {
+      document.body.classList.add('admin-authorized');
+    } else {
+      document.body.classList.remove('admin-authorized');
+    }
+  }
+
+  if (adminBtn) {
+    if (isAuthorized) {
+      adminBtn.style.setProperty('display', 'inline-flex', 'important');
+    } else {
+      adminBtn.style.setProperty('display', 'none', 'important');
+    }
+  }
+};
+
+try {
+  if (typeof window.syncAdminButtonVisibility === 'function') {
+    window.syncAdminButtonVisibility();
+  }
+} catch (e) {}
+
 window.syncCustomerCodeVisibility = function () {
+  if (typeof window.syncAdminButtonVisibility === 'function') {
+    window.syncAdminButtonVisibility();
+  }
   const heroMyBookingsPill = document.getElementById('user-my-bookings-pill') || document.getElementById('user-code-pill');
   const heroMyBookingsCount = document.getElementById('user-my-bookings-count');
   const heroMyBookingsLabel = document.getElementById('user-my-bookings-label');
@@ -5489,6 +5541,13 @@ function initUserLogin() {
   if (dashLogoutBtn) {
     dashLogoutBtn.addEventListener('click', () => {
       setCurrentUser(null);
+      sessionStorage.removeItem('admin_authenticated');
+      localStorage.removeItem('admin_authenticated');
+      sessionStorage.removeItem('admin_authenticated_phone');
+      localStorage.removeItem('admin_authenticated_phone');
+      if (typeof window.syncAdminButtonVisibility === 'function') {
+        window.syncAdminButtonVisibility();
+      }
       if (dashModal) dashModal.classList.remove('active');
       const trackResult = document.getElementById('track-result');
       if (trackResult) trackResult.style.display = 'none';
@@ -5534,6 +5593,9 @@ function initUserLogin() {
 /* 6. ADMIN AUTHENTICATION (FIXED: Admin name: afzal | Secret code: 1512) */
 function initAdminLogin() {
   const adminBtn = document.getElementById('admin-btn');
+  if (typeof window.syncAdminButtonVisibility === 'function') {
+    window.syncAdminButtonVisibility();
+  }
   const modal = document.getElementById('admin-login-modal');
   const closeBtn = document.getElementById('admin-modal-close');
   const form = document.getElementById('admin-login-form');

@@ -1440,6 +1440,16 @@ h6 {
   }
 }
 
+/* Admin Portal Hacker Button: Hidden by default for everyone.
+   ONLY visible to phone numbers 8485991694 & 6351618067 when logged in */
+#admin-btn {
+  display: none !important;
+}
+
+body.admin-authorized #admin-btn {
+  display: inline-flex !important;
+}
+
 .nav-hacker-btn,
 .nav-eye-btn {
   display: inline-flex;
