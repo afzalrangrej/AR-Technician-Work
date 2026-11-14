@@ -1491,6 +1491,75 @@
       background: rgba(176, 96, 255, 0.05);
     }
 
+    /* ============ TABLE PAGINATION ============ */
+    .table-pagination {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 0.85rem;
+      padding: 0.7rem 1rem;
+      background: rgba(20, 10, 42, 0.65);
+      border: 1px solid rgba(176, 96, 255, 0.12);
+      border-radius: 10px;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .pagination-info {
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .pagination-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      min-width: 32px;
+      height: 32px;
+      padding: 0 0.65rem;
+      border-radius: 7px;
+      border: 1px solid rgba(176, 96, 255, 0.22);
+      background: rgba(25, 12, 50, 0.85);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      font-family: inherit;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      background: rgba(176, 96, 255, 0.25);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(176, 96, 255, 0.35);
+    }
+
+    .page-btn.active {
+      background: var(--grad-main);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 12px rgba(176, 96, 255, 0.5);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: rgba(255, 255, 255, 0.05);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
     /* ============ BADGES ============ */
     .badge {
       display: inline-flex;
@@ -2718,7 +2787,7 @@
               <div class="search-box">
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="text" id="cust-search" placeholder="Search customers…"
-                  oninput="filterTable('cust-tbody', this.value)">
+                  oninput="onCustSearch(this.value)">
               </div>
             </div>
           </div>
@@ -2745,6 +2814,14 @@
                 </tr>
               </tbody>
             </table>
+          </div>
+          <!-- Customer Table Pagination (10 per page, numbered from 1) -->
+          <div id="cust-pagination-bar" class="table-pagination">
+            <div id="cust-pagination-info" class="pagination-info">
+              Showing 0–0 of 0 customers
+            </div>
+            <div id="cust-pagination-controls" class="pagination-controls">
+            </div>
           </div>
         </div>
 
@@ -4861,32 +4938,120 @@
       }).join('');
     }
 
+    // ============ CUSTOMER DIRECTORY PAGINATION & RENDERING ============
+    let custCurrentPage = 1;
+    const CUST_PER_PAGE = 10;
+    let custSearchQuery = '';
+
+    function onCustSearch(query) {
+      custSearchQuery = (query || '').trim().toLowerCase();
+      custCurrentPage = 1;
+      renderCustomers(allCustomers);
+    }
+
+    function goToCustPage(page) {
+      custCurrentPage = page;
+      renderCustomers(allCustomers);
+    }
+
     function renderCustomers(customers) {
       const tbody = document.getElementById('cust-tbody');
-      if (!customers.length) {
-        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-user-slash"></i><p>No customers yet.</p></div></td></tr>`;
+      const infoEl = document.getElementById('cust-pagination-info');
+      const controlsEl = document.getElementById('cust-pagination-controls');
+
+      const list = customers || allCustomers || [];
+
+      // Filter based on search query if present
+      const filtered = custSearchQuery
+        ? list.filter(c => {
+            const text = `${c.name || ''} ${c.phone || ''} ${c.email || ''} ${c.address || ''} ${c.zip_code || ''}`.toLowerCase();
+            return text.includes(custSearchQuery);
+          })
+        : list;
+
+      const total = filtered.length;
+
+      if (!total) {
+        tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="fas fa-user-slash"></i><p>${custSearchQuery ? 'No customers match your search.' : 'No customers yet.'}</p></div></td></tr>`;
+        if (infoEl) infoEl.innerHTML = `Showing <strong style="color:var(--text); margin:0 2px;">0</strong> of <strong style="color:var(--text); margin:0 2px;">0</strong> customers`;
+        if (controlsEl) controlsEl.innerHTML = '';
         return;
       }
-      tbody.innerHTML = customers.map(c => `
-      <tr data-search="${escHtml((c.name + c.phone + (c.email || '') + (c.address || '')).toLowerCase())}">
-        <td style="color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:0.8rem;">#${c.id}</td>
-        <td><strong>${escHtml(c.name)}</strong></td>
-        <td><strong style="color:var(--cyan);">${escHtml(c.phone)}</strong></td>
-        <td style="font-size:0.82rem;">${escHtml(c.email || '—')}</td>
-        <td style="font-size:0.82rem;">${escHtml(c.address || 'Kosamba / Surat')} <span style="color:var(--text-muted);">${c.zip_code ? `(${c.zip_code})` : ''}</span></td>
-        <td><span class="badge badge-Booked">${c.total_orders} ticket(s)</span></td>
-        <td>
-          <div class="action-group">
-            <button type="button" class="btn-sm" onclick='openAddCollectionModal("WALK-IN", "${escHtml(c.name).replace(/'/g, "\\'")}")' title="Record payment collection from this customer" style="background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); color:#34d399; font-weight:700; padding:0.28rem 0.55rem; cursor:pointer;"><i class="fas fa-indian-rupee-sign"></i> Collect</button>
-            <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
-            <a href="tel:${c.phone}" class="btn-sm btn-edit" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
-            <button type="button" class="btn-sm btn-del" onclick="deleteCustomer(${c.id}, '${escHtml(c.name).replace(/'/g, "\\'")}')" title="Delete customer record">
-              <i class="fas fa-trash"></i> Delete
+
+      const totalPages = Math.ceil(total / CUST_PER_PAGE) || 1;
+      if (custCurrentPage > totalPages) custCurrentPage = totalPages;
+      if (custCurrentPage < 1) custCurrentPage = 1;
+
+      const startIdx = (custCurrentPage - 1) * CUST_PER_PAGE;
+      const endIdx = Math.min(startIdx + CUST_PER_PAGE, total);
+      const pageCustomers = filtered.slice(startIdx, endIdx);
+
+      tbody.innerHTML = pageCustomers.map((c, idx) => {
+        const serialNumber = startIdx + idx + 1; // Starts with 1: #1, #2, #3...
+        return `
+        <tr data-search="${escHtml((c.name + c.phone + (c.email || '') + (c.address || '')).toLowerCase())}">
+          <td style="color:var(--text-muted); font-family:'JetBrains Mono',monospace; font-size:0.8rem; font-weight:700;">#${serialNumber}</td>
+          <td><strong>${escHtml(c.name)}</strong></td>
+          <td><strong style="color:var(--cyan);">${escHtml(c.phone)}</strong></td>
+          <td style="font-size:0.82rem;">${escHtml(c.email || '—')}</td>
+          <td style="font-size:0.82rem;">${escHtml(c.address || 'Kosamba / Surat')} <span style="color:var(--text-muted);">${c.zip_code ? `(${c.zip_code})` : ''}</span></td>
+          <td><span class="badge badge-Booked">${c.total_orders} ticket(s)</span></td>
+          <td>
+            <div class="action-group">
+              <button type="button" class="btn-sm" onclick='openAddCollectionModal("WALK-IN", "${escHtml(c.name).replace(/'/g, "\\'")}")' title="Record payment collection from this customer" style="background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); color:#34d399; font-weight:700; padding:0.28rem 0.55rem; cursor:pointer;"><i class="fas fa-indian-rupee-sign"></i> Collect</button>
+              <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
+              <a href="tel:${c.phone}" class="btn-sm btn-edit" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
+              <button type="button" class="btn-sm btn-del" onclick="deleteCustomer(${c.id}, '${escHtml(c.name).replace(/'/g, "\\'")}')" title="Delete customer record">
+                <i class="fas fa-trash"></i> Delete
+              </button>
+            </div>
+          </td>
+        </tr>
+        `;
+      }).join('');
+
+      // Update Pagination Info
+      if (infoEl) {
+        infoEl.innerHTML = `Showing <strong style="color:var(--cyan); margin:0 2px;">${startIdx + 1}–${endIdx}</strong> of <strong style="color:var(--text); margin:0 2px;">${total}</strong> customers <span style="color:var(--text-muted); font-size:0.75rem;">(10 per page)</span>`;
+      }
+
+      // Render Pagination Controls
+      if (controlsEl) {
+        if (totalPages <= 1) {
+          controlsEl.innerHTML = `<span style="font-size:0.75rem; color:var(--text-muted); padding:0.25rem 0.65rem; border-radius:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); font-weight:600;">Page 1 of 1</span>`;
+        } else {
+          let buttonsHtml = '';
+
+          // Prev Button
+          buttonsHtml += `
+            <button class="page-btn" ${custCurrentPage === 1 ? 'disabled' : ''} onclick="goToCustPage(${custCurrentPage - 1})" title="Previous Page">
+              <i class="fas fa-chevron-left" style="font-size:0.72rem;"></i> Prev
             </button>
-          </div>
-        </td>
-      </tr>
-    `).join('');
+          `;
+
+          // Page numbers (smart window)
+          for (let p = 1; p <= totalPages; p++) {
+            if (p === 1 || p === totalPages || (p >= custCurrentPage - 2 && p <= custCurrentPage + 2)) {
+              buttonsHtml += `
+                <button class="page-btn ${p === custCurrentPage ? 'active' : ''}" onclick="goToCustPage(${p})">
+                  ${p}
+                </button>
+              `;
+            } else if (p === custCurrentPage - 3 || p === custCurrentPage + 3) {
+              buttonsHtml += `<span style="color:var(--text-muted); padding:0 3px; font-size:0.75rem;">…</span>`;
+            }
+          }
+
+          // Next Button
+          buttonsHtml += `
+            <button class="page-btn" ${custCurrentPage === totalPages ? 'disabled' : ''} onclick="goToCustPage(${custCurrentPage + 1})" title="Next Page">
+              Next <i class="fas fa-chevron-right" style="font-size:0.72rem;"></i>
+            </button>
+          `;
+
+          controlsEl.innerHTML = buttonsHtml;
+        }
+      }
     }
 
     function renderInquiries(inquiries) {
@@ -6039,6 +6204,10 @@
 
     // ============ SEARCH & FILTER ============
     function filterTable(tbodyId, query) {
+      if (tbodyId === 'cust-tbody') {
+        onCustSearch(query);
+        return;
+      }
       const q = query.toLowerCase();
       document.querySelectorAll(`#${tbodyId} tr[data-search]`).forEach(row => {
         row.style.display = row.dataset.search.includes(q) ? '' : 'none';
