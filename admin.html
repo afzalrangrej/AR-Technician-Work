@@ -2737,9 +2737,9 @@
           </div>
           <div class="topbar-right">
             <button class="btn-mood-toggle mood-on" id="btn-admin-mood" onclick="toggleAdminMood()"
-              title="Click to toggle your live Online / Offline mood on customer website">
+              title="Click to toggle Service (Service On / Service Off)">
               <span class="mood-dot"></span>
-              <span id="admin-mood-label">I am ON</span>
+              <span id="admin-mood-label">Service On</span>
             </button>
             <div class="live-badge">
               <div class="live-dot"></div> Live User Sync
@@ -2758,14 +2758,14 @@
             <div class="banner-left">
               <div class="banner-lock-icon" style="background:rgba(239,68,68,0.2); border-color:#ef4444; color:#ef4444;"><i class="fas fa-moon"></i></div>
               <div class="banner-text">
-                <h4 style="color:#f87171;"><i class="fas fa-lock"></i> Shop & Admin are currently OFFLINE ("I AM OFF")</h4>
-                <p style="color:#fecaca; font-weight:600;"><i class="fas fa-hand" style="margin-right:4px;"></i> Screen and buttons are LOCKED. Clicking anywhere shows a red alert. Only Logout or Turn "I am ON" can be used.</p>
+                <h4 style="color:#f87171;"><i class="fas fa-lock"></i> Shop & Admin are currently OFFLINE ("Service Off")</h4>
+                <p style="color:#fecaca; font-weight:600;"><i class="fas fa-hand" style="margin-right:4px;"></i> Screen and buttons are LOCKED. Clicking anywhere shows a red alert. Only Logout or Turn "Service On" can be used.</p>
               </div>
             </div>
             <div class="banner-actions">
               <button class="banner-mood-btn" onclick="toggleAdminMood()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); border-color:#10b981; color:#fff;"
-                title="Click to turn Admin mood back ON">
-                <i class="fas fa-bolt"></i> Turn "I am ON" Now
+                title="Click to turn Service On">
+                <i class="fas fa-bolt"></i> Turn "Service On" Now
               </button>
               <button class="banner-logout-btn" onclick="doLogout()" title="Click to safely logout of admin portal">
                 <i class="fas fa-right-from-bracket"></i> Logout
@@ -4152,15 +4152,15 @@
         document.body.classList.remove('admin-mood-is-off');
         if (btn) {
           btn.className = 'btn-mood-toggle mood-on';
-          if (label) label.textContent = 'I am ON (Location ON)';
-          btn.title = 'You are ON • Location is ON. Customers can track live GPS location when departed.';
+          if (label) label.textContent = 'Service On';
+          btn.title = 'Service is ON • Location is ON. Customers can book repairs and track live GPS location when departed.';
         }
       } else {
         document.body.classList.add('admin-mood-is-off');
         if (btn) {
           btn.className = 'btn-mood-toggle mood-off';
-          if (label) label.textContent = 'I am OFF (Location OFF)';
-          btn.title = 'You are OFF • Location is OFF. Customer repair service and live tracking are paused until you turn ON.';
+          if (label) label.textContent = 'Service Off';
+          btn.title = 'Service is OFF • Location is OFF. Customer repair bookings and live tracking are paused.';
         }
       }
 
@@ -4211,13 +4211,13 @@
         <div class="red-core"></div>
         <div class="red-cross">✕</div>
         <div class="red-locked-tag">
-          <i class="fas fa-lock"></i> LOCKED (I AM OFF)
+          <i class="fas fa-lock"></i> LOCKED (SERVICE OFF)
         </div>
       `;
 
       document.body.appendChild(fx);
 
-      // Attention pulse on the "I am OFF" button to guide admin
+      // Attention pulse on the "Service Off" button to guide admin
       const moodBtn = document.getElementById('btn-admin-mood');
       if (moodBtn) {
         moodBtn.classList.remove('attention-wiggle');
@@ -4256,8 +4256,8 @@
       alertToast.innerHTML = `
         <i class="fas fa-ban" style="font-size:1.3rem; color:#fee2e2;"></i>
         <div style="text-align:left;">
-          <div style="font-size:0.96rem; font-weight:800; letter-spacing:0.3px;">⛔ ADMIN IS IN "I AM OFF" MOOD!</div>
-          <div style="font-size:0.8rem; font-weight:600; color:#fecaca; margin-top:2px;">Screen & buttons are locked. Only Logout (or Turn "I am ON") can be used.</div>
+          <div style="font-size:0.96rem; font-weight:800; letter-spacing:0.3px;">⛔ ADMIN IS IN "SERVICE OFF" MODE!</div>
+          <div style="font-size:0.8rem; font-weight:600; color:#fecaca; margin-top:2px;">Screen & buttons are locked. Only Logout (or Turn "Service On") can be used.</div>
         </div>
       `;
       document.body.appendChild(alertToast);
@@ -4425,14 +4425,14 @@
       const nextMood = currentAdminMood === 'ON' ? 'OFF' : 'ON';
       updateAdminMoodUI(nextMood);
 
-      // MAN voice announces: "I am ON" or "I am OFF"
-      speakManVoice(nextMood === 'ON' ? 'I am ON' : 'I am OFF');
+      // MAN voice announces: "Service On" or "Service Off"
+      speakManVoice(nextMood === 'ON' ? 'Service On' : 'Service Off');
 
       if (nextMood === 'ON') {
         playAlertChime();
-        showToast('🟢 "I am ON": Location is ON! Customers can track live location when departed from shop.', 'success');
+        showToast('🟢 "Service On": Location is ON! Customers can track live location when departed from shop.', 'success');
       } else {
-        showToast('🔴 "I am OFF": Location is OFF! Customer repair bookings and live tracking are paused until you turn "I am ON".', 'warning');
+        showToast('🔴 "Service Off": Location is OFF! Customer repair bookings and live tracking are paused until you turn "Service On".', 'warning');
       }
 
       // 1. Universal Cloud Sync: Real-time cross-device sync across Netlify, mobile phones & PC
@@ -6588,7 +6588,7 @@
         if (currentAdminMood === 'ON') {
           showToast(`🏍️ Order #${targetKey} departed! Location is ON — Customer is tracking live location.`, 'success');
         } else {
-          showToast(`⚠️ Order #${targetKey} departed! NOTE: Location is OFF — Customer cannot track until you turn "I am ON"!`, 'warning');
+          showToast(`⚠️ Order #${targetKey} departed! NOTE: Service is OFF — Customer cannot track until you turn "Service On"!`, 'warning');
         }
       } else {
         showToast(`✨ Order #${targetKey} updated to "${nextStatus}"!`, 'success');

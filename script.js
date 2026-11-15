@@ -7129,8 +7129,8 @@ function initAdminLiveStatusWatcher() {
 
       if (isAdminUser) {
         const confirmMsg = targetMood === 'OFF'
-          ? '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "I am OFF"?\n(This will pause repair bookings and show Admin: Offline across all devices)'
-          : '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "I am ON"?\n(This will resume repair bookings and show Admin: Online across all devices)';
+          ? '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "Service Off"?\n(This will pause repair bookings and show Admin: Offline across all devices)'
+          : '⚙️ Admin Quick Control (Afzal):\nSwitch live status to "Service On"?\n(This will resume repair bookings and show Admin: Online across all devices)';
 
         if (confirm(confirmMsg)) {
           broadcastAndSyncAdminMood(targetMood);
@@ -7139,7 +7139,7 @@ function initAdminLiveStatusWatcher() {
       } else {
         // Not currently logged in as admin phone: allow Admin PIN verification to switch on any device
         const promptInput = prompt(
-          `⚙️ Admin Quick Control:\nCurrent Status: ${currentMood === 'ON' ? 'ONLINE (Green)' : 'OFFLINE (Red)'}\n\nEnter Admin PIN (1512) to switch status to "I am ${targetMood}":`
+          `⚙️ Admin Quick Control:\nCurrent Status: ${currentMood === 'ON' ? 'ONLINE (Green)' : 'OFFLINE (Red)'}\n\nEnter Admin PIN (1512) to switch status to "Service ${targetMood === 'ON' ? 'On' : 'Off'}":`
         );
         if (promptInput && promptInput.trim() === '1512') {
           broadcastAndSyncAdminMood(targetMood);
