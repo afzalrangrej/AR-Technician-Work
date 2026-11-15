@@ -1514,6 +1514,194 @@
       background: rgba(255, 255, 255, 0.02);
     }
 
+    /* ============ COLORFUL CYBER QR FRAME & MODAL ============ */
+    #upi-qr-modal .modal-card {
+      max-width: 390px !important;
+      padding: 1.1rem 1.15rem !important;
+      max-height: 94vh !important;
+      overflow-y: auto;
+      background: radial-gradient(circle at 50% 0%, rgba(176, 96, 255, 0.22), transparent 70%), linear-gradient(145deg, rgba(26, 12, 54, 0.98), rgba(14, 6, 30, 0.98)) !important;
+      border: 1.5px solid rgba(176, 96, 255, 0.35) !important;
+      box-shadow: 0 0 50px rgba(176, 96, 255, 0.3), 0 0 80px rgba(0, 242, 254, 0.2), 0 25px 60px rgba(0, 0, 0, 0.9) !important;
+      border-radius: 20px !important;
+    }
+
+    #upi-qr-modal .modal-card::-webkit-scrollbar,
+    .modal-card::-webkit-scrollbar {
+      width: 5px;
+    }
+    #upi-qr-modal .modal-card::-webkit-scrollbar-track,
+    .modal-card::-webkit-scrollbar-track {
+      background: rgba(15, 7, 30, 0.5);
+      border-radius: 10px;
+    }
+    #upi-qr-modal .modal-card::-webkit-scrollbar-thumb,
+    .modal-card::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00f2fe, #b060ff, #f472b6);
+      border-radius: 10px;
+    }
+
+    .qr-cyber-frame {
+      position: relative;
+      background: linear-gradient(145deg, rgba(22, 10, 45, 0.95), rgba(12, 5, 26, 0.98)) padding-box,
+                  linear-gradient(135deg, #00f2fe 0%, #b060ff 33%, #f472b6 66%, #fbbf24 100%) border-box;
+      border: 2.5px solid transparent;
+      border-radius: 18px;
+      box-shadow: 0 0 28px rgba(0, 242, 254, 0.4), 0 0 55px rgba(176, 96, 255, 0.3), 0 14px 40px rgba(0, 0, 0, 0.7);
+      margin: 0.5rem auto;
+      overflow: hidden;
+      max-width: 320px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .qr-frame-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.45rem 0.85rem;
+      background: rgba(0, 0, 0, 0.38);
+      border-bottom: 1px solid rgba(176, 96, 255, 0.22);
+    }
+
+    .qr-frame-title {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      color: #22d3ee;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .qr-live-badge {
+      font-size: 0.65rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.22), rgba(5, 150, 105, 0.38));
+      border: 1px solid #10b981;
+      color: #34d399;
+      padding: 2px 7px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      letter-spacing: 0.4px;
+    }
+
+    .qr-inner-card {
+      position: relative;
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 7px;
+      margin: 0.6rem auto;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+      display: inline-block;
+      max-width: calc(100% - 1.5rem);
+    }
+
+    .corner-bracket {
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      pointer-events: none;
+    }
+
+    .corner-tl {
+      top: -3px;
+      left: -3px;
+      border-top: 3px solid #00f2fe;
+      border-left: 3px solid #00f2fe;
+      border-radius: 4px 0 0 0;
+      filter: drop-shadow(-1px -1px 5px #00f2fe);
+    }
+
+    .corner-tr {
+      top: -3px;
+      right: -3px;
+      border-top: 3px solid #b060ff;
+      border-right: 3px solid #b060ff;
+      border-radius: 0 4px 0 0;
+      filter: drop-shadow(1px -1px 5px #b060ff);
+    }
+
+    .corner-bl {
+      bottom: -3px;
+      left: -3px;
+      border-bottom: 3px solid #f472b6;
+      border-left: 3px solid #f472b6;
+      border-radius: 0 0 0 4px;
+      filter: drop-shadow(-1px 1px 5px #f472b6);
+    }
+
+    .corner-br {
+      bottom: -3px;
+      right: -3px;
+      border-bottom: 3px solid #fbbf24;
+      border-right: 3px solid #fbbf24;
+      border-radius: 0 0 4px 0;
+      filter: drop-shadow(1px 1px 5px #fbbf24);
+    }
+
+    .qr-img-styled {
+      width: 215px;
+      max-width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 7px;
+      margin: 0 auto;
+    }
+
+    .qr-frame-footer {
+      padding: 0.45rem 0.65rem 0.55rem;
+      background: rgba(0, 0, 0, 0.38);
+      border-top: 1px solid rgba(176, 96, 255, 0.2);
+    }
+
+    .qr-apps-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      flex-wrap: wrap;
+    }
+
+    .app-pill {
+      font-size: 0.64rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 12px;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+      letter-spacing: 0.3px;
+    }
+
+    .app-pill.gpay {
+      background: rgba(66, 133, 244, 0.18);
+      border: 1px solid rgba(66, 133, 244, 0.45);
+      color: #93c5fd;
+    }
+
+    .app-pill.phonepe {
+      background: rgba(147, 51, 234, 0.18);
+      border: 1px solid rgba(147, 51, 234, 0.45);
+      color: #d8b4fe;
+    }
+
+    .app-pill.paytm {
+      background: rgba(0, 185, 245, 0.18);
+      border: 1px solid rgba(0, 185, 245, 0.45);
+      color: #67e8f9;
+    }
+
+    .app-pill.bhim {
+      background: rgba(249, 115, 22, 0.18);
+      border: 1px solid rgba(249, 115, 22, 0.45);
+      color: #fed7aa;
+    }
+
     /* ============ BADGES ============ */
     .badge {
       display: inline-flex;
@@ -3240,53 +3428,79 @@
 
   <!-- ======== MODAL: UPI PAYMENT QR CODE PAGE (WITH BACK BUTTON) ======== -->
   <div class="modal-overlay" id="upi-qr-modal" style="z-index:99999;">
-    <div class="modal-card" style="max-width:420px; text-align:center; padding:1.25rem; background:rgba(18, 9, 36, 0.96); border:1px solid rgba(176,96,255,0.28); box-shadow:0 16px 50px rgba(0,0,0,0.8); border-radius:18px;">
+    <div class="modal-card" style="max-width:390px; text-align:center; padding:1rem 1.15rem; background:radial-gradient(circle at 50% 0%, rgba(176, 96, 255, 0.22), transparent 70%), linear-gradient(145deg, rgba(26, 12, 54, 0.98), rgba(14, 6, 30, 0.98)); border:1.5px solid rgba(176,96,255,0.4); box-shadow:0 0 50px rgba(176,96,255,0.3), 0 0 80px rgba(0,242,254,0.2), 0 25px 60px rgba(0,0,0,0.9); border-radius:20px;">
       <!-- Top Navigation Bar with Prominent Back Button -->
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:1rem; padding-bottom:0.75rem; border-bottom:1px solid rgba(176,96,255,0.15);">
-        <button type="button" class="btn-sm" onclick="closeUpiQrModal()" style="background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.22); color:#fff; font-weight:700; padding:0.42rem 0.95rem; border-radius:8px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.75rem; padding-bottom:0.65rem; border-bottom:1px solid rgba(176,96,255,0.2);">
+        <button type="button" class="btn-sm" onclick="closeUpiQrModal()" style="background:linear-gradient(135deg, rgba(176,96,255,0.25), rgba(0,242,254,0.25)); border:1px solid rgba(0,242,254,0.5); color:#ffffff; font-weight:800; padding:0.42rem 0.95rem; border-radius:9px; display:inline-flex; align-items:center; gap:6px; cursor:pointer; font-size:0.82rem; box-shadow:0 0 12px rgba(0,242,254,0.3); transition:all 0.2s ease;">
           <i class="fas fa-arrow-left"></i> Back
         </button>
-        <span style="font-weight:700; font-size:0.95rem; color:var(--cyan); display:inline-flex; align-items:center; gap:6px;">
-          <i class="fas fa-qrcode"></i> UPI Scan & Pay
+        <span style="font-weight:800; font-size:0.95rem; background:linear-gradient(135deg, #00f2fe, #b060ff, #f472b6); -webkit-background-clip:text; -webkit-text-fill-color:transparent; display:inline-flex; align-items:center; gap:6px; letter-spacing:0.5px;">
+          <i class="fas fa-qrcode" style="-webkit-text-fill-color:#00f2fe; filter:drop-shadow(0 0 8px #00f2fe);"></i> UPI Scan & Pay
         </span>
-        <button type="button" class="modal-close" onclick="closeUpiQrModal()" style="position:static; margin:0;"><i class="fas fa-times"></i></button>
+        <button type="button" class="modal-close" onclick="closeUpiQrModal()" style="position:static; margin:0; width:32px; height:32px; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.06); border-radius:8px;"><i class="fas fa-times"></i></button>
       </div>
 
       <!-- Live Amount Banner if Amount is Present -->
-      <div id="upi-qr-amount-wrap" style="display:none; margin-bottom:0.85rem; background:rgba(16,185,129,0.12); border:1px solid rgba(16,185,129,0.35); border-radius:10px; padding:0.55rem 0.85rem;">
-        <div style="font-size:0.75rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Payable Collection Amount</div>
-        <div style="font-size:1.45rem; font-weight:800; color:#34d399;" id="upi-qr-amount-text">₹0</div>
+      <div id="upi-qr-amount-wrap" style="display:none; margin-bottom:0.65rem; background:linear-gradient(135deg, rgba(16,185,129,0.18), rgba(0,242,254,0.12)); border:1.5px solid rgba(16,185,129,0.45); border-radius:12px; padding:0.45rem 0.85rem; box-shadow:0 0 16px rgba(16,185,129,0.25);">
+        <div style="font-size:0.7rem; color:#a7f3d0; text-transform:uppercase; letter-spacing:0.6px; font-weight:700;">Payable Collection Amount</div>
+        <div style="font-size:1.4rem; font-weight:900; color:#34d399; font-family:'Outfit',sans-serif; text-shadow:0 0 12px rgba(52,211,153,0.5);" id="upi-qr-amount-text">₹0</div>
       </div>
 
-      <!-- QR Card Container -->
-      <div style="background:#ffffff; border-radius:14px; padding:10px; box-shadow:0 8px 32px rgba(0,0,0,0.45); display:inline-block; max-width:100%; border:1px solid rgba(255,255,255,0.2);">
-        <img src="images/upi-qr.jpg" alt="A R Technician Work Google Pay UPI QR" style="max-width:100%; width:300px; height:auto; display:block; border-radius:8px; margin:0 auto;">
+      <!-- Colorful Cyber QR Frame -->
+      <div class="qr-cyber-frame">
+        <div class="qr-frame-header">
+          <div class="qr-frame-title">
+            <i class="fas fa-bolt" style="color:#fbbf24; filter:drop-shadow(0 0 5px #fbbf24);"></i> Fast Scan & Pay
+          </div>
+          <div class="qr-live-badge">
+            <i class="fas fa-check-circle"></i> Verified
+          </div>
+        </div>
+
+        <div style="padding:0.4rem 0.5rem 0.2rem; position:relative;">
+          <div class="qr-inner-card">
+            <span class="corner-bracket corner-tl"></span>
+            <span class="corner-bracket corner-tr"></span>
+            <span class="corner-bracket corner-bl"></span>
+            <span class="corner-bracket corner-br"></span>
+            <img src="images/upi-qr.jpg" alt="A R Technician Work Google Pay UPI QR" class="qr-img-styled">
+          </div>
+        </div>
+
+        <div class="qr-frame-footer">
+          <div class="qr-apps-row">
+            <span class="app-pill gpay"><i class="fab fa-google-pay"></i> GPay</span>
+            <span class="app-pill phonepe"><i class="fas fa-wallet"></i> PhonePe</span>
+            <span class="app-pill paytm"><i class="fas fa-mobile-alt"></i> Paytm</span>
+            <span class="app-pill bhim"><i class="fas fa-university"></i> BHIM</span>
+          </div>
+        </div>
       </div>
 
       <!-- UPI ID Bar with 1-Click Copy -->
-      <div style="margin-top:0.9rem; background:rgba(25,12,50,0.85); border:1px solid rgba(176,96,255,0.2); border-radius:10px; padding:0.6rem 0.85rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem;">
+      <div style="margin-top:0.65rem; background:linear-gradient(135deg, rgba(25,12,50,0.9), rgba(15,7,30,0.95)); border:1.5px solid rgba(0,242,254,0.3); border-radius:12px; padding:0.5rem 0.85rem; display:flex; align-items:center; justify-content:space-between; gap:0.5rem; box-shadow:0 0 16px rgba(0,242,254,0.15);">
         <div style="text-align:left; overflow:hidden;">
-          <div style="font-size:0.68rem; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px;">Official UPI ID</div>
-          <div style="font-size:0.85rem; font-weight:700; color:var(--cyan); font-family:'JetBrains Mono',monospace; text-overflow:ellipsis; overflow:hidden;">6351618067@okbizaxis</div>
+          <div style="font-size:0.65rem; color:#a78bfa; text-transform:uppercase; letter-spacing:0.6px; font-weight:700;">Official Merchant UPI ID</div>
+          <div style="font-size:0.84rem; font-weight:800; color:#22d3ee; font-family:'JetBrains Mono',monospace; text-overflow:ellipsis; overflow:hidden; letter-spacing:0.3px;">6351618067@okbizaxis</div>
         </div>
-        <button type="button" class="btn-sm" onclick="copyUpiId()" style="background:rgba(34,211,238,0.15); border:1px solid rgba(34,211,238,0.4); color:var(--cyan); padding:0.38rem 0.75rem; font-size:0.75rem; font-weight:700; cursor:pointer; border-radius:6px; white-space:nowrap; display:inline-flex; align-items:center; gap:5px;">
-          <i class="fas fa-copy"></i> <span id="copy-upi-btn-text">Copy</span>
+        <button type="button" class="btn-sm" onclick="copyUpiId()" style="background:linear-gradient(135deg, rgba(0,242,254,0.25), rgba(176,96,255,0.25)); border:1px solid #00f2fe; color:#ffffff; padding:0.4rem 0.85rem; font-size:0.75rem; font-weight:800; cursor:pointer; border-radius:8px; white-space:nowrap; display:inline-flex; align-items:center; gap:5px; box-shadow:0 0 10px rgba(0,242,254,0.35); transition:all 0.2s ease;">
+          <i class="fas fa-copy" style="color:#00f2fe;"></i> <span id="copy-upi-btn-text">Copy</span>
         </button>
       </div>
 
       <!-- Action Buttons with Back and Done -->
-      <div style="display:flex; gap:0.65rem; margin-top:1rem;">
-        <button type="button" class="btn-sm btn-delete" onclick="closeUpiQrModal()" style="flex:1; padding:0.62rem; border-radius:8px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+      <div style="display:flex; gap:0.6rem; margin-top:0.75rem;">
+        <button type="button" class="btn-sm" onclick="closeUpiQrModal()" style="flex:1; padding:0.55rem; border-radius:10px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:6px; background:rgba(255,255,255,0.08); border:1px solid rgba(255,255,255,0.2); color:#fff; cursor:pointer;">
           <i class="fas fa-arrow-left"></i> Back to Form
         </button>
-        <button type="button" onclick="closeUpiQrModal()" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); border:none; color:#fff; padding:0.62rem; border-radius:8px; font-weight:700; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px;">
+        <button type="button" onclick="closeUpiQrModal()" style="flex:1; background:linear-gradient(135deg, #10b981, #059669); border:1px solid rgba(255,255,255,0.25); color:#fff; padding:0.55rem; border-radius:10px; font-weight:800; cursor:pointer; display:inline-flex; align-items:center; justify-content:center; gap:6px; box-shadow:0 0 15px rgba(16,185,129,0.45);">
           <i class="fas fa-check"></i> Done
         </button>
       </div>
 
       <!-- Open Full Page Link -->
-      <div style="margin-top:0.65rem;">
-        <a href="upi-qr.html" target="_blank" style="font-size:0.75rem; color:var(--text-muted); text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:color 0.2s ease;" onmouseover="this.style.color='var(--cyan)'" onmouseout="this.style.color='var(--text-muted)'">
+      <div style="margin-top:0.55rem;">
+        <a href="upi-qr.html" target="_blank" style="font-size:0.74rem; font-weight:600; color:#c084fc; text-decoration:none; display:inline-flex; align-items:center; gap:5px; transition:all 0.2s ease;" onmouseover="this.style.color='#00f2fe'" onmouseout="this.style.color='#c084fc'">
           <i class="fas fa-arrow-up-right-from-square"></i> Open in Full Page View
         </a>
       </div>
