@@ -4341,7 +4341,7 @@ Understand and respond in the same language the user uses (English, Hindi, Gujar
   }
 }
 
-function showToast(msg, type = 'success', duration = 2000) {
+function showToast(msg, type = 'success', duration = 1000) {
   let container = document.querySelector('.toast-container');
   if (!container) {
     container = document.createElement('div');

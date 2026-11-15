@@ -6819,13 +6819,19 @@
     function openModal(id) { document.getElementById(id).classList.add('active'); }
     function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-    function showToast(msg, type = 'success') {
+    function showToast(msg, type = 'success', duration = 1000) {
       const c = document.getElementById('toast-container');
+      if (!c) return;
       const t = document.createElement('div');
       t.className = `toast ${type}`;
       t.innerHTML = `<i class="fas ${type === 'success' ? 'fa-circle-check' : (type === 'error' ? 'fa-triangle-exclamation' : 'fa-bell')}" style="color:${type === 'success' ? 'var(--green)' : (type === 'error' ? 'var(--red)' : 'var(--cyan)')}"></i> ${msg}`;
       c.appendChild(t);
-      setTimeout(() => t.remove(), 4200);
+      setTimeout(() => {
+        t.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
+        t.style.opacity = '0';
+        t.style.transform = 'translateY(8px)';
+        setTimeout(() => t.remove(), 200);
+      }, duration);
     }
 
     function escHtml(t) {
