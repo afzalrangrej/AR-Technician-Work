@@ -2567,7 +2567,7 @@
           </div>
 
           <div class="nav-section-label" style="margin-top:0.6rem;">Live Operations (User Side)</div>
-          <div class="nav-link active" onclick="showCustomerSection('pending')" id="nav-pending">
+          <div class="nav-link" onclick="showCustomerSection('pending')" id="nav-pending">
             <i class="fas fa-hourglass-half" style="color:#fbbf24;"></i> Pending Customers
             <span class="nav-badge" id="pending-count-badge"
               style="background:#fbbf24; color:#000; font-weight:800;">0</span>
@@ -4346,6 +4346,15 @@
       if (loginScreen) loginScreen.classList.add('hidden');
       const sideName = document.getElementById('sidebar-name');
       if (sideName) sideName.textContent = name || 'afzal';
+
+      // Ensure Pending Customers or other sub-sections are not highlighted on refresh
+      ['nav-pending', 'nav-accepted', 'nav-rejected', 'nav-orders', 'nav-collections', 'nav-broadcast', 'nav-customers', 'nav-inquiries', 'nav-reviews'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('active');
+      });
+      const dashNav = document.getElementById('nav-dashboard');
+      if (dashNav) dashNav.classList.add('active');
+
       refreshAll();
       loadAdminMood();
       // Auto-refresh interval (every 4 seconds for live sync with user requests)
