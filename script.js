@@ -759,9 +759,6 @@ window.syncCustomerCodeVisibility = function () {
   const heroMyBookingsLabel = document.getElementById('user-my-bookings-label');
   const heroCodeVal = document.getElementById('user-code-val');
   const heroCodePrefix = document.getElementById('user-code-prefix');
-  const pasteBanner = document.getElementById('tracker-paste-info-banner');
-  const bannerHighlight = document.getElementById('tracker-banner-code-highlight');
-  const bannerBtnLabel = document.getElementById('btn-quick-paste-code-label');
   const trackInput = document.getElementById('track-input');
   const realSection = document.getElementById('tracker-real-booking-section');
   const realTrackBtn = document.getElementById('btn-track-real-booking');
@@ -862,46 +859,11 @@ window.syncCustomerCodeVisibility = function () {
   const allCodes = Array.from(allBookingsMap.keys());
   const allBookingsList = Array.from(allBookingsMap.values());
 
-  const bannerCodesContainer = document.getElementById('tracker-banner-codes-container');
-  const bannerActionArea = document.getElementById('tracker-banner-action-area');
   const chipsRow = document.getElementById('tracker-codes-chips-row');
   const chipsList = document.getElementById('tracker-chips-list');
 
   if (allCodes.length > 0) {
-    if (pasteBanner) pasteBanner.style.display = 'flex';
-
-    // 1. Populate all codes inside the banner title
-    if (bannerCodesContainer) {
-      if (allCodes.length === 1) {
-        bannerCodesContainer.innerHTML = `<strong class="highlight-code" id="tracker-banner-code-highlight">${allCodes[0]}</strong>`;
-      } else {
-        bannerCodesContainer.innerHTML = allCodes.map((c, i) => `
-          <button type="button" class="highlight-code-chip btn-set-tracker-code ${i === 0 ? 'active' : ''}" data-code="${c}" title="Click to track ${c}">
-            <i class="fas fa-ticket-simple" style="font-size:0.7rem;"></i> ${c}
-          </button>
-        `).join(' ');
-      }
-    }
-
-    // 2. Populate banner action buttons for every code
-    if (bannerActionArea) {
-      if (allCodes.length <= 1) {
-        const singleCode = allCodes[0] || code;
-        bannerActionArea.innerHTML = `
-          <button type="button" class="btn-paste-code-pill btn-set-tracker-code" data-code="${singleCode}" title="Paste ${singleCode}">
-            <i class="fas fa-clipboard-check"></i> <span>Paste ${singleCode}</span>
-          </button>
-        `;
-      } else {
-        bannerActionArea.innerHTML = allCodes.map(c => `
-          <button type="button" class="btn-paste-code-pill btn-set-tracker-code" data-code="${c}" style="padding:0.45rem 0.85rem; font-size:0.8rem;" title="Paste ${c}">
-            <i class="fas fa-clipboard-check"></i> <span>Paste ${c}</span>
-          </button>
-        `).join('');
-      }
-    }
-
-    // 3. Populate quick selector chips row directly under search bar
+    // 1. Populate quick selector chips row directly under search bar
     if (chipsRow && chipsList) {
       chipsRow.style.display = 'flex';
       chipsList.innerHTML = allCodes.map((c, i) => `
@@ -3496,20 +3458,14 @@ function initTracker() {
     doTrack(input.value);
   });
 
-  // Quick Paste buttons to paste HOME-7783 or clipboard code
-  const quickPasteBannerBtn = document.getElementById('btn-quick-paste-code');
+  // Quick Paste button to paste from clipboard or user order
   const inputPasteBtn = document.getElementById('track-input-paste-btn');
 
   function pasteTrackingCode(codeToPaste) {
     let code = (codeToPaste || '').trim();
     if (!code) {
-      const bannerCode = document.getElementById('tracker-banner-code-highlight');
-      if (bannerCode && bannerCode.textContent.trim()) {
-        code = bannerCode.textContent.trim();
-      } else {
-        const u = window.getCurrentCustomerUser ? window.getCurrentCustomerUser() : null;
-        code = (u && u.orders && u.orders.length > 0 && u.orders[0].tracking_code) ? u.orders[0].tracking_code : '';
-      }
+      const u = window.getCurrentCustomerUser ? window.getCurrentCustomerUser() : null;
+      code = (u && u.orders && u.orders.length > 0 && u.orders[0].tracking_code) ? u.orders[0].tracking_code : '';
     }
     if (!code) {
       input.focus();
@@ -3523,14 +3479,6 @@ function initTracker() {
     if (typeof showToast === 'function') {
       showToast(`📋 Code "${code}" pasted! Click "Track Live Location" to watch your electrician.`, 'success', 2500);
     }
-  }
-
-  if (quickPasteBannerBtn) {
-    quickPasteBannerBtn.addEventListener('click', () => {
-      const bannerCode = document.getElementById('tracker-banner-code-highlight');
-      const code = (bannerCode ? bannerCode.textContent.trim() : '');
-      pasteTrackingCode(code);
-    });
   }
 
   if (inputPasteBtn) {
