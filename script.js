@@ -29,9 +29,9 @@
           el.style.setProperty('opacity', '0', 'important');
           el.style.setProperty('position', 'fixed', 'important');
           el.style.setProperty('bottom', '-9999px', 'important');
-          try { el.remove(); } catch (e) {}
+          try { el.remove(); } catch (e) { }
         });
-      } catch (e) {}
+      } catch (e) { }
     });
   }
 
@@ -50,7 +50,7 @@
       try {
         const obs = new MutationObserver(purgeNetlifyElements);
         obs.observe(document.documentElement, { childList: true, subtree: true });
-      } catch (e) {}
+      } catch (e) { }
     }
   }
 })();
@@ -120,6 +120,7 @@ const translations = {
     nav_admin: "Admin",
     nav_login: "Login",
     nav_book: "Book Repair",
+    nav_notice_board: "Notice Board",
     nav_my_bookings: "My Bookings",
     my_bookings_badge: "YOUR REPAIR TICKETS",
     my_bookings_title: 'My <span class="gradient-text">Bookings</span> & Live Status',
@@ -241,6 +242,7 @@ const translations = {
     nav_admin: "एडमिन",
     nav_login: "लॉगिन",
     nav_book: "रिपेयर बुक करें",
+    nav_notice_board: "सूचना बोर्ड",
     nav_my_bookings: "मेरी बुकिंग्स",
     my_bookings_badge: "आपकी रिपेयर बुकिंग्स",
     my_bookings_title: 'मेरी <span class="gradient-text">बुकिंग्स</span> और लाइव स्टेटस',
@@ -362,6 +364,7 @@ const translations = {
     nav_admin: "એડમિન",
     nav_login: "લૉગિન",
     nav_book: "રીપેરીંગ બુક કરો",
+    nav_notice_board: "નોટિસ બોર્ડ",
     nav_my_bookings: "મારી બુકિંગ્સ",
     my_bookings_badge: "તમારી રીપેર બુકિંગ્સ",
     my_bookings_title: 'મારી <span class="gradient-text">બુકિંગ્સ</span> અને લાઈવ સ્ટેટસ',
@@ -483,6 +486,7 @@ const translations = {
     nav_admin: "Admin",
     nav_login: "Login",
     nav_book: "Repair Book Karein",
+    nav_notice_board: "Notice Board",
     nav_my_bookings: "Meri Bookings",
     my_bookings_badge: "AAPKI REPAIR TICKETS",
     my_bookings_title: 'Meri <span class="gradient-text">Bookings</span> aur Live Status',
@@ -601,7 +605,7 @@ try {
   if (typeof window.syncCustomerCodeVisibility === 'function') {
     window.syncCustomerCodeVisibility();
   }
-} catch (e) {}
+} catch (e) { }
 
 window.isCustomerLoggedIn = function () {
   const u = window.getCurrentCustomerUser();
@@ -664,7 +668,7 @@ try {
   if (typeof window.syncAdminButtonVisibility === 'function') {
     window.syncAdminButtonVisibility();
   }
-} catch (e) {}
+} catch (e) { }
 
 window.syncCustomerCodeVisibility = function () {
   if (typeof window.syncAdminButtonVisibility === 'function') {
@@ -698,13 +702,13 @@ window.syncCustomerCodeVisibility = function () {
         code = latestBooking.tracking_code.trim();
       }
     }
-  } catch (e) {}
+  } catch (e) { }
 
   let currentUser = null;
   try {
     const raw = localStorage.getItem('ar_customer_user');
     currentUser = raw ? JSON.parse(raw) : null;
-  } catch (e) {}
+  } catch (e) { }
 
   if (currentUser) {
     if (currentUser.orders && currentUser.orders.length > 0) {
@@ -737,7 +741,7 @@ window.syncCustomerCodeVisibility = function () {
         }
       });
     }
-  } catch (e) {}
+  } catch (e) { }
 
   const totalBookingsCount = allBookingsMap.size;
 
@@ -748,7 +752,7 @@ window.syncCustomerCodeVisibility = function () {
       if (heroMyBookingsCount) heroMyBookingsCount.textContent = totalBookingsCount;
       if (heroMyBookingsLabel) heroMyBookingsLabel.textContent = 'My Bookings';
       heroMyBookingsPill.title = `Click to view all your (${totalBookingsCount}) repair bookings & tracking codes`;
-      
+
       // Wire click to open My Bookings section
       heroMyBookingsPill.onclick = function (e) {
         e.preventDefault();
@@ -937,7 +941,7 @@ window.syncCustomerCodeVisibility = function () {
                 btn.classList.remove('copied');
                 btn.innerHTML = `<i class="far fa-copy"></i> <span>Copy</span>`;
               }, 1800);
-            } catch(err) {}
+            } catch (err) { }
           };
         });
 
@@ -1046,7 +1050,7 @@ window.syncCustomerCodeVisibility = function () {
           if (b.created_at) {
             try {
               dateStr = new Date(b.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-            } catch (e) {}
+            } catch (e) { }
           }
 
           const stepsDef = [
@@ -1061,24 +1065,24 @@ window.syncCustomerCodeVisibility = function () {
               <div class="booking-stepper-track"></div>
               <div class="booking-stepper-fill" style="width: ${stepFillWidth};"></div>
               ${stepsDef.map(s => {
-                let dotClass = 'step-node-dot';
-                let labelClass = 'step-node-text';
-                if (!isRejected) {
-                  if (stepNum > s.id) {
-                    dotClass += ' completed';
-                    labelClass += ' completed';
-                  } else if (stepNum === s.id) {
-                    dotClass += ' active';
-                    labelClass += ' active';
-                  }
-                }
-                return `
+            let dotClass = 'step-node-dot';
+            let labelClass = 'step-node-text';
+            if (!isRejected) {
+              if (stepNum > s.id) {
+                dotClass += ' completed';
+                labelClass += ' completed';
+              } else if (stepNum === s.id) {
+                dotClass += ' active';
+                labelClass += ' active';
+              }
+            }
+            return `
                   <div class="booking-step-node">
                     <div class="${dotClass}" title="${s.label}"></div>
                     <span class="${labelClass}">${s.label}</span>
                   </div>
                 `;
-              }).join('')}
+          }).join('')}
             </div>
           `;
 
@@ -1258,7 +1262,7 @@ window.syncCustomerCodeVisibility = function () {
       let user = null;
       try {
         user = JSON.parse(localStorage.getItem('ar_customer_user') || 'null');
-      } catch (err) {}
+      } catch (err) { }
 
       if (user && user.id) {
         try {
@@ -1270,7 +1274,7 @@ window.syncCustomerCodeVisibility = function () {
               localStorage.setItem('ar_customer_user', JSON.stringify(user));
             }
           }
-        } catch (err) {}
+        } catch (err) { }
       }
 
       if (typeof window.syncCustomerCodeVisibility === 'function') {
@@ -1313,14 +1317,14 @@ function attach10DigitPhoneEnforcer(element) {
   element.setAttribute('inputmode', 'numeric');
   element.setAttribute('pattern', '[0-9]{10}');
 
-  element.addEventListener('input', function() {
+  element.addEventListener('input', function () {
     const clean = extract10DigitPhone(this.value);
     if (this.value !== clean) {
       this.value = clean;
     }
   });
 
-  element.addEventListener('paste', function(e) {
+  element.addEventListener('paste', function (e) {
     e.preventDefault();
     const pasteText = (e.clipboardData || window.clipboardData).getData('text') || '';
     const clean = extract10DigitPhone(pasteText);
@@ -1354,7 +1358,7 @@ document.addEventListener('click', (e) => {
   }
 }, true);
 
-window.dismissWelcomeScreen = function () {};
+window.dismissWelcomeScreen = function () { };
 
 document.addEventListener('DOMContentLoaded', () => {
   document.body.classList.remove('auth-locked');
@@ -1521,7 +1525,7 @@ function initHeroSlideshow() {
   startTimer();
 
   // Global helper method so user can pass images or add extra slides anytime
-  window.addHeroSlide = function(imgSrc, titleText, badgeText = 'Doorstep Expert') {
+  window.addHeroSlide = function (imgSrc, titleText, badgeText = 'Doorstep Expert') {
     if (!container) return;
     const slides = getSlides();
     const newSlide = document.createElement('div');
@@ -2482,7 +2486,7 @@ function initTracker() {
               otp: foundLocal.otp || '5192'
             };
           }
-        } catch (e) {}
+        } catch (e) { }
       }
 
       // 3. Mock fallback
@@ -3101,7 +3105,7 @@ function initTracker() {
           if (speedEl) {
             speedEl.innerHTML = '<i class="fas fa-door-open"></i> At Customer Door';
           }
-          
+
           showDoorKnockingScene(techName);
 
           clearInterval(currentTrackingInterval);
@@ -3498,7 +3502,7 @@ function initTracker() {
       if (!code) return;
       try {
         if (navigator.clipboard) await navigator.clipboard.writeText(code);
-      } catch (e) {}
+      } catch (e) { }
       pasteTrackingCode(code);
       const icon = document.getElementById('real-copy-code-icon');
       if (icon) {
@@ -4020,7 +4024,7 @@ function initBookingModal() {
       if (user) {
         user.orders = user.orders || [];
         user.orders.unshift(newOrder);
-        try { localStorage.setItem('ar_customer_user', JSON.stringify(user)); } catch (e) {}
+        try { localStorage.setItem('ar_customer_user', JSON.stringify(user)); } catch (e) { }
         if (typeof window.syncCustomerCodeVisibility === 'function') {
           window.syncCustomerCodeVisibility();
         }
@@ -4031,7 +4035,7 @@ function initBookingModal() {
         const localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
         localBookings.unshift(newOrder);
         localStorage.setItem('ar_local_bookings', JSON.stringify(localBookings));
-      } catch (e) {}
+      } catch (e) { }
 
       // 3. Update UI, tracker input & toast
       modal.classList.remove('active');
@@ -4041,7 +4045,7 @@ function initBookingModal() {
       if (trackInput) {
         trackInput.value = trackingCode;
       }
-      try { localStorage.setItem('last_tracking_code', trackingCode); } catch (e) {}
+      try { localStorage.setItem('last_tracking_code', trackingCode); } catch (e) { }
       if (typeof window.syncCustomerCodeVisibility === 'function') {
         window.syncCustomerCodeVisibility();
       }
@@ -4170,7 +4174,7 @@ function initLiveChat() {
         if (!isNaN(calcResult) && isFinite(calcResult)) {
           return `**Calculation Result:**\n\`${sanitized.trim()} = ${calcResult}\``;
         }
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Greetings
@@ -4660,7 +4664,7 @@ function initUserLogin() {
       if (window.location.hash === '#login' || window.location.hash === '#signup') {
         history.replaceState(null, '', window.location.pathname + window.location.search);
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   if (loginClose && loginModal) {
@@ -5086,7 +5090,7 @@ function initUserLogin() {
           }
         });
       }
-    } catch (e) {}
+    } catch (e) { }
 
     const allDisplayBookings = Array.from(allBookingsMap.values());
 
@@ -5274,7 +5278,7 @@ function initUserLogin() {
     let localBookings = [];
     try {
       localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
-    } catch (e) {}
+    } catch (e) { }
 
     if (user) {
       openDashboard(user);
@@ -5572,7 +5576,7 @@ function initUserLogin() {
       // User is already logged in! Do NOT open login modal; clean hash smoothly.
       try {
         history.replaceState(null, '', window.location.pathname + window.location.search);
-      } catch (e) {}
+      } catch (e) { }
       return;
     }
     if (hash === '#login' || hash === '#signup' || hash === '#forgot' || hash === '#reset' || hash === '#recover') {
@@ -5661,8 +5665,8 @@ function initAdminLogin() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: 'afzal', passkey: '1512', phone: verifiedPhone })
-          }).catch(() => {});
-        } catch (err) {}
+          }).catch(() => { });
+        } catch (err) { }
 
         showToast(`🔓 Admin access verified for Afzal (${verifiedPhone}). Opening Admin Dashboard...`, 'success');
         window.open('/admin', '_blank');
@@ -5926,7 +5930,7 @@ function initShopLocation() {
     });
 
     const shopMarker = L.marker(kosambaCoords, { icon: shopRadarIcon }).addTo(shopMap);
-    
+
     const shopPopupContent = `
       <div style="min-width: 240px; font-family: 'Outfit', sans-serif;">
         <div style="font-size:14px; font-weight:800; color:#00f2fe; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
@@ -6154,7 +6158,7 @@ async function initLiveBroadcast() {
     if (data && data.success && data.announcement && data.announcement.is_active) {
       activeAnnouncement = data.announcement;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   // Fallback to localStorage if offline or running on Netlify
   if (!activeAnnouncement) {
@@ -6163,13 +6167,13 @@ async function initLiveBroadcast() {
       if (local && local.is_active) {
         activeAnnouncement = local;
       }
-    } catch (e) {}
+    } catch (e) { }
   }
 
   if (activeAnnouncement && activeAnnouncement.is_active) {
     const a = activeAnnouncement;
     const gradClass = a.bg_gradient ? `ribbon-${a.bg_gradient}` : 'ribbon-cyan';
-    
+
     banner.className = `live-broadcast-bar ${gradClass}`;
     banner.innerHTML = `
       <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:center;">
@@ -6223,7 +6227,7 @@ async function fetchUserNotices() {
   let localNotices = [];
   try {
     localNotices = JSON.parse(localStorage.getItem('ar_admin_notices') || '[]');
-  } catch (e) {}
+  } catch (e) { }
 
   const combined = [...localNotices];
   for (const sn of serverNotices) {
@@ -6289,7 +6293,7 @@ function renderUserNotices(notices) {
       try {
         const d = new Date(n.created_at);
         dateText = d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' }) + ', ' +
-                   d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
+          d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true });
       } catch (e) { dateText = n.created_at; }
     }
 
@@ -6335,7 +6339,7 @@ function showCustomerInvoiceFromTracker(order) {
   if (!modal || !container || !order) return;
 
   const price = parseFloat(order.price_estimate || 85.00).toFixed(2);
-  const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : new Date().toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+  const dateStr = order.created_at ? new Date(order.created_at).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
 
   container.innerHTML = `
     <div style="background: rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:1.25rem; margin-bottom:1rem;">
@@ -6456,7 +6460,7 @@ function openCustomerReviewModal(order) {
 }
 
 // Contact section now exclusively displays Electrician Feedback
-window.switchContactTab = function() {
+window.switchContactTab = function () {
   prefillFeedbackUser();
 };
 
@@ -6467,14 +6471,14 @@ function checkFeedbackStatusForCode(code) {
   try {
     const submitted = JSON.parse(localStorage.getItem('ar_submitted_feedback_codes') || '[]');
     if (submitted.includes(cleanCode)) return true;
-  } catch (e) {}
+  } catch (e) { }
 
   try {
     const localFeedbacks = JSON.parse(localStorage.getItem('ar_local_feedback') || '[]');
     if (localFeedbacks.some(f => (f.tracking_code || '').trim().toUpperCase() === cleanCode)) {
       return true;
     }
-  } catch (e) {}
+  } catch (e) { }
 
   return false;
 }
@@ -6488,7 +6492,7 @@ function markFeedbackCodeAsSubmitted(code) {
       submitted.push(cleanCode);
       localStorage.setItem('ar_submitted_feedback_codes', JSON.stringify(submitted));
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function updateFeedbackFormView(code) {
@@ -6541,7 +6545,7 @@ async function checkRemoteFeedbackStatus(code, phone, name) {
       markFeedbackCodeAsSubmitted(code);
       updateFeedbackFormView(code);
     }
-  } catch (e) {}
+  } catch (e) { }
 }
 
 function prefillFeedbackUser(preferredOrder) {
@@ -6702,7 +6706,7 @@ function initCustomerInvoiceAndReviews() {
           localFeedbacks.unshift(newEntry);
           try {
             localStorage.setItem('ar_local_feedback', JSON.stringify(localFeedbacks));
-          } catch (e) {}
+          } catch (e) { }
 
           markFeedbackCodeAsSubmitted(code);
           updateFeedbackFormView(code);
@@ -6818,7 +6822,7 @@ function initCustomerInvoiceAndReviews() {
           });
           try {
             localStorage.setItem('ar_local_feedback', JSON.stringify(localFeedbacks));
-          } catch (e) {}
+          } catch (e) { }
 
           markFeedbackCodeAsSubmitted(custCode);
           updateFeedbackFormView(custCode);
@@ -6838,7 +6842,7 @@ function initCustomerInvoiceAndReviews() {
 
 function escapeHtml(t) {
   if (!t) return '';
-  return String(t).replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]));
+  return String(t).replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m]));
 }
 
 // Customer entrance auth gate removed - direct website access enabled
@@ -6849,7 +6853,7 @@ function initAuthGate() {
 /* ========================================================
    ADMIN LIVE ONLINE / OFFLINE STATUS WATCHER (SYNCED WITH ADMIN)
    ======================================================== */
-window.showAdminOfflineNotice = function(customMsg) {
+window.showAdminOfflineNotice = function (customMsg) {
   const modal = document.getElementById('admin-offline-modal');
   if (modal) {
     modal.classList.add('active');
@@ -7076,7 +7080,7 @@ function initAdminLiveStatusWatcher() {
 
     // 1. Cross-device universal cloud sync
     try {
-      fetch(`${CLOUD_SYNC_SET_URL}/${targetMood}`, { method: 'POST' }).catch(() => {});
+      fetch(`${CLOUD_SYNC_SET_URL}/${targetMood}`, { method: 'POST' }).catch(() => { });
     } catch (e) { }
 
     // 2. BroadcastChannel for instant same-browser cross-tab sync
@@ -7099,7 +7103,7 @@ function initAdminLiveStatusWatcher() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status_mood: targetMood, is_online: targetMood === 'ON' })
-      }).catch(() => {});
+      }).catch(() => { });
     } catch (e) { }
 
     showToast(targetMood === 'ON' ? '🟢 Admin status set to ONLINE across all devices!' : '🔴 Admin status set to OFFLINE across all devices! Repair bookings are paused.', targetMood === 'ON' ? 'success' : 'warning');
@@ -7268,12 +7272,12 @@ function initUserCodePill() {
     try {
       const raw = localStorage.getItem('ar_customer_user');
       currentUser = raw ? JSON.parse(raw) : null;
-    } catch (e) {}
+    } catch (e) { }
 
     let localBookings = [];
     try {
       localBookings = JSON.parse(localStorage.getItem('ar_local_bookings') || '[]');
-    } catch (e) {}
+    } catch (e) { }
 
     if (currentUser) {
       if (typeof openDashboard === 'function') {
