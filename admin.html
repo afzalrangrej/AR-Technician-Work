@@ -1836,18 +1836,7 @@
       box-shadow: 0 4px 12px rgba(176, 96, 255, 0.35);
     }
 
-    .btn-wa {
-      background: rgba(37, 211, 102, 0.16);
-      color: #25d366;
-      border: 1px solid rgba(37, 211, 102, 0.35);
-    }
 
-    .btn-wa:hover {
-      background: #25d366;
-      color: #000;
-      font-weight: 700;
-      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.35);
-    }
 
     .btn-invoice {
       background: rgba(251, 191, 36, 0.16);
@@ -3422,35 +3411,7 @@
     </div>
   </div>
 
-  <!-- ======== MODAL 3: 1-CLICK WHATSAPP DISPATCH MODAL ======== -->
-  <div class="modal-overlay" id="wa-modal">
-    <div class="modal-card">
-      <button class="modal-close" onclick="closeModal('wa-modal')"><i class="fas fa-times"></i></button>
-      <h2 class="modal-title" style="color:#25d366;"><i class="fab fa-whatsapp"></i> Direct WhatsApp to Customer</h2>
-      <div>
-        <div class="form-group">
-          <label>Customer Name & Phone</label>
-          <input type="text" id="wa-customer-info" readonly>
-        </div>
-        <div class="form-group">
-          <label>Message Template</label>
-          <select id="wa-template" onchange="applyWaTemplate()">
-            <option value="dispatch">🚀 Technician Dispatched & Traveling</option>
-            <option value="diagnosed">🔍 Component Diagnosis & Estimate Ready</option>
-            <option value="completed">✅ Repair Completed & Payment Received</option>
-            <option value="custom">💬 Custom Message</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Message Body (Sent to Customer's WhatsApp)</label>
-          <textarea id="wa-body" rows="4"></textarea>
-        </div>
-        <button class="btn-save" style="background:#25d366; color:#000; font-weight:800;" onclick="sendWhatsAppNow()">
-          <i class="fab fa-whatsapp"></i> Open WhatsApp Web / App & Send
-        </button>
-      </div>
-    </div>
-  </div>
+
 
   <!-- ======== MODAL: ADD SHOP CUSTOMER MANUALLY ======== -->
   <div class="modal-overlay" id="add-customer-modal">
@@ -3761,9 +3722,6 @@
         <button class="btn-sm btn-edit" style="flex:1; padding:0.75rem;" onclick="window.print()">
           <i class="fas fa-print"></i> Print / Save PDF Invoice
         </button>
-        <button class="btn-sm btn-wa" style="flex:1; padding:0.75rem;" onclick="shareInvoiceWhatsApp()">
-          <i class="fab fa-whatsapp"></i> Send Invoice Link on WhatsApp
-        </button>
       </div>
     </div>
   </div>
@@ -3824,7 +3782,7 @@
     let allOrders = [], allCustomers = [], allInquiries = [], allReviews = [], allCollections = [];
     let lastOrderCount = 0;
     let soundEnabled = false;
-    let activeWaOrder = null;
+
     let activeInvoiceOrder = null;
 
     // ============ COLLECTION STATS & DROPDOWN STATE ============
@@ -4670,7 +4628,7 @@
       const titles = {
         dashboard: ['Dashboard Overview', 'Real-time snapshot of your repair business'],
         broadcast: ['Broadcast Center', 'Push live alerts, banners, and discounts to the customer website'],
-        customers: ['Customer Directory', 'Complete directory of registered customers with phone & WhatsApp'],
+        customers: ['Customer Directory', 'Complete directory of registered customers with contact phone numbers'],
         inquiries: ['Notice Board & Chat', 'Write live announcements and chat messages published on the user homepage'],
         reviews: ['Customer Reviews', 'Moderate customer ratings and feature testimonials on homepage']
       };
@@ -5292,9 +5250,6 @@
             <button class="btn-sm" onclick="quickRejectOrder('${escHtml(o.id || '')}', '${escHtml(o.tracking_code)}')" title="Reject Customer Booking (Stop Bike)" style="background:rgba(239,68,68,0.18); border:1px solid #ef4444; color:#fca5a5; font-weight:700; padding:0.35rem 0.7rem; cursor:pointer;">
               <i class="fas fa-times"></i> Reject
             </button>
-            <button class="btn-sm btn-wa" onclick='openWhatsAppModal(${JSON.stringify(o)})' title="Send Direct WhatsApp Message">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
             <button class="btn-sm btn-edit" onclick='openEditModal(${JSON.stringify(o)})' title="Edit & Assign Details">
               <i class="fas fa-pen"></i> Edit
             </button>
@@ -5317,9 +5272,6 @@
             <button class="btn-sm" onclick="quickRejectOrder('${escHtml(o.id || '')}', '${escHtml(o.tracking_code)}')" title="Move to Reject" style="background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.35); color:#fca5a5; font-size:0.74rem; padding:0.3rem 0.5rem; cursor:pointer;">
               <i class="fas fa-ban"></i> Reject
             </button>
-            <button class="btn-sm btn-wa" onclick='openWhatsAppModal(${JSON.stringify(o)})' title="Send Direct WhatsApp Message">
-              <i class="fab fa-whatsapp"></i> Chat
-            </button>
             <button class="btn-sm btn-invoice" onclick='openInvoiceModal(${JSON.stringify(o)})' title="Generate Digital Bill & 90-Day Warranty">
               <i class="fas fa-receipt"></i> Bill
             </button>
@@ -5337,9 +5289,6 @@
           actionButtons = `
             <button class="btn-sm" onclick="quickAcceptOrder('${escHtml(o.id || '')}', '${escHtml(o.tracking_code)}')" title="Restore and Move to Accepted (Start Bike Tracking)" style="background:#10b981; color:#000; font-weight:800; border:none; box-shadow:0 0 10px rgba(16,185,129,0.4); padding:0.35rem 0.7rem; cursor:pointer;">
               <i class="fas fa-rotate-left"></i> Accept
-            </button>
-            <button class="btn-sm btn-wa" onclick='openWhatsAppModal(${JSON.stringify(o)})' title="Send WhatsApp Message">
-              <i class="fab fa-whatsapp"></i> Chat
             </button>
             <button class="btn-sm btn-edit" onclick='openEditModal(${JSON.stringify(o)})' title="Edit Ticket">
               <i class="fas fa-pen"></i> Edit
@@ -5364,7 +5313,6 @@
             <div style="font-weight:700;"><i class="fas fa-phone" style="color:var(--cyan);width:14px;"></i> ${escHtml(o.customer_phone)}</div>
             <div style="display:flex; gap:4px; margin-top:4px;">
               <a href="tel:${String(o.customer_phone || '').replace(/\D/g, '')}" class="btn-sm" style="background:#10b981; color:#000; font-weight:800; text-decoration:none; padding:2px 7px; font-size:0.7rem; border-radius:6px; display:inline-flex; align-items:center; gap:3px;" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
-              <a href="https://wa.me/91${String(o.customer_phone || '').replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Hello ' + (o.customer_name || 'Customer') + ', this is AR Technician Work regarding your booking (' + o.tracking_code + ').')}" target="_blank" class="btn-sm btn-wa" style="text-decoration:none; padding:2px 7px; font-size:0.7rem; border-radius:6px; display:inline-flex; align-items:center; gap:3px;" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
             </div>
             ${o.customer_email ? `<div style="color:var(--text-muted); font-size:0.72rem; margin-top:3px;"><i class="fas fa-envelope" style="width:14px;"></i> ${escHtml(o.customer_email)}</div>` : ''}
           </td>
@@ -5428,7 +5376,6 @@
             <div style="font-size:0.73rem; color:var(--text-muted);"><i class="fas fa-phone" style="font-size:0.65rem;"></i> ${escHtml(o.customer_phone || 'N/A')}</div>
             <div style="display:flex; gap:4px; margin-top:3px;">
               <a href="tel:${String(o.customer_phone || '').replace(/\D/g, '')}" class="btn-sm" style="background:#10b981; color:#000; font-weight:800; text-decoration:none; padding:1px 6px; font-size:0.68rem; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
-              <a href="https://wa.me/91${String(o.customer_phone || '').replace(/\D/g, '').slice(-10)}?text=${encodeURIComponent('Hello ' + (o.customer_name || 'Customer') + ', this is AR Technician Work regarding your booking (' + o.tracking_code + ').')}" target="_blank" class="btn-sm btn-wa" style="text-decoration:none; padding:1px 6px; font-size:0.68rem; border-radius:4px; display:inline-flex; align-items:center; gap:3px;" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
             </div>
           </td>
           <td>
@@ -5447,7 +5394,6 @@
                 <button class="btn-sm btn-del" onclick="deleteOrder('${escHtml(o.id || '')}', '${escHtml(o.tracking_code)}')" title="Delete ticket" style="padding:0.3rem 0.6rem; font-size:0.74rem; font-weight:700;"><i class="fas fa-trash"></i> Delete</button>
               ` : `
                 ${quickActionBtns}
-                <button class="btn-sm btn-wa" onclick='openWhatsAppModal(${JSON.stringify(o)})' title="Send WhatsApp Message" style="padding:0.3rem 0.6rem; font-size:0.74rem;"><i class="fab fa-whatsapp"></i> Chat</button>
                 <button class="btn-sm btn-edit" onclick='openEditModal(${JSON.stringify(o)})' title="Edit Ticket" style="padding:0.3rem 0.5rem; font-size:0.74rem;"><i class="fas fa-pen"></i></button>
                 <button class="btn-sm" onclick='openAddCollectionModal("${escHtml(o.tracking_code)}", "${escHtml(o.customer_name).replace(/'/g, "\\'")}")' title="Record Daily Collection" style="background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); color:#34d399; padding:0.3rem 0.55rem; font-size:0.74rem; cursor:pointer;"><i class="fas fa-indian-rupee-sign"></i></button>
               `}
@@ -5519,7 +5465,6 @@
           <td>
             <div class="action-group">
               <button type="button" class="btn-sm" onclick='openAddCollectionModal("WALK-IN", "${escHtml(c.name).replace(/'/g, "\\'")}")' title="Record payment collection from this customer" style="background:rgba(16,185,129,0.18); border:1px solid rgba(16,185,129,0.4); color:#34d399; font-weight:700; padding:0.28rem 0.55rem; cursor:pointer;"><i class="fas fa-indian-rupee-sign"></i> Collect</button>
-              <a href="https://wa.me/${c.phone.replace(/[^0-9]/g, '')}" target="_blank" class="btn-sm btn-wa" title="WhatsApp Customer"><i class="fab fa-whatsapp"></i> Chat</a>
               <a href="tel:${c.phone}" class="btn-sm btn-edit" title="Call Customer"><i class="fas fa-phone"></i> Call</a>
               <button type="button" class="btn-sm btn-del" onclick="deleteCustomer(${c.id}, '${escHtml(c.name).replace(/'/g, "\\'")}')" title="Delete customer record">
                 <i class="fas fa-trash"></i> Delete
@@ -5591,7 +5536,7 @@
         <td style="font-size:0.8rem; color:var(--text-muted);">${fmtDate(q.created_at)}</td>
         <td>
           <div class="action-group">
-            ${q.phone ? `<a href="https://wa.me/${q.phone.replace(/[^0-9]/g, '')}?text=Hello%20${encodeURIComponent(q.name)},%20this%20is%20AR%20Technician%20Work%20regarding%20your%20inquiry..." target="_blank" class="btn-sm btn-wa"><i class="fab fa-whatsapp"></i> Reply</a>` : ''}
+            ${q.phone ? `<a href="tel:${q.phone.replace(/[^0-9+]/g, '')}" class="btn-sm btn-edit" title="Call Customer"><i class="fas fa-phone"></i> Call</a>` : ''}
             ${q.status !== 'Resolved' ? `<button class="btn-sm btn-edit" onclick="resolveInquiry(${q.id})"><i class="fas fa-check"></i> Resolve</button>` : '<span style="color:var(--green); font-size:0.8rem;"><i class="fas fa-check-double"></i> Done</span>'}
           </div>
         </td>
@@ -6168,13 +6113,6 @@
           showToast(`✅ Ticket #${d.tracking_code} Created!`, 'success');
           fetchOrders();
           fetchStats();
-          // Prompt to WhatsApp customer
-          setTimeout(() => {
-            if (confirm(`Order #${d.tracking_code} generated for ${payload.name}! Would you like to send them their live tracking link on WhatsApp now?`)) {
-              const msg = `Hello ${payload.name}, your repair order #${d.tracking_code} for ${payload.device_name} has been booked at AR Technician Work! Track live status: http://localhost:3000/#tracker`;
-              window.open(`https://wa.me/${payload.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
-            }
-          }, 500);
         } else {
           showToast('❌ Error: ' + d.error, 'error');
         }
@@ -6637,44 +6575,6 @@
       }
     }
 
-    // ============ WHATSAPP DISPATCH MODAL ============
-    function openWhatsAppModal(order) {
-      activeWaOrder = order;
-      document.getElementById('wa-customer-info').value = `${order.customer_name} (${order.customer_phone}) • Order #${order.tracking_code}`;
-      document.getElementById('wa-template').value = 'dispatch';
-      applyWaTemplate();
-      openModal('wa-modal');
-    }
-
-    function applyWaTemplate() {
-      if (!activeWaOrder) return;
-      const tmpl = document.getElementById('wa-template').value;
-      const o = activeWaOrder;
-      const cust = o.customer_name || 'Customer';
-      const tech = o.assigned_tech || 'Afzal';
-      const dev = o.device_name || 'Appliance';
-      const price = o.price_estimate || '85.00';
-      const eta = o.eta_minutes || '15 mins';
-
-      if (tmpl === 'dispatch') {
-        document.getElementById('wa-body').value = `Hello ${cust}! Technician ${tech} is travelling on his electric service bike to your address for your ${dev} repair (Ticket #${o.tracking_code}). Estimated Arrival: ${eta}. You can track his live movement here: http://localhost:3000/#tracker`;
-      } else if (tmpl === 'diagnosed') {
-        document.getElementById('wa-body').value = `Hello ${cust}, diagnosis for your ${dev} (Ticket #${o.tracking_code}) is complete. Required repair & component servicing is ready to begin. Please reply YES to approve and begin repair.`;
-      } else if (tmpl === 'completed') {
-        document.getElementById('wa-body').value = `Great news ${cust}! Your ${dev} repair (Ticket #${o.tracking_code}) has been completed, tested, and payment received. Thank you for choosing AR Technician Work!`;
-      } else {
-        document.getElementById('wa-body').value = `Hello ${cust}, regarding your repair ticket #${o.tracking_code} (${dev})...`;
-      }
-    }
-
-    function sendWhatsAppNow() {
-      if (!activeWaOrder) return;
-      const phone = activeWaOrder.customer_phone.replace(/[^0-9]/g, '');
-      const text = encodeURIComponent(document.getElementById('wa-body').value);
-      window.open(`https://wa.me/${phone}?text=${text}`, '_blank');
-      closeModal('wa-modal');
-    }
-
     // ============ DIGITAL INVOICE & WARRANTY ============
     function openInvoiceModal(order) {
       activeInvoiceOrder = order;
@@ -6691,14 +6591,6 @@
       document.getElementById('inv-total').textContent = '90 DAYS COVERED';
       document.getElementById('inv-status').textContent = order.status === 'Completed' ? 'COMPLETED & VERIFIED' : 'ACTIVE SERVICE RECORD';
       openModal('invoice-modal');
-    }
-
-    function shareInvoiceWhatsApp() {
-      if (!activeInvoiceOrder) return;
-      const o = activeInvoiceOrder;
-      const phone = o.customer_phone.replace(/[^0-9]/g, '');
-      const msg = `Hello ${o.customer_name}, here is your digital service confirmation & 90-Day Warranty Certificate for ${o.device_name} (Order #${o.tracking_code}). Verify online: http://localhost:3000/#tracker`;
-      window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
     }
 
     // ============ BROADCAST BANNER LOGIC ============

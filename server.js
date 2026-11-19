@@ -159,7 +159,7 @@ function generateSmartFallbackReply(query) {
 
   // Doorstep Service / Location / Contact
   if (q.includes('doorstep') || q.includes('home visit') || q.includes('location') || q.includes('address') || q.includes('contact') || q.includes('phone') || q.includes('number')) {
-    return "📍 **AR Technician Work Contact & Location:**\n\n- **Address:** Jain Mandir Railway Station Road, Kosamba, Taluka Mangrol, Surat - 394120\n- **Phone / WhatsApp:** [+91 6351618067](tel:+916351618067)\n- **Service Modes:** 100% Doorstep At-Home Visits & In-Shop Drop-off Repairs with 90-Day Guarantee!";
+    return "📍 **AR Technician Work Contact & Location:**\n\n- **Address:** Jain Mandir Railway Station Road, Kosamba, Taluka Mangrol, Surat - 394120\n- **Phone:** [+91 6351618067](tel:+916351618067)\n- **Service Modes:** 100% Doorstep At-Home Visits & In-Shop Drop-off Repairs with 90-Day Guarantee!";
   }
 
   // General default answer
@@ -273,7 +273,7 @@ app.post('/api/bookings', async (req, res) => {
       return res.status(403).json({
         success: false,
         is_offline: true,
-        error: 'Admin is currently offline. Repair booking requests are temporarily paused. Please try again when admin is online or contact via WhatsApp / phone.'
+        error: 'Admin is currently offline. Repair booking requests are temporarily paused. Please try again when admin is online or contact via phone (+91 6351618067).'
       });
     }
 

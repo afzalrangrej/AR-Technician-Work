@@ -207,7 +207,7 @@ const translations = {
     tracker_demos: "Try Demo Codes:",
     contact_badge: '<i class="fas fa-location-dot"></i> Shop',
     contact_title: "Visit Our Shop",
-    contact_subtitle: "Not sure if your home is covered or need directions? Call or WhatsApp our workshop team directly.",
+    contact_subtitle: "Not sure if your home is covered or need directions? Call our workshop team directly.",
     contact_address_lbl: "Workshop Address:",
     contact_address_val: "Near Jain Mandir, Railway Station Road, Kosamba (R.S.), Taluka Mangrol, Surat District, Gujarat – 394120",
     contact_hours_lbl: "Shop Timing:",
@@ -243,7 +243,6 @@ const translations = {
     modal_phone_ph: "10-digit Mobile Number",
     modal_addr_ph: "Doorstep Address, Colony / Area (Kosamba & Nearby)",
     modal_submit_btn: "Send Request",
-    modal_wa_btn: "Book Home Visit via WhatsApp",
     chat_title: "AR Technician Work Assistant",
     chat_greeting: "👋 Hi! Need doorstep home service or drop-off at our repair shop? Ask me any question!",
     chat_ph: "Ask about price or home visits...",
@@ -385,7 +384,6 @@ const translations = {
     modal_phone_ph: "10 अंकों का मोबाइल नंबर",
     modal_addr_ph: "घर का पता, लैंडमार्क या क्षेत्र (कोसंबा व आसपास)",
     modal_submit_btn: "रिक्वेस्ट भेजें",
-    modal_wa_btn: "व्हाट्सएप पर होम सर्विस बुक करें",
     chat_title: "एआर टेक्नीशियन वर्क असिस्टेंट",
     chat_greeting: "👋 नमस्ते! क्या आपको घर पर सर्विस चाहिए या हमारी दुकान पर आना चाहते हैं? मुझसे कोई भी सवाल पूछें!",
     chat_ph: "दाम या होम विजिट के बारे में पूछें...",
@@ -527,7 +525,6 @@ const translations = {
     modal_phone_ph: "10 આંકડાનો મોબાઇલ નંબર",
     modal_addr_ph: "ઘરનું સરનામું, વિસ્તાર કે સોસાયટી (કોસંબા & આસપાસ)",
     modal_submit_btn: "રિક્વેસ્ટ મોકલો",
-    modal_wa_btn: "WhatsApp પર હોમ સર્વિસ બુક કરો",
     chat_title: "એઆર ટેકનિશિયન વર્ક આસિસ્ટન્ટ",
     chat_greeting: "👋 કેમ છો! શું તમારે ઘરે સર્વિસ જોઈએ છે કે દુકાન પર આવવું છે? મને કોઈ પણ પ્રશ્ન પૂછો!",
     chat_ph: "ભાવ અથવા હોમ વિઝિટ વિશે પૂછો...",
@@ -669,7 +666,6 @@ const translations = {
     modal_phone_ph: "10 Digit Mobile Number",
     modal_addr_ph: "Ghar ka address / Area (Kosamba & Nearby)",
     modal_submit_btn: "Request Send Karein",
-    modal_wa_btn: "WhatsApp Par Home Visit Book Karein",
     chat_title: "AR Technician Work Assistant",
     chat_greeting: "👋 Hello! Doorstep home service chahiye ya hamari shop par aana chahte hain? Koi bhi sawal puchiye!",
     chat_ph: "Price ya home visit ke baare me puchiye...",
@@ -1176,8 +1172,8 @@ window.syncCustomerCodeVisibility = function () {
                 <button type="button" class="btn-card-track-live btn-track-my-booking" data-code="${escapeHtml(bCode)}" title="Track live bike route on map">
                   <i class="fas fa-location-arrow"></i> <span>Track Live on Map</span>
                 </button>
-                <a href="https://wa.me/916351618067?text=Hello%20Afzal,%20regarding%20my%20repair%20booking%20${encodeURIComponent(bCode)}" target="_blank" class="btn-card-whatsapp" title="Chat with technician on WhatsApp">
-                  <i class="fab fa-whatsapp"></i> <span>WhatsApp</span>
+                <a href="tel:+916351618067" class="btn-card-call" title="Call technician">
+                  <i class="fas fa-phone-alt"></i> <span>Call Tech</span>
                 </a>
                 <button type="button" class="btn-card-copy-bottom btn-copy-my-code" data-code="${escapeHtml(bCode)}" title="Copy code">
                   <i class="far fa-copy"></i> <span>Copy #${escapeHtml(bCode)}</span>
@@ -2420,9 +2416,6 @@ function renderThanksNote(order, box) {
           <button type="button" class="btn-thanks-action rate" onclick="window.rateActiveOrder()">
             <i class="fas fa-star"></i> Rate Us & Review
           </button>
-          <a href="https://wa.me/91${cleanPhone.slice(-10) || '6351618067'}?text=Hello%20Afzal,%20thank%20you%20for%20completing%20repair%20order%20%23${escapeHtml(trackingCode)}" target="_blank" class="btn-thanks-action whatsapp">
-            <i class="fab fa-whatsapp"></i> Chat on WhatsApp
-          </a>
           <a href="tel:${techPhone}" class="btn-thanks-action call">
             <i class="fas fa-phone"></i> Call Afzal
           </a>
@@ -2937,9 +2930,6 @@ function initTracker() {
         <div class="driver-actions" style="display:flex; gap:6px; flex-wrap:wrap;">
           <a href="tel:${order.tech_phone || '+916351618067'}" class="btn btn-sm btn-amber" style="text-decoration:none; display:inline-flex; align-items:center; gap:6px;">
             <i class="fas fa-phone"></i> Call Tech
-          </a>
-          <a href="https://wa.me/916351618067?text=Hello%20Afzal,%20I%20am%20tracking%20my%20repair%20order%20%23${order.tracking_code}" target="_blank" class="btn btn-sm btn-whatsapp">
-            <i class="fab fa-whatsapp"></i> WhatsApp
           </a>
           <button type="button" class="btn btn-sm btn-view-invoice" onclick='showCustomerInvoiceFromTracker(${JSON.stringify(order).replace(/'/g, "&apos;")})'>
             <i class="fas fa-receipt"></i> Verified Bill & Receipt
@@ -3846,27 +3836,6 @@ function initBookingModal() {
   const itemInput = document.getElementById('book-item-input');
   const selectedBadge = document.getElementById('chip-selected-badge');
   const chips = document.querySelectorAll('.booking-chips-grid .service-chip');
-  const waBtn = document.getElementById('btn-whatsapp-direct');
-
-  function updateWhatsAppLink() {
-    if (!waBtn) return;
-    const item = itemInput ? itemInput.value : 'Appliance Repair';
-    const name = nameInput && nameInput.value.trim() ? nameInput.value.trim() : '';
-    const phone = phoneInput ? extract10DigitPhone(phoneInput.value) : '';
-    const addr = addrInput && addrInput.value.trim() ? addrInput.value.trim() : '';
-    const issue = issueInput && issueInput.value.trim() ? issueInput.value.trim() : '';
-
-    let text = `Hello AR Technician Work! I want to book a Doorstep Home Repair service:\n` +
-      `• Service: ${item}\n` +
-      `• Mode: 🏡 Doorstep Home Technician Visit\n`;
-    if (issue) text += `• Problem: ${issue}\n`;
-    if (name) text += `• Customer Name: ${name}\n`;
-    if (phone) text += `• Phone: +91 ${phone}\n`;
-    if (addr) text += `• Home Address: ${addr}\n`;
-    text += `Please confirm technician visit time. Thank you!`;
-
-    waBtn.href = `https://wa.me/916351618067?text=${encodeURIComponent(text)}`;
-  }
 
   function setServiceCategory(catName) {
     if (itemInput) itemInput.value = catName;
@@ -3878,7 +3847,6 @@ function initBookingModal() {
         chip.classList.remove('active');
       }
     });
-    updateWhatsAppLink();
   }
 
   chips.forEach(chip => {
@@ -3886,10 +3854,6 @@ function initBookingModal() {
       const cat = chip.getAttribute('data-cat');
       setServiceCategory(cat);
     });
-  });
-
-  [nameInput, phoneInput, addrInput, issueInput].forEach(inp => {
-    if (inp) inp.addEventListener('input', updateWhatsAppLink);
   });
 
   triggers.forEach(t => {
@@ -3925,7 +3889,6 @@ function initBookingModal() {
       if (preset) {
         setServiceCategory(preset);
       }
-      updateWhatsAppLink();
 
       const user = window.getCurrentCustomerUser();
       if (user) {
@@ -4227,7 +4190,7 @@ function initLiveChat() {
 
     // Location / Contact
     if (q.includes('doorstep') || q.includes('location') || q.includes('address') || q.includes('phone') || q.includes('contact')) {
-      return "📍 **AR Technician Work Shop & Contact Details:**\n\n- **Address:** Jain Mandir Railway Station Road, Kosamba, Taluka Mangrol, Surat - 394120\n- **Phone / WhatsApp:** +91 6351618067\n- **Services:** Doorstep At-Home Visits & In-Shop Repairs with 90-Day Warranty!";
+      return "📍 **AR Technician Work Shop & Contact Details:**\n\n- **Address:** Jain Mandir Railway Station Road, Kosamba, Taluka Mangrol, Surat - 394120\n- **Phone:** +91 6351618067\n- **Services:** Doorstep At-Home Visits & In-Shop Repairs with 90-Day Warranty!";
     }
 
     // General fallback
@@ -6351,8 +6314,8 @@ function renderUserNotices(notices) {
 
         <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.55rem; font-size: 0.78rem; color: var(--text-muted); flex-wrap: wrap; gap: 6px;">
           <span><i class="fas fa-circle-check" style="color: #10b981;"></i> Official Notice • Kosamba Workshop</span>
-          <a href="https://wa.me/916351618067?text=${encodeURIComponent('Hello Afzal, regarding your notice: ' + (n.message || '').slice(0, 60))}" target="_blank" style="color: #34d399; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
-            <i class="fab fa-whatsapp"></i> Direct WhatsApp Reply →
+          <a href="tel:+916351618067" style="color: var(--primary); text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 4px;">
+            <i class="fas fa-phone-alt"></i> Call Workshop →
           </a>
         </div>
       </div>
